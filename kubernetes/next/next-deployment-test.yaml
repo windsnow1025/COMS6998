@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: next-deployment
+  labels:
+    app: next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: next
+  template:
+    metadata:
+      labels:
+        app: next
+    spec:
+      containers:
+        - name: next
+          image: windsnow1025/coms6998-next:test
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: FRONTEND_URL
+  revisionHistoryLimit: 0

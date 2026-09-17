@@ -1,0 +1,110 @@
+# COMS6998
+
+Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
+
+## Tech Stack
+
+- **Front End**: Node.js, React.js, Next.js, Tailwind CSS
+- **Infrastructure**: Linux (Debian 12), Kubernetes (K3S), Nginx
+- **DevOps**: GitHub Actions
+
+## Setup
+
+### Prepare Environment
+
+1. Copy `./app-secret.example.yaml` to `./app-secret.yaml` and `./app-secret-test.yaml`, modify value for each key.
+
+### Debian Production
+
+1. Create and configure a Debian VM with at least 4GB RAM
+2. JetBrains IDEA >> `Settings` >> `SSH Configurations`: login as root
+
+### Nginx Installation
+
+1. Install Nginx with Stream module
+2. In `<nginx_config_path>`: create `./nginx.conf` and `./sites-available/default`
+
+  - HTTP Block in `./sites-available/default`:
+    ```
+    server {
+    
+      server_name <domain_name>;
+    
+      client_max_body_size 100M;
+    
+        location / {
+            proxy_pass http://localhost:30080/;
+            
+            proxy_buffering off;
+            proxy_request_buffering off;
+    
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port $server_port;
+            proxy_set_header X-Forwarded-Host $host;
+    
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+    
+        location /kubernetes/ {
+            proxy_pass https://localhost:38443/;
+    
+            proxy_ssl_verify off;
+    
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port $server_port;
+            proxy_set_header X-Forwarded-Host $host;
+        }
+    }
+    ```
+
+#### Config and Environment Setup
+
+JetBrains IDEA >> `Settings` >> `Build, Execution, Deployment` >> `Deployment`
+1. Add `SFTP`
+2. Add `Mapping`
+  - Deployment Path: `/root/kubernetes`, Local Path: `./kubernetes`
+  - Deployment Path: `/etc/nginx`, Local Path: `<nginx_config_path>`
+3. Select `Deployment Path`s in `Remote Host`: `Sync with local...`
+
+#### Nginx Configuration
+
+1. Install Certbot
+2. Nginx `Sync with local`
+
+#### K3S Installation and Configuration
+
+See `./K3S.md`
+
+#### Apply Custom Configs
+
+See `./KubernetesCommand.md`
+
+#### Usage
+
+- Main
+  - `http://localhost:30080/`
+  - `https://<domain_name>/`
+- Kubernetes Dashboard
+  - `https://localhost:38443/`
+  - `https://<domain_name>/kubernetes/`
+
+### Development
+
+#### Windows Develop Environment
+
+1. Setup and run K3S in Test Server.
+2. Setup and run Next.js by JetBrains IDE according to its documentation.
+
+#### CI/CD
+
+GitHub >> Repository >> Settings >> Security >> Secrets and variables >> Actions
+- Secrets >> Repository secrets: add `DOCKERHUB_TOKEN`
+- Variables >> Repository variables: add `DOCKERHUB_USERNAME`
