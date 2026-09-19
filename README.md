@@ -102,8 +102,22 @@ See `./KubernetesCommand.md`
 
 #### Windows Develop Environment
 
-1. Setup and run K3S in Test Server.
-2. Setup and run Next.js by JetBrains IDE according to its documentation.
+#### OpenSSH
+
+1. Prepare Private Key
+  ```bash
+  dos2unix <id_rsa_filepath>
+  ```
+2. Add in OpenSSH config
+  ```config
+  Host <tunnel_name>
+      HostName <domain_name>
+      User root
+      IdentityFile <id_rsa_filepath>
+      ExitOnForwardFailure yes
+      ServerAliveInterval 30
+  ```
+3. Run JetBrains Tunnel configs
 
 #### CI/CD
 
