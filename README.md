@@ -51,9 +51,7 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
         }
     
         location /kubernetes/ {
-            proxy_pass https://localhost:38443/;
-    
-            proxy_ssl_verify off;
+            proxy_pass http://localhost:34466;
     
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -61,6 +59,10 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Port $server_port;
             proxy_set_header X-Forwarded-Host $host;
+    
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
         }
     }
     ```
@@ -93,7 +95,7 @@ See `./KubernetesCommand.md`
   - `http://localhost:30080/`
   - `https://<domain_name>/`
 - Kubernetes Dashboard
-  - `https://localhost:38443/`
+  - `http://localhost:34466/kubernetes/`
   - `https://<domain_name>/kubernetes/`
 
 ### Development
