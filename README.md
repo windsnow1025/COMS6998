@@ -16,7 +16,7 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 
 ### Debian Production
 
-1. Create and configure a Debian VM with at least 4GB RAM
+1. Create and configure a Debian VM with 4GB RAM by following `https://github.com/windsnow1025/Notes/blob/main/Configuration/CloudVM.md`
 2. JetBrains IDEA >> `Settings` >> `SSH Configurations`: login as root
 
 ### Nginx Installation
@@ -83,7 +83,7 @@ JetBrains IDEA >> `Settings` >> `Build, Execution, Deployment` >> `Deployment`
 
 #### K3S Installation and Configuration
 
-See `./K3S.md`
+Follow `https://github.com/windsnow1025/Notes/blob/main/Configuration/K3S.md`
 
 #### Apply Custom Configs
 
