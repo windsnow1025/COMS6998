@@ -1,0 +1,16 @@
+{
+  "name": "The Humor Project",
+  "short_name": "Humor Project",
+  "description": "AI-generated captions for images.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
