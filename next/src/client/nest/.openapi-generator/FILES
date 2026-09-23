@@ -1,0 +1,13 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/AppApi.md
+docs/CaptionResDto.md
+docs/CaptionsApi.md
+docs/ImageResDto.md
+git_push.sh
+index.ts

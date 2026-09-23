@@ -4,7 +4,9 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 
 ## Tech Stack
 
-- **Front End**: Node.js, React.js, Next.js, Tailwind CSS
+- **Front End**: Node.js, React.js, Next.js, Tailwind CSS, MUI
+- **Back End**: Node.js (Nest.js)
+- **Storage**: PostgreSQL
 - **Infrastructure**: Linux (Debian 12), Kubernetes (K3S), Nginx
 - **DevOps**: GitHub Actions
 
@@ -89,6 +91,10 @@ Follow `https://github.com/windsnow1025/Notes/blob/main/Configuration/K3S.md`
 
 See `./KubernetesCommand.md`
 
+#### Seed Data
+
+After the first Nest.js start has created the tables, run `./nest/seed.sql` against the PostgreSQL database.
+
 #### Usage
 
 - Main
@@ -99,8 +105,6 @@ See `./KubernetesCommand.md`
   - `https://<domain_name>/kubernetes/`
 
 ### Development
-
-#### Windows Develop Environment
 
 #### OpenSSH
 
