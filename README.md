@@ -26,6 +26,16 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 1. Install Nginx with Stream module
 2. In `<nginx_config_path>`: create `./nginx.conf` and `./sites-available/default`
 
+  - Stream Block in `./nginx.conf`:
+    ```
+    stream {
+        server {
+            listen 5432;
+            proxy_pass localhost:35432;
+        }
+    }
+    ```
+    
   - HTTP Block in `./sites-available/default`:
     ```
     server {
@@ -118,6 +128,7 @@ After the first Nest.js start has created the tables, run `./nest/seed.sql` agai
       HostName <domain_name>
       User root
       IdentityFile <id_rsa_filepath>
+      LocalForward 5432 localhost:5432
       ExitOnForwardFailure yes
       ServerAliveInterval 30
   ```
