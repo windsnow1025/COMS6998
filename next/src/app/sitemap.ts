@@ -7,7 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();
   return [
     {
-      url: baseUrl,
+      url: `${baseUrl}/w1`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/w2`,
       lastModified: new Date(),
     },
   ];
