@@ -16,5 +16,15 @@ export default registerAs('app', (): AppConfig => {
       password: process.env.POSTGRES_PASSWORD!,
       database: process.env.POSTGRES_DB!,
     },
+    s3: {
+      host: process.env.S3_HOST!,
+      port: 9000,
+      useSSL: false,
+      region: 'us-east-1',
+      accessKey: process.env.S3_ACCESS_KEY!,
+      secretKey: process.env.S3_SECRET_KEY!,
+      bucketName: process.env.S3_BUCKET_NAME!,
+      webUrl: process.env.S3_WEB_URL!,
+    },
   };
 });

@@ -8,6 +8,10 @@ configuration.ts
 docs/AppApi.md
 docs/CaptionResDto.md
 docs/CaptionsApi.md
+docs/FilesApi.md
+docs/FilesReqDto.md
+docs/FilesResDto.md
 docs/ImageResDto.md
+docs/WebUrlResDto.md
 git_push.sh
 index.ts

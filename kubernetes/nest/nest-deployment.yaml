@@ -45,4 +45,29 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: POSTGRES_DB
+            - name: S3_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: S3_HOST
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: S3_ACCESS_KEY
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: S3_SECRET_KEY
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: S3_BUCKET_NAME
+            - name: S3_WEB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: S3_WEB_URL
   revisionHistoryLimit: 0

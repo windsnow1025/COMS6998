@@ -1,0 +1,17 @@
+### Upload Files
+
+POST {{baseUrl}}/files
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; filename="example1.txt"
+Content-Type: text/plain
+
+This is the content of the first file.
+--boundary
+Content-Disposition: form-data; filename="example2.txt"
+Content-Type: text/plain
+
+This is the content of the second file.
+--boundary--

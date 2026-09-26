@@ -5,6 +5,7 @@ import configuration from './config/configuration';
 import { AppConfig } from './config/config.interface';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { FilesModule } from './files/files.module';
 import { Image } from './images/image.entity';
 import { Caption } from './captions/caption.entity';
 import { CaptionsModule } from './captions/captions.module';
@@ -36,6 +37,7 @@ import { CaptionsModule } from './captions/captions.module';
         };
       },
     }),
+    FilesModule,
     CaptionsModule,
   ],
   controllers: [AppController],

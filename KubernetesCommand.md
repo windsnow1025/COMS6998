@@ -11,6 +11,11 @@ kubectl apply -f ./postgresql/postgresql-pvc.yaml
 kubectl apply -f ./postgresql/postgresql-deployment.yaml
 kubectl apply -f ./postgresql/postgresql-service.yaml
 
+# RustFS
+kubectl apply -f ./rustfs/rustfs-pvc.yaml
+kubectl apply -f ./rustfs/rustfs-deployment.yaml
+kubectl apply -f ./rustfs/rustfs-service.yaml
+
 # Nest.js
 kubectl apply -f ./nest/nest-service.yaml
 
@@ -57,6 +62,9 @@ kubectl rollout restart deployment -n kubernetes-dashboard
 
 # PostgreSQL
 kubectl rollout restart deployment postgresql-deployment
+
+# RustFS
+kubectl rollout restart deployment rustfs-deployment
 
 # Nest.js
 kubectl rollout restart deployment nest-deployment
