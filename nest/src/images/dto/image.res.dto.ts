@@ -1,5 +1,5 @@
 export class ImageResDto {
-  id: number;
+  id: string;
   url: string;
   description: string;
 }

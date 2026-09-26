@@ -10,8 +10,8 @@ import { Image } from '../images/image.entity';
 
 @Entity()
 export class Caption extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'text' })
   content: string;

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **number** |  | [default to undefined]
+**id** | **string** |  | [default to undefined]
 **content** | **string** |  | [default to undefined]
 **image** | [**ImageResDto**](ImageResDto.md) |  | [default to undefined]
 **createdAt** | **string** |  | [default to undefined]

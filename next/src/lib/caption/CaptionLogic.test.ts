@@ -7,9 +7,9 @@ describe("CaptionLogic.fetchCaptions", () => {
   it("returns the captions from the client", async () => {
     const captions = [
       {
-        id: 1,
+        id: "6b1a6f2e-3d0c-4b9e-9f1d-2a7c5e8b4d10",
         content: "me opening Gradescope at 2 a.m.",
-        image: {id: 7, url: "https://example.com/7.jpg", description: "a dog"},
+        image: {id: "0f9d3c2b-7a1e-4c6d-8b2f-5e4a9c1d7b33", url: "https://example.com/7.jpg", description: "a dog"},
         createdAt: "2026-09-23T00:00:00.000Z",
       },
     ];

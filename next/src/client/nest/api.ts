@@ -24,7 +24,7 @@ import type { RequestArgs } from './base';
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 export interface CaptionResDto {
-    'id': number;
+    'id': string;
     'content': string;
     'image': ImageResDto;
     'createdAt': string;
@@ -36,7 +36,7 @@ export interface FilesResDto {
     'urls': Array<string>;
 }
 export interface ImageResDto {
-    'id': number;
+    'id': string;
     'url': string;
     'description': string;
 }

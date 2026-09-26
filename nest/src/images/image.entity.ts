@@ -4,8 +4,8 @@ import { Caption } from '../captions/caption.entity';
 
 @Entity()
 export class Image extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'text' })
   url: string;
