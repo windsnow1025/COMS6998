@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis, { createKeyv } from '@keyv/redis';
 import configuration from './config/configuration';
 import { AppConfig } from './config/config.interface';
 import { AppController } from './app.controller';
@@ -34,6 +36,31 @@ import { CaptionsModule } from './captions/captions.module';
           synchronize: true,
           logging: ['query', 'error'],
           logger: 'advanced-console',
+        };
+      },
+    }),
+    // https://docs.nestjs.com/techniques/caching
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const config = configService.get<AppConfig>('app')!;
+        const redisUrl = `redis://:${encodeURIComponent(config.redis.password)}@${config.redis.host}:${config.redis.port}`;
+
+        const keyv = createKeyv(redisUrl);
+        const redisClient = (keyv.store as KeyvRedis<unknown>).client;
+
+        redisClient.on('error', (error: Error) =>
+          console.error('error', error.message),
+        );
+
+        keyv.on('error', (error) => {
+          console.error('error', error);
+        });
+
+        return {
+          stores: [keyv],
         };
       },
     }),

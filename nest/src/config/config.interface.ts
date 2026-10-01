@@ -17,8 +17,15 @@ export interface S3Config {
   webUrl: string;
 }
 
+export interface RedisConfig {
+  host: string;
+  port: number;
+  password: string;
+}
+
 export interface AppConfig {
   port: number;
   postgres: PostgresConfig;
   s3: S3Config;
+  redis: RedisConfig;
 }

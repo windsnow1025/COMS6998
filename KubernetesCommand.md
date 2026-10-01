@@ -16,6 +16,10 @@ kubectl apply -f ./rustfs/rustfs-pvc.yaml
 kubectl apply -f ./rustfs/rustfs-deployment.yaml
 kubectl apply -f ./rustfs/rustfs-service.yaml
 
+# Redis
+kubectl apply -f ./redis/redis-deployment.yaml
+kubectl apply -f ./redis/redis-service.yaml
+
 # Nest.js
 kubectl apply -f ./nest/nest-service.yaml
 
@@ -65,6 +69,9 @@ kubectl rollout restart deployment postgresql-deployment
 
 # RustFS
 kubectl rollout restart deployment rustfs-deployment
+
+# Redis
+kubectl rollout restart deployment redis-deployment
 
 # Nest.js
 kubectl rollout restart deployment nest-deployment

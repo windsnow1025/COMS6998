@@ -6,3 +6,4 @@ data:
   ENV: "production"
   POSTGRES_HOST: "postgresql-service"
   S3_HOST: "rustfs-service"
+  REDIS_HOST: "redis-service"

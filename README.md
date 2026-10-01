@@ -6,7 +6,7 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 
 - **Front End**: Node.js, React.js, Next.js, Tailwind CSS, MUI
 - **Back End**: Node.js (Nest.js)
-- **Storage**: PostgreSQL, RustFS
+- **Storage**: PostgreSQL, RustFS, Redis
 - **Infrastructure**: Linux (Debian 12), Kubernetes (K3S), Nginx
 - **DevOps**: GitHub Actions
 
@@ -32,6 +32,10 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
         server {
             listen 5432;
             proxy_pass localhost:35432;
+        }
+        server {
+            listen 6379;
+            proxy_pass localhost:36379;
         }
         server {
             listen 9000;
@@ -139,6 +143,7 @@ After the first Nest.js start has created the tables, run `./nest/seed.sql` agai
       User root
       IdentityFile <id_rsa_filepath>
       LocalForward 5432 localhost:5432
+      LocalForward 6379 localhost:6379
       LocalForward 9000 localhost:9000
       LocalForward 9001 localhost:9001
       ExitOnForwardFailure yes

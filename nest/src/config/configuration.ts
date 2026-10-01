@@ -26,5 +26,10 @@ export default registerAs('app', (): AppConfig => {
       bucketName: process.env.S3_BUCKET_NAME!,
       webUrl: process.env.S3_WEB_URL!,
     },
+    redis: {
+      host: process.env.REDIS_HOST!,
+      port: 6379,
+      password: process.env.REDIS_PASSWORD!,
+    },
   };
 });
