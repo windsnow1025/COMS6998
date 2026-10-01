@@ -3,7 +3,7 @@ import type {GetServerSideProps} from "next";
 export const getServerSideProps = (async () => {
   return {
     redirect: {
-      destination: "/w2",
+      destination: "/w3",
       permanent: false,
     },
   };

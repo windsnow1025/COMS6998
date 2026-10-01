@@ -5,6 +5,8 @@ export const StorageKeys = {
   DeveloperMode: "developerMode",
 }
 
+export const ResendCooldownSeconds = 60;
+
 export const getBaseUrl = (): string => {
   if (process.env.NODE_ENV === "production") {
     if (!process.env.FRONTEND_URL) {

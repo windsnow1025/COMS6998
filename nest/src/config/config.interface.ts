@@ -1,3 +1,6 @@
+import { FirebaseOptions } from 'firebase/app';
+import { ServiceAccount } from 'firebase-admin';
+
 export interface PostgresConfig {
   host: string;
   port: number;
@@ -23,9 +26,18 @@ export interface RedisConfig {
   password: string;
 }
 
+export interface FirebaseConfig {
+  config: FirebaseOptions;
+  serviceAccountKey: ServiceAccount;
+}
+
 export interface AppConfig {
   port: number;
+  jwtSecret: string;
   postgres: PostgresConfig;
   s3: S3Config;
   redis: RedisConfig;
+  googleClientId: string;
+  firebase: FirebaseConfig;
+  frontendUrl: string;
 }

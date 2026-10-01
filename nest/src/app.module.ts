@@ -1,12 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis, { createKeyv } from '@keyv/redis';
 import configuration from './config/configuration';
 import { AppConfig } from './config/config.interface';
+import { AuthGuard } from './common/guards/auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CoreModule } from './core/core.module';
+import { AuthModule } from './auth/auth.module';
+import { User } from './users/user.entity';
+import { UsersModule } from './users/users.module';
 import { FilesModule } from './files/files.module';
 import { Image } from './images/image.entity';
 import { Caption } from './captions/caption.entity';
@@ -32,7 +40,7 @@ import { CaptionsModule } from './captions/captions.module';
           username: config.postgres.user,
           password: config.postgres.password,
           database: config.postgres.database,
-          entities: [Image, Caption],
+          entities: [User, Image, Caption],
           synchronize: true,
           logging: ['query', 'error'],
           logger: 'advanced-console',
@@ -64,10 +72,25 @@ import { CaptionsModule } from './captions/captions.module';
         };
       },
     }),
+    JwtModule,
+    CoreModule,
+    AuthModule,
+    UsersModule,
     FilesModule,
     CaptionsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // https://docs.nestjs.com/guards
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

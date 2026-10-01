@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { Public } from '../common/decorators/public.decorator';
 import { CaptionsService } from './captions.service';
 import { CaptionResDto } from './dto/caption.res.dto';
 
@@ -6,6 +7,7 @@ import { CaptionResDto } from './dto/caption.res.dto';
 export class CaptionsController {
   constructor(private readonly captionsService: CaptionsService) {}
 
+  @Public()
   @Get()
   async findAll(): Promise<CaptionResDto[]> {
     const captions = await this.captionsService.findAll();

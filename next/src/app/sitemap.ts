@@ -14,5 +14,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/w2`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/w3`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/auth/signin`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/auth/signup`,
+      lastModified: new Date(),
+    },
   ];
 }

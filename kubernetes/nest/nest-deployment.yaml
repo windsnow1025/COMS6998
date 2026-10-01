@@ -19,12 +19,26 @@ spec:
           image: windsnow1025/coms6998-nest
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+              readOnly: true
           env:
             - name: ENV
               valueFrom:
                 configMapKeyRef:
                   name: app-configmap
                   key: ENV
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: JWT_SECRET
+            - name: FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: FRONTEND_URL
             - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:
@@ -80,4 +94,18 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: REDIS_PASSWORD
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: GOOGLE_CLIENT_ID
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: app-secret
+            items:
+              - key: FIREBASE_CONFIG
+                path: firebaseConfig.json
+              - key: SERVICE_ACCOUNT_KEY
+                path: serviceAccountKey.json
   revisionHistoryLimit: 0
