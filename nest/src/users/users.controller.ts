@@ -23,6 +23,7 @@ import {
   UserAvatarReqDto,
   UserEmailPasswordReqDto,
   UserEmailReqDto,
+  UserNameReqDto,
   UserPasswordReqDto,
   UserSignUpReqDto,
   UserUsernameReqDto,
@@ -111,6 +112,20 @@ export class UsersController {
     const user = await this.usersService.updateUsername(
       id,
       userUsernameReqDto.username,
+    );
+    return this.usersCoreService.toUserDto(user);
+  }
+
+  @Put('user/name')
+  async updateName(
+    @Request() req: RequestWithUser,
+    @Body() userNameReqDto: UserNameReqDto,
+  ): Promise<UserResDto> {
+    const id = req.user.id;
+    const user = await this.usersService.updateName(
+      id,
+      userNameReqDto.firstName,
+      userNameReqDto.lastName,
     );
     return this.usersCoreService.toUserDto(user);
   }

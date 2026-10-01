@@ -163,6 +163,14 @@ export default class UserLogic {
     }
   }
 
+  async updateName(firstName: string, lastName: string) {
+    try {
+      return await this.userClient.updateName(firstName, lastName);
+    } catch (error) {
+      handleError(error, 'Update name failed');
+    }
+  }
+
   async updatePassword(password: string) {
     try {
       await this.userClient.updatePassword(password);

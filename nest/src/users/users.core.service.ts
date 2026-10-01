@@ -27,6 +27,8 @@ export class UsersCoreService {
     const userDto: UserResDto = {
       id: user.id,
       username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       roles: user.roles,
       avatar: user.avatar,
@@ -82,17 +84,28 @@ export class UsersCoreService {
     googleId: string,
     email: string,
     avatar: string | undefined,
+    firstName: string | undefined,
+    lastName: string | undefined,
   ) {
     // Google account already linked
     const googleUser = await this.usersRepository.findOneBy({ googleId });
     if (googleUser) {
-      return googleUser;
+      if (googleUser.firstName || !firstName) {
+        return googleUser;
+      }
+      this.nameByGoogle(googleUser, firstName, lastName);
+
+      await this.cacheManager.del(this.getUserCacheKey(googleUser.id));
+      return await this.usersRepository.save(googleUser);
     }
 
     // Email already registered: link the Google account
     const emailUser = await this.findOneByEmail(email);
     if (emailUser) {
       emailUser.googleId = googleId;
+      if (!emailUser.firstName && firstName) {
+        this.nameByGoogle(emailUser, firstName, lastName);
+      }
 
       await this.cacheManager.del(this.getUserCacheKey(emailUser.id));
       return await this.usersRepository.save(emailUser);
@@ -106,9 +119,24 @@ export class UsersCoreService {
     if (avatar) {
       user.avatar = avatar;
     }
+    if (firstName) {
+      this.nameByGoogle(user, firstName, lastName);
+    }
     user.roles = [Role.User];
 
     return await this.usersRepository.save(user);
+  }
+
+  // Names the user as the Google account is named
+  private nameByGoogle(
+    user: User,
+    firstName: string,
+    lastName: string | undefined,
+  ) {
+    user.firstName = firstName;
+    if (lastName) {
+      user.lastName = lastName;
+    }
   }
 
   async adjustCredit(id: number, amount: number) {

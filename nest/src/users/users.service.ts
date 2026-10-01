@@ -174,6 +174,19 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
+  async updateName(id: number, firstName: string, lastName: string) {
+    const user = await this.usersCoreService.findOneById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+
+    await this.cacheManager.del(this.usersCoreService.getUserCacheKey(id));
+    return await this.usersRepository.save(user);
+  }
+
   async updatePassword(user: User, password: string) {
     user.password = await this.hashPassword(password);
     user.tokenVersion = user.tokenVersion + 1;

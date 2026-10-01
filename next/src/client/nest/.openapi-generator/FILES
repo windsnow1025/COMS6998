@@ -23,6 +23,7 @@ docs/ReduceCreditReqDto.md
 docs/UserAvatarReqDto.md
 docs/UserEmailPasswordReqDto.md
 docs/UserEmailReqDto.md
+docs/UserNameReqDto.md
 docs/UserPasswordReqDto.md
 docs/UserPrivilegesReqDto.md
 docs/UserResDto.md

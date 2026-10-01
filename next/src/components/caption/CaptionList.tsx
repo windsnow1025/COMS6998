@@ -4,7 +4,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CaptionLogic from '@/lib/caption/CaptionLogic';
 import {CaptionResDto} from '@/client/nest';
@@ -40,22 +42,26 @@ export default function CaptionList() {
 
   return (
     <Grid container spacing={3}>
-      {captions.map((caption) => (
-        <Grid key={caption.id} size={{ xs: 12, sm: 6, md: 4 }}>
-          <Card>
+      {CaptionLogic.groupByImage(captions).map(({ image, captions }) => (
+        <Grid key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
+          <Card sx={{ height: '100%' }}>
             <CardMedia
               component="img"
-              image={caption.image.url}
-              alt={caption.image.description}
+              image={image.url}
+              alt={image.description}
               sx={{ aspectRatio: '3 / 2' }}
             />
             <CardContent>
-              <Typography variant="body1" gutterBottom>
-                {caption.content}
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {image.description}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {caption.image.description}
-              </Typography>
+              <Stack spacing={1} divider={<Divider flexItem />}>
+                {captions.map((caption) => (
+                  <Typography key={caption.id} variant="body1">
+                    {caption.content}
+                  </Typography>
+                ))}
+              </Stack>
             </CardContent>
           </Card>
         </Grid>

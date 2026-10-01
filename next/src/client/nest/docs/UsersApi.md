@@ -15,6 +15,7 @@ All URIs are relative to *http://localhost*
 |[**usersControllerSendPasswordResetEmail**](#userscontrollersendpasswordresetemail) | **POST** /users/user/password-reset-email | |
 |[**usersControllerUpdateAvatar**](#userscontrollerupdateavatar) | **PUT** /users/user/avatar | |
 |[**usersControllerUpdateEmail**](#userscontrollerupdateemail) | **PUT** /users/user/email | |
+|[**usersControllerUpdateName**](#userscontrollerupdatename) | **PUT** /users/user/name | |
 |[**usersControllerUpdatePassword**](#userscontrollerupdatepassword) | **PUT** /users/user/password | |
 |[**usersControllerUpdatePrivileges**](#userscontrollerupdateprivileges) | **PUT** /users/user/privileges | |
 |[**usersControllerUpdateResetPassword**](#userscontrollerupdateresetpassword) | **PUT** /users/user/reset-password | |
@@ -525,6 +526,57 @@ const { status, data } = await apiInstance.usersControllerUpdateEmail(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **verifiedEmailReqDto** | **VerifiedEmailReqDto**|  | |
+
+
+### Return type
+
+**UserResDto**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **usersControllerUpdateName**
+> UserResDto usersControllerUpdateName(userNameReqDto)
+
+
+### Example
+
+```typescript
+import {
+    UsersApi,
+    Configuration,
+    UserNameReqDto
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new UsersApi(configuration);
+
+let userNameReqDto: UserNameReqDto; //
+
+const { status, data } = await apiInstance.usersControllerUpdateName(
+    userNameReqDto
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **userNameReqDto** | **UserNameReqDto**|  | |
 
 
 ### Return type

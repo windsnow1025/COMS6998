@@ -52,6 +52,8 @@ export class AuthService {
       payload.sub,
       payload.email,
       payload.picture,
+      payload.given_name,
+      payload.family_name,
     );
     return await this.signToken(user);
   }
