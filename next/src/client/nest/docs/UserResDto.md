@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [default to undefined]
 **username** | **string** |  | [default to undefined]
+**firstName** | **string** |  | [optional] [default to undefined]
+**lastName** | **string** |  | [optional] [default to undefined]
 **email** | **string** |  | [default to undefined]
 **roles** | **Array&lt;string&gt;** |  | [default to undefined]
 **avatar** | **string** |  | [optional] [default to undefined]
@@ -20,6 +22,8 @@ import { UserResDto } from './api';
 const instance: UserResDto = {
     id,
     username,
+    firstName,
+    lastName,
     email,
     roles,
     avatar,

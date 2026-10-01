@@ -49,6 +49,14 @@ export class UserUsernameReqDto {
   username: string;
 }
 
+export class UserNameReqDto {
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+}
+
 export class UserPasswordReqDto {
   @IsString()
   password: string;

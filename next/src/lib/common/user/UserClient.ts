@@ -44,6 +44,12 @@ export default class UserClient {
     await api.usersControllerUpdateUsername({ username });
   }
 
+  async updateName(firstName: string, lastName: string): Promise<UserResDto> {
+    const api = new UsersApi(getNestOpenAPIConfiguration());
+    const res = await api.usersControllerUpdateName({ firstName, lastName });
+    return res.data;
+  }
+
   async updatePassword(password: string) {
     const api = new UsersApi(getNestOpenAPIConfiguration());
     await api.usersControllerUpdatePassword({ password });

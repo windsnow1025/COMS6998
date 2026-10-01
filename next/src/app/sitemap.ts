@@ -19,6 +19,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/w3/profile`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/auth/signin`,
       lastModified: new Date(),
     },
