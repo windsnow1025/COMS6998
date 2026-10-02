@@ -11,6 +11,10 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 - **Infrastructure**: Linux (Debian 12), Kubernetes (K3S), Nginx
 - **DevOps**: GitHub Actions
 
+## Live Demo
+
+[https://www-coms6998.windsnow1025.com/](https://www-coms6998.windsnow1025.com/)
+
 ## Setup
 
 ### Prepare Environment
@@ -110,9 +114,7 @@ JetBrains IDEA >> `Settings` >> `Build, Execution, Deployment` >> `Deployment`
 
 Follow `https://github.com/windsnow1025/Notes/blob/main/Configuration/K3S.md`
 
-#### Apply Custom Configs
-
-See `./KubernetesCommand.md`
+Apply Custom Configs in `./KubernetesCommand.md`
 
 #### Seed Data
 
