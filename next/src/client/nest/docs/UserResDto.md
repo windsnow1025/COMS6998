@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **firstName** | **string** |  | [optional] [default to undefined]
 **lastName** | **string** |  | [optional] [default to undefined]
 **email** | **string** |  | [default to undefined]
+**hasPassword** | **boolean** |  | [default to undefined]
 **roles** | **Array&lt;string&gt;** |  | [default to undefined]
 **avatar** | **string** |  | [optional] [default to undefined]
 **credit** | **number** |  | [default to undefined]
@@ -25,6 +26,7 @@ const instance: UserResDto = {
     firstName,
     lastName,
     email,
+    hasPassword,
     roles,
     avatar,
     credit,
