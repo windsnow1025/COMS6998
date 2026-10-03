@@ -30,5 +30,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/auth/signup`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/about/privacy`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/about/terms`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/about/policy`,
+      lastModified: new Date(),
+    },
   ];
 }
