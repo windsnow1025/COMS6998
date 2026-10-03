@@ -6,6 +6,7 @@ export class UserResDto {
   firstName?: string;
   lastName?: string;
   email: string;
+  hasPassword: boolean;
   roles: Role[];
   avatar?: string;
   credit: number;

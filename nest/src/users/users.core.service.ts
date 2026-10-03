@@ -30,6 +30,7 @@ export class UsersCoreService {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      hasPassword: !!user.password,
       roles: user.roles,
       avatar: user.avatar,
       credit: user.credit,
