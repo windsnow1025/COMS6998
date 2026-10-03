@@ -57,9 +57,6 @@ importers:
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@types/google.accounts':
-        specifier: ^0.0.18
-        version: 0.0.18
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -1202,9 +1199,6 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
-
-  '@types/google.accounts@0.0.18':
-    resolution: {integrity: sha512-yHaPznll97ZnMJlPABHyeiIlLn3u6gQaUjA5k/O9lrrpgFB9VT10CKPLuKM0qTHMl50uXpW5sIcG+utm8jMOHw==}
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -4752,8 +4746,6 @@ snapshots:
       '@babel/types': 7.29.8
 
   '@types/estree@1.0.9': {}
-
-  '@types/google.accounts@0.0.18': {}
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
