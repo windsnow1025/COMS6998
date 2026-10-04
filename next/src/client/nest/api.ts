@@ -75,10 +75,6 @@ export interface ReduceCreditReqDto {
 export interface UserAvatarReqDto {
     'avatar': string;
 }
-export interface UserEmailPasswordReqDto {
-    'email': string;
-    'password': string;
-}
 export interface UserEmailReqDto {
     'email': string;
 }
@@ -129,6 +125,11 @@ export interface UserSignUpReqDto {
 }
 export interface UserUsernameReqDto {
     'username': string;
+}
+export interface VerifiedEmailPasswordReqDto {
+    'email': string;
+    'password': string;
+    'token': string;
 }
 export interface VerifiedEmailReqDto {
     'email': string;
@@ -1513,13 +1514,13 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @param {UserEmailPasswordReqDto} userEmailPasswordReqDto 
+         * @param {VerifiedEmailPasswordReqDto} verifiedEmailPasswordReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersControllerUpdateResetPassword: async (userEmailPasswordReqDto: UserEmailPasswordReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userEmailPasswordReqDto' is not null or undefined
-            assertParamExists('usersControllerUpdateResetPassword', 'userEmailPasswordReqDto', userEmailPasswordReqDto)
+        usersControllerUpdateResetPassword: async (verifiedEmailPasswordReqDto: VerifiedEmailPasswordReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'verifiedEmailPasswordReqDto' is not null or undefined
+            assertParamExists('usersControllerUpdateResetPassword', 'verifiedEmailPasswordReqDto', verifiedEmailPasswordReqDto)
             const localVarPath = `/users/user/reset-password`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1543,7 +1544,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(userEmailPasswordReqDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(verifiedEmailPasswordReqDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1764,12 +1765,12 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {UserEmailPasswordReqDto} userEmailPasswordReqDto 
+         * @param {VerifiedEmailPasswordReqDto} verifiedEmailPasswordReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async usersControllerUpdateResetPassword(userEmailPasswordReqDto: UserEmailPasswordReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.usersControllerUpdateResetPassword(userEmailPasswordReqDto, options);
+        async usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto: VerifiedEmailPasswordReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UsersApi.usersControllerUpdateResetPassword']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1919,12 +1920,12 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @param {UserEmailPasswordReqDto} userEmailPasswordReqDto 
+         * @param {VerifiedEmailPasswordReqDto} verifiedEmailPasswordReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersControllerUpdateResetPassword(userEmailPasswordReqDto: UserEmailPasswordReqDto, options?: RawAxiosRequestConfig): AxiosPromise<UserResDto> {
-            return localVarFp.usersControllerUpdateResetPassword(userEmailPasswordReqDto, options).then((request) => request(axios, basePath));
+        usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto: VerifiedEmailPasswordReqDto, options?: RawAxiosRequestConfig): AxiosPromise<UserResDto> {
+            return localVarFp.usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2080,12 +2081,12 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {UserEmailPasswordReqDto} userEmailPasswordReqDto 
+     * @param {VerifiedEmailPasswordReqDto} verifiedEmailPasswordReqDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public usersControllerUpdateResetPassword(userEmailPasswordReqDto: UserEmailPasswordReqDto, options?: RawAxiosRequestConfig) {
-        return UsersApiFp(this.configuration).usersControllerUpdateResetPassword(userEmailPasswordReqDto, options).then((request) => request(this.axios, this.basePath));
+    public usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto: VerifiedEmailPasswordReqDto, options?: RawAxiosRequestConfig) {
+        return UsersApiFp(this.configuration).usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
