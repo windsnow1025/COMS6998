@@ -21,12 +21,12 @@ import {
   EmailVerificationReqDto,
   ReduceCreditReqDto,
   UserAvatarReqDto,
-  UserEmailPasswordReqDto,
   UserEmailReqDto,
   UserNameReqDto,
   UserPasswordReqDto,
   UserSignUpReqDto,
   UserUsernameReqDto,
+  VerifiedEmailPasswordReqDto,
   VerifiedEmailReqDto,
 } from './dto/user.req.dto';
 import { UserResDto } from './dto/user.res.dto';
@@ -81,10 +81,11 @@ export class UsersController {
 
   @Public()
   @Put('user/reset-password')
-  async updateResetPassword(@Body() reqDto: UserEmailPasswordReqDto) {
+  async updateResetPassword(@Body() reqDto: VerifiedEmailPasswordReqDto) {
     const user = await this.usersService.updateResetPassword(
       reqDto.email,
       reqDto.password,
+      reqDto.token,
     );
     return this.usersCoreService.toUserDto(user);
   }

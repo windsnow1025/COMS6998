@@ -703,7 +703,7 @@ const { status, data } = await apiInstance.usersControllerUpdatePrivileges(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **usersControllerUpdateResetPassword**
-> UserResDto usersControllerUpdateResetPassword(userEmailPasswordReqDto)
+> UserResDto usersControllerUpdateResetPassword(verifiedEmailPasswordReqDto)
 
 
 ### Example
@@ -712,16 +712,16 @@ const { status, data } = await apiInstance.usersControllerUpdatePrivileges(
 import {
     UsersApi,
     Configuration,
-    UserEmailPasswordReqDto
+    VerifiedEmailPasswordReqDto
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new UsersApi(configuration);
 
-let userEmailPasswordReqDto: UserEmailPasswordReqDto; //
+let verifiedEmailPasswordReqDto: VerifiedEmailPasswordReqDto; //
 
 const { status, data } = await apiInstance.usersControllerUpdateResetPassword(
-    userEmailPasswordReqDto
+    verifiedEmailPasswordReqDto
 );
 ```
 
@@ -729,7 +729,7 @@ const { status, data } = await apiInstance.usersControllerUpdateResetPassword(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **userEmailPasswordReqDto** | **UserEmailPasswordReqDto**|  | |
+| **verifiedEmailPasswordReqDto** | **VerifiedEmailPasswordReqDto**|  | |
 
 
 ### Return type
