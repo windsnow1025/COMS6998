@@ -40,6 +40,16 @@ export interface AuthTokenUsernameReqDto {
     'username': string;
     'password': string;
 }
+export interface BatchResDto {
+    'date': string;
+    'closed': boolean;
+    'photos': Array<PhotoResDto>;
+}
+export interface BatchSummaryResDto {
+    'coverUrl': string | null;
+    'date': string;
+    'photoCount': number;
+}
 export interface CaptionResDto {
     'id': string;
     'content': string;
@@ -64,13 +74,64 @@ export interface FilesReqDto {
 export interface FilesResDto {
     'urls': Array<string>;
 }
+export interface FlavorResDto {
+    'slug': string;
+    'name': string;
+    'tagline': string;
+}
+export interface FlavorStatResDto {
+    'flavor': FlavorResDto;
+    'picks': number;
+    'seen': number;
+}
 export interface ImageResDto {
     'id': string;
     'url': string;
     'description': string;
 }
+export interface PhotoCaptionResDto {
+    'id': string;
+    'content': string;
+    'flavor'?: FlavorResDto;
+    'picks'?: number;
+}
+export interface PhotoResDto {
+    'place': string | null;
+    'uploader': PhotoUploaderResDto | null;
+    'batchDate': string | null;
+    'id': string;
+    'url': string;
+    'description': string;
+    'queuePosition'?: number;
+    'createdAt': string;
+    'captions': Array<PhotoCaptionResDto>;
+    'revealed': boolean;
+    'voters'?: number;
+    'nonePicks'?: number;
+    'viewer': PhotoViewerResDto;
+}
+export interface PhotoUploaderResDto {
+    'name': string;
+    'avatar'?: string;
+}
+export interface PhotoViewerResDto {
+    'captionId': string | null;
+    'isOwner': boolean;
+    'hasVoted': boolean;
+    'matched'?: boolean;
+}
 export interface ReduceCreditReqDto {
     'amount': number;
+}
+export interface StatsResDto {
+    'streak': number;
+    'votes': number;
+    'judged': number;
+    'matches': number;
+    'flavors': Array<FlavorStatResDto>;
+    'photos': number;
+    'picksReceived': number;
+    'roastsLeft': number;
 }
 export interface UserAvatarReqDto {
     'avatar': string;
@@ -134,6 +195,9 @@ export interface VerifiedEmailPasswordReqDto {
 export interface VerifiedEmailReqDto {
     'email': string;
     'token': string;
+}
+export interface VoteReqDto {
+    'captionId': string | null;
 }
 export interface WebUrlResDto {
     'webUrl': string;
@@ -532,6 +596,229 @@ export class AuthApi extends BaseAPI {
      */
     public authControllerGetGoogleClientId(options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).authControllerGetGoogleClientId(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * BatchesApi - axios parameter creator
+ */
+export const BatchesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} date 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindPast: async (date: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'date' is not null or undefined
+            assertParamExists('batchesControllerFindPast', 'date', date)
+            const localVarPath = `/batches/{date}`
+                .replace(`{${"date"}}`, encodeURIComponent(String(date)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindRecent: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/batches`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindToday: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/batches/today`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * BatchesApi - functional programming interface
+ */
+export const BatchesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BatchesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} date 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async batchesControllerFindPast(date: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BatchResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.batchesControllerFindPast(date, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BatchesApi.batchesControllerFindPast']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async batchesControllerFindRecent(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BatchSummaryResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.batchesControllerFindRecent(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BatchesApi.batchesControllerFindRecent']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async batchesControllerFindToday(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BatchResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.batchesControllerFindToday(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BatchesApi.batchesControllerFindToday']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * BatchesApi - factory interface
+ */
+export const BatchesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BatchesApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} date 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindPast(date: string, options?: RawAxiosRequestConfig): AxiosPromise<BatchResDto> {
+            return localVarFp.batchesControllerFindPast(date, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindRecent(options?: RawAxiosRequestConfig): AxiosPromise<Array<BatchSummaryResDto>> {
+            return localVarFp.batchesControllerFindRecent(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        batchesControllerFindToday(options?: RawAxiosRequestConfig): AxiosPromise<BatchResDto> {
+            return localVarFp.batchesControllerFindToday(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * BatchesApi - object-oriented interface
+ */
+export class BatchesApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} date 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public batchesControllerFindPast(date: string, options?: RawAxiosRequestConfig) {
+        return BatchesApiFp(this.configuration).batchesControllerFindPast(date, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public batchesControllerFindRecent(options?: RawAxiosRequestConfig) {
+        return BatchesApiFp(this.configuration).batchesControllerFindRecent(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public batchesControllerFindToday(options?: RawAxiosRequestConfig) {
+        return BatchesApiFp(this.configuration).batchesControllerFindToday(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -982,6 +1269,748 @@ export class FilesApi extends BaseAPI {
      */
     public filesControllerUploadFiles(options?: RawAxiosRequestConfig) {
         return FilesApiFp(this.configuration).filesControllerUploadFiles(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * FlavorsApi - axios parameter creator
+ */
+export const FlavorsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        flavorsControllerFindAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/flavors`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * FlavorsApi - functional programming interface
+ */
+export const FlavorsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FlavorsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async flavorsControllerFindAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FlavorResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.flavorsControllerFindAll(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FlavorsApi.flavorsControllerFindAll']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * FlavorsApi - factory interface
+ */
+export const FlavorsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FlavorsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        flavorsControllerFindAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<FlavorResDto>> {
+            return localVarFp.flavorsControllerFindAll(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * FlavorsApi - object-oriented interface
+ */
+export class FlavorsApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public flavorsControllerFindAll(options?: RawAxiosRequestConfig) {
+        return FlavorsApiFp(this.configuration).flavorsControllerFindAll(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * ImagesApi - axios parameter creator
+ */
+export const ImagesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerCreate: async (file: File, place?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('imagesControllerCreate', 'file', file)
+            const localVarPath = `/images`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (place !== undefined) { 
+                localVarFormParams.append('place', place as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindMine: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/images/mine`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerFindOne', 'id', id)
+            const localVarPath = `/images/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ImagesControllerFindTopRangeEnum} range 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindTop: async (range: ImagesControllerFindTopRangeEnum, limit: number, offset: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'range' is not null or undefined
+            assertParamExists('imagesControllerFindTop', 'range', range)
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('imagesControllerFindTop', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('imagesControllerFindTop', 'offset', offset)
+            const localVarPath = `/images/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (range !== undefined) {
+                localVarQueryParameter['range'] = range;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerRemove', 'id', id)
+            const localVarPath = `/images/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {VoteReqDto} voteReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerVote: async (id: string, voteReqDto: VoteReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerVote', 'id', id)
+            // verify required parameter 'voteReqDto' is not null or undefined
+            assertParamExists('imagesControllerVote', 'voteReqDto', voteReqDto)
+            const localVarPath = `/images/{id}/votes`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(voteReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerWriteCaptions: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerWriteCaptions', 'id', id)
+            const localVarPath = `/images/{id}/captions`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ImagesApi - functional programming interface
+ */
+export const ImagesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ImagesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerCreate(file: File, place?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerCreate(file, place, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerFindMine(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerFindMine(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerFindMine']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerFindOne(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerFindOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ImagesControllerFindTopRangeEnum} range 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerFindTop(range: ImagesControllerFindTopRangeEnum, limit: number, offset: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerFindTop(range, limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerFindTop']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerRemove(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {VoteReqDto} voteReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerVote(id: string, voteReqDto: VoteReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerVote(id, voteReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerVote']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerWriteCaptions(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerWriteCaptions(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerWriteCaptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * ImagesApi - factory interface
+ */
+export const ImagesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ImagesApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerCreate(file: File, place?: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerCreate(file, place, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindMine(options?: RawAxiosRequestConfig): AxiosPromise<Array<PhotoResDto>> {
+            return localVarFp.imagesControllerFindMine(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerFindOne(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ImagesControllerFindTopRangeEnum} range 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerFindTop(range: ImagesControllerFindTopRangeEnum, limit: number, offset: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<PhotoResDto>> {
+            return localVarFp.imagesControllerFindTop(range, limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.imagesControllerRemove(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {VoteReqDto} voteReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerVote(id: string, voteReqDto: VoteReqDto, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerVote(id, voteReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerWriteCaptions(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerWriteCaptions(id, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ImagesApi - object-oriented interface
+ */
+export class ImagesApi extends BaseAPI {
+    /**
+     * 
+     * @param {File} file 
+     * @param {string} [place] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerCreate(file: File, place?: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerCreate(file, place, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerFindMine(options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerFindMine(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerFindOne(id: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerFindOne(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ImagesControllerFindTopRangeEnum} range 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerFindTop(range: ImagesControllerFindTopRangeEnum, limit: number, offset: number, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerFindTop(range, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerRemove(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {VoteReqDto} voteReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerVote(id: string, voteReqDto: VoteReqDto, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerVote(id, voteReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerWriteCaptions(id: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerWriteCaptions(id, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+export const ImagesControllerFindTopRangeEnum = {
+    Week: 'week',
+    All: 'all'
+} as const;
+export type ImagesControllerFindTopRangeEnum = typeof ImagesControllerFindTopRangeEnum[keyof typeof ImagesControllerFindTopRangeEnum];
+
+
+/**
+ * StatsApi - axios parameter creator
+ */
+export const StatsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        statsControllerFindMine: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/stats/mine`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * StatsApi - functional programming interface
+ */
+export const StatsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = StatsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async statsControllerFindMine(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerFindMine(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerFindMine']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * StatsApi - factory interface
+ */
+export const StatsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = StatsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        statsControllerFindMine(options?: RawAxiosRequestConfig): AxiosPromise<StatsResDto> {
+            return localVarFp.statsControllerFindMine(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * StatsApi - object-oriented interface
+ */
+export class StatsApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public statsControllerFindMine(options?: RawAxiosRequestConfig) {
+        return StatsApiFp(this.configuration).statsControllerFindMine(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

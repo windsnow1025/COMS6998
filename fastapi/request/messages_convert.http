@@ -1,0 +1,20 @@
+### Post Messages Convert
+
+POST {{baseUrl}}/messages/convert
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "contents": [
+        {
+          "type": "text",
+          "data": "Explain the concept of Occam's Razor and provide a simple, everyday example."
+        }
+      ]
+    }
+  ],
+  "api_type": "Claude"
+}

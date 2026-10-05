@@ -19,6 +19,15 @@ import { FilesModule } from './files/files.module';
 import { Image } from './images/image.entity';
 import { Caption } from './captions/caption.entity';
 import { CaptionsModule } from './captions/captions.module';
+import { HumorFlavor } from './flavors/humor-flavor.entity';
+import { FlavorsModule } from './flavors/flavors.module';
+import { LlmCall } from './llm/llm-call.entity';
+import { CaptionVote } from './votes/caption-vote.entity';
+import { ImagesModule } from './images/images.module';
+import { DailyBatch } from './batches/daily-batch.entity';
+import { DailyBatchItem } from './batches/daily-batch-item.entity';
+import { BatchesModule } from './batches/batches.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -40,7 +49,16 @@ import { CaptionsModule } from './captions/captions.module';
           username: config.postgres.user,
           password: config.postgres.password,
           database: config.postgres.database,
-          entities: [User, Image, Caption],
+          entities: [
+            User,
+            Image,
+            Caption,
+            HumorFlavor,
+            LlmCall,
+            CaptionVote,
+            DailyBatch,
+            DailyBatchItem,
+          ],
           synchronize: true,
           logging: ['query', 'error'],
           logger: 'advanced-console',
@@ -78,6 +96,10 @@ import { CaptionsModule } from './captions/captions.module';
     UsersModule,
     FilesModule,
     CaptionsModule,
+    FlavorsModule,
+    ImagesModule,
+    BatchesModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [

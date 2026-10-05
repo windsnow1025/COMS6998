@@ -33,16 +33,25 @@ Settings >> Languages & Frameworks >> JavaScript Runtime >> Package manager: `~\
     npm i -g @openapitools/openapi-generator-cli@latest
     ```
 2. Install Java.
+3. Install Python.
+4. Install openapi-python-client.
+    ```bash
+    pip install --upgrade openapi-python-client
+    ```
 
 ### Generate Client Package
 
 ```bash
 rm -r ../next/src/client/nest # TypeScript
+rm -r ../fastapi/app/client # Python
 ```
 
 ```bash
 # TypeScript
 openapi-generator-cli generate -i http://localhost:3001/docs-json -g typescript-axios -o ../next/src/client/nest
+
+# Python
+openapi-python-client generate --url http://localhost:3001/docs-json --output-path ../fastapi/app/client
 ```
 
 ## Run
