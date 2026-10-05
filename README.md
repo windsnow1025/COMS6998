@@ -5,7 +5,7 @@ Designing for GenAI: The Humor Project (Columbia University, Fall 2026).
 ## Tech Stack
 
 - **Front End**: Node.js, React.js, Next.js, Tailwind CSS, MUI
-- **Back End**: Node.js (Nest.js)
+- **Back End**: Node.js (Nest.js), Python (FastAPI)
 - **Storage**: PostgreSQL, RustFS, Redis
 - **Authentication**: Firebase (Email Verification), Google Sign-In
 - **Infrastructure**: Linux (Debian 12), Kubernetes (K3S), Nginx

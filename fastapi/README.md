@@ -1,0 +1,22 @@
+# FastAPI
+
+## Development
+
+### Python uv
+
+1. Install uv: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+2. Install Python in uv: `uv python install 3.12`; upgrade Python in uv: `uv python upgrade 3.12`
+3. Configure requirements:
+  ```bash
+  uv sync --refresh
+  ```
+
+### PyCharm
+
+Add New Interpreter >> Add Local Interpreter
+  - Environment: Select existing
+  - Type: uv
+
+### Environment Variables
+
+- Copy `./.env.example` and rename it to `.env`, then fill in the Env variables.

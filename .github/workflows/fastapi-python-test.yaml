@@ -1,0 +1,43 @@
+# https://docs.astral.sh/uv/guides/integration/github/
+
+name: FastAPI test
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - "main"
+      - "test"
+    paths:
+      - 'fastapi/**'
+      - '.github/workflows/fastapi-python-test.yaml'
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - 'fastapi/**'
+      - '.github/workflows/fastapi-python-test.yaml'
+
+jobs:
+  uv:
+    name: python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable caching
+        uses: astral-sh/setup-uv@v7
+        with:
+          cache-dependency-glob: "fastapi/uv.lock"
+          enable-cache: true
+
+      - name: Install the project
+        working-directory: ./fastapi
+        run: uv sync --locked --all-extras --dev
+
+      - name: Run tests
+        working-directory: ./fastapi
+        run: uv run pytest tests

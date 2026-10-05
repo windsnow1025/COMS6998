@@ -6,6 +6,6 @@ import { S3Service } from './s3.service';
 @Module({
   providers: [FilesService, S3Service],
   controllers: [FilesController],
-  exports: [],
+  exports: [S3Service],
 })
 export class FilesModule {}

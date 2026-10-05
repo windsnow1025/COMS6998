@@ -23,6 +23,9 @@ kubectl apply -f ./redis/redis-service.yaml
 # Nest.js
 kubectl apply -f ./nest/nest-service.yaml
 
+# FastAPI
+kubectl apply -f ./fastapi/fastapi-service.yaml
+
 # Next.js
 kubectl apply -f ./next/next-service.yaml
 
@@ -41,6 +44,9 @@ kubectl apply -f ./app-secret.yaml
 # Nest
 kubectl apply -f ./nest/nest-deployment.yaml
 
+# FastAPI
+kubectl apply -f ./fastapi/fastapi-deployment.yaml
+
 # Next
 kubectl apply -f ./next/next-deployment.yaml
 ```
@@ -53,6 +59,9 @@ kubectl apply -f ./app-secret-test.yaml
 
 # Nest
 kubectl apply -f ./nest/nest-deployment-test.yaml
+
+# FastAPI
+kubectl apply -f ./fastapi/fastapi-deployment-test.yaml
 
 # Next
 kubectl apply -f ./next/next-deployment-test.yaml
@@ -75,6 +84,9 @@ kubectl rollout restart deployment redis-deployment
 
 # Nest.js
 kubectl rollout restart deployment nest-deployment
+
+# FastAPI
+kubectl rollout restart deployment fastapi-deployment
 
 # Next.js
 kubectl rollout restart deployment next-deployment

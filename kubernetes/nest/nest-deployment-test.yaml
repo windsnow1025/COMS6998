@@ -95,6 +95,11 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: REDIS_PASSWORD
+            - name: FASTAPI_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: FASTAPI_HOST
             - name: GOOGLE_CLIENT_ID
               valueFrom:
                 secretKeyRef:
