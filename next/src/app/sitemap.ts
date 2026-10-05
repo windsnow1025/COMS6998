@@ -23,6 +23,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/w4`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/w4/top`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/auth/signin`,
       lastModified: new Date(),
     },

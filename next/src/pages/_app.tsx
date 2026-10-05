@@ -1,6 +1,7 @@
 import '../global.css';
 
 import * as React from 'react';
+import type {AppProps} from 'next/app';
 import Head from 'next/head';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -12,7 +13,7 @@ import UserLogic from "@/lib/common/user/UserLogic";
 import {StorageKeys} from "@/lib/common/Constants";
 import {type Session, SessionProvider} from "@/session/SessionContext";
 
-export default function App({Component}: { Component: React.ElementType }) {
+export default function App({Component, pageProps}: AppProps) {
   const [session, setSession] = React.useState<Session | null>(null);
 
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function App({Component}: { Component: React.ElementType }) {
         <CssBaseline enableColorScheme />
         <SessionProvider session={session} authentication={authentication}>
           <div className="local-scroll-root">
-            <Component/>
+            <Component {...pageProps}/>
           </div>
         </SessionProvider>
       </AppTheme>

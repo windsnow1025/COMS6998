@@ -26,6 +26,11 @@ export interface RedisConfig {
   password: string;
 }
 
+export interface FastApiConfig {
+  host: string;
+  port: number;
+}
+
 export interface FirebaseConfig {
   config: FirebaseOptions;
   serviceAccountKey: ServiceAccount;
@@ -37,6 +42,7 @@ export interface AppConfig {
   postgres: PostgresConfig;
   s3: S3Config;
   redis: RedisConfig;
+  fastapi: FastApiConfig;
   googleClientId: string;
   firebase: FirebaseConfig;
   frontendUrl: string;
