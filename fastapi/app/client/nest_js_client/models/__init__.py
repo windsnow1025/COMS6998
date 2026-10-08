@@ -16,6 +16,7 @@ from .flavor_res_dto import FlavorResDto
 from .flavor_stat_res_dto import FlavorStatResDto
 from .image_res_dto import ImageResDto
 from .images_controller_create_body import ImagesControllerCreateBody
+from .images_controller_create_seed_body import ImagesControllerCreateSeedBody
 from .images_controller_find_top_range import ImagesControllerFindTopRange
 from .photo_caption_res_dto import PhotoCaptionResDto
 from .photo_res_dto import PhotoResDto
@@ -55,6 +56,7 @@ __all__ = (
     "FlavorStatResDto",
     "ImageResDto",
     "ImagesControllerCreateBody",
+    "ImagesControllerCreateSeedBody",
     "ImagesControllerFindTopRange",
     "PhotoCaptionResDto",
     "PhotoResDto",

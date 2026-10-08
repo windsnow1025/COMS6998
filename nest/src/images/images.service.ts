@@ -61,11 +61,13 @@ export class ImagesService {
 
   // Stores the photo's file, which the LLM reads by its URL, then screens and describes the photo.
   // The file of an unsuitable photo is removed, and nothing of the photo is kept.
+  // A seed photo has no uploader; the batches serve it when no upload of a user waits.
   // `authorization` is the Authorization header of the user's request.
   async create(
     user: UserResDto,
     file: Express.Multer.File,
     place: string | null,
+    seed: boolean,
     authorization: string,
   ): Promise<Image> {
     const type = detectImageType(file.buffer);
@@ -107,7 +109,7 @@ export class ImagesService {
           description: screening.description,
           place,
           storageKey,
-          uploader: { id: user.id },
+          uploader: seed ? null : { id: user.id },
         });
         await manager.save(LlmCall, {
           ...screening.record,

@@ -19,6 +19,8 @@ import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { RequestWithOptionalUser } from '../auth/interfaces/request-with-optional-user.interface';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { Public } from '../common/decorators/public.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
 import { OptionalAuthGuard } from '../common/guards/optional-auth.guard';
 import { addDays, toCampusDate } from '../common/utils/campus-date';
 import { VoteReqDto } from '../votes/dto/vote.req.dto';
@@ -35,6 +37,19 @@ import { PhotosService } from './photos.service';
 const MaxPhotoBytes = 8 * 1024 * 1024;
 const TopWeekDays = 7;
 
+// https://docs.nestjs.com/techniques/file-upload
+const PhotoBodySchema = {
+  type: 'object',
+  required: ['file'],
+  properties: {
+    file: { type: 'string', format: 'binary' },
+    place: { type: 'string', maxLength: MaxPlaceLength },
+  },
+};
+const PhotoFileInterceptor = FileInterceptor('file', {
+  limits: { fileSize: MaxPhotoBytes },
+});
+
 @Controller('images')
 export class ImagesController {
   constructor(
@@ -42,26 +57,37 @@ export class ImagesController {
     private readonly photosService: PhotosService,
   ) {}
 
-  // https://docs.nestjs.com/techniques/file-upload
   @Post()
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['file'],
-      properties: {
-        file: { type: 'string', format: 'binary' },
-        place: { type: 'string', maxLength: MaxPlaceLength },
-      },
-    },
-  })
-  @UseInterceptors(
-    FileInterceptor('file', { limits: { fileSize: MaxPhotoBytes } }),
-  )
+  @ApiBody({ schema: PhotoBodySchema })
+  @UseInterceptors(PhotoFileInterceptor)
   async create(
     @Req() req: RequestWithUser,
     @UploadedFile() file: Express.Multer.File | undefined,
     @Body() photoCreateReqDto: PhotoCreateReqDto,
+  ): Promise<PhotoResDto> {
+    return await this.store(req, file, photoCreateReqDto, false);
+  }
+
+  // A seed photo has no uploader
+  @Post('seed')
+  @Roles([Role.Admin])
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: PhotoBodySchema })
+  @UseInterceptors(PhotoFileInterceptor)
+  async createSeed(
+    @Req() req: RequestWithUser,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() photoCreateReqDto: PhotoCreateReqDto,
+  ): Promise<PhotoResDto> {
+    return await this.store(req, file, photoCreateReqDto, true);
+  }
+
+  private async store(
+    req: RequestWithUser,
+    file: Express.Multer.File | undefined,
+    photoCreateReqDto: PhotoCreateReqDto,
+    seed: boolean,
   ): Promise<PhotoResDto> {
     if (!file) {
       throw new BadRequestException('A photo file is required');
@@ -70,6 +96,7 @@ export class ImagesController {
       req.user,
       file,
       photoCreateReqDto.place?.trim() || null,
+      seed,
       req.headers.authorization!,
     );
     return await this.toPhotoDto(

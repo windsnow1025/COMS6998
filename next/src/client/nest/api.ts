@@ -1424,6 +1424,55 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerCreateSeed: async (file: File, place?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('imagesControllerCreateSeed', 'file', file)
+            const localVarPath = `/images/seed`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (place !== undefined) { 
+                localVarFormParams.append('place', place as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1687,6 +1736,19 @@ export const ImagesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerCreateSeed(file: File, place?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerCreateSeed(file, place, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerCreateSeed']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1780,6 +1842,16 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {File} file 
+         * @param {string} [place] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerCreateSeed(file: File, place?: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerCreateSeed(file, place, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1850,6 +1922,17 @@ export class ImagesApi extends BaseAPI {
      */
     public imagesControllerCreate(file: File, place?: string, options?: RawAxiosRequestConfig) {
         return ImagesApiFp(this.configuration).imagesControllerCreate(file, place, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {File} file 
+     * @param {string} [place] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerCreateSeed(file: File, place?: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerCreateSeed(file, place, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

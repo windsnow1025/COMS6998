@@ -5,6 +5,7 @@ All URIs are relative to *http://localhost*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**imagesControllerCreate**](#imagescontrollercreate) | **POST** /images | |
+|[**imagesControllerCreateSeed**](#imagescontrollercreateseed) | **POST** /images/seed | |
 |[**imagesControllerFindMine**](#imagescontrollerfindmine) | **GET** /images/mine | |
 |[**imagesControllerFindOne**](#imagescontrollerfindone) | **GET** /images/{id} | |
 |[**imagesControllerFindTop**](#imagescontrollerfindtop) | **GET** /images/top | |
@@ -31,6 +32,59 @@ let file: File; // (default to undefined)
 let place: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.imagesControllerCreate(
+    file,
+    place
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **file** | [**File**] |  | defaults to undefined|
+| **place** | [**string**] |  | (optional) defaults to undefined|
+
+
+### Return type
+
+**PhotoResDto**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **imagesControllerCreateSeed**
+> PhotoResDto imagesControllerCreateSeed()
+
+
+### Example
+
+```typescript
+import {
+    ImagesApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new ImagesApi(configuration);
+
+let file: File; // (default to undefined)
+let place: string; // (optional) (default to undefined)
+
+const { status, data } = await apiInstance.imagesControllerCreateSeed(
     file,
     place
 );
