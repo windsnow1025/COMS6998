@@ -138,6 +138,29 @@ export class VotesService {
     return picks;
   }
 
+  // When the user first voted on each of the photos, for the photos the user has voted on
+  async getVoteDates(
+    userId: number,
+    imageIds: string[],
+  ): Promise<Map<string, Date>> {
+    const dates = new Map<string, Date>();
+    if (imageIds.length === 0) {
+      return dates;
+    }
+
+    const votes = await this.voteRepository.find({
+      where: { user: { id: userId }, image: { id: In(imageIds) } },
+      relations: { image: true },
+    });
+    for (const vote of votes) {
+      const known = dates.get(vote.image.id);
+      if (known === undefined || vote.createdAt < known) {
+        dates.set(vote.image.id, vote.createdAt);
+      }
+    }
+    return dates;
+  }
+
   // Every vote of the user, with its image and its caption's flavor
   async findByUser(userId: number): Promise<CaptionVote[]> {
     return await this.voteRepository.find({

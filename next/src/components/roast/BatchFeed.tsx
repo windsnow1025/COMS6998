@@ -15,13 +15,17 @@ interface BatchFeedProps {
 }
 
 // A batch as a feed: every photo with its captions, a meter of the photos the viewer has judged, and the summary once all are.
+// A closed batch is read-only: its results show to everyone, and a viewer who took part gets their summary first.
 export default function BatchFeed({ batch }: BatchFeedProps) {
   const { viewer, paths } = useRoast();
   const router = useRouter();
 
   const [photos, setPhotos] = React.useState(batch.photos);
-  // A viewer who returns to a finished batch gets the summary first; one who finishes it now reaches it at the end of the feed
-  const [wasDoneAtLoad] = React.useState(() => batch.photos.every(isDone));
+  // A viewer who returns to a finished or closed batch they took part in gets the summary first;
+  // one who finishes an open batch now reaches it at the end of the feed
+  const [wasDoneAtLoad] = React.useState(
+    () => batch.photos.every(isDone) || (batch.closed && batch.photos.some(isDone)),
+  );
   const summaryRef = React.useRef<HTMLDivElement>(null);
 
   const handleVoted = (voted: PhotoResDto) => {
@@ -35,7 +39,7 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
 
   return (
     <>
-      {viewer && !wasDoneAtLoad && (
+      {viewer && !batch.closed && !wasDoneAtLoad && (
         <div className={styles.meter}>
           <div className={styles.progress} role="img" aria-label={`${doneCount} of ${photos.length} photos judged`}>
             {photos.map((photo, index) => (
@@ -64,7 +68,7 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
         {photos.map((photo) => (
           <PhotoCard key={photo.id} photo={photo} onVoted={handleVoted} />
         ))}
-        {viewer && !wasDoneAtLoad && isAllDone && (
+        {viewer && !batch.closed && !wasDoneAtLoad && isAllDone && (
           <div ref={summaryRef} className={styles.feedEnd}>
             <BatchSummary batch={{ ...batch, photos }} />
           </div>

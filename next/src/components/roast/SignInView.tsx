@@ -1,13 +1,17 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import LocalCafeRoundedIcon from '@mui/icons-material/LocalCafeRounded';
 import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import {useRoast} from './RoastContext';
 import styles from './roast.module.css';
 
+interface SignInViewProps {
+  // The icon of the product's mark above the title
+  brandMark: React.ReactNode;
+}
+
 // Sign-in with Google. The button returns the user to the `redirect` of the query.
-export default function SignInView() {
+export default function SignInView({ brandMark }: SignInViewProps) {
   const { viewer, paths } = useRoast();
   const router = useRouter();
 
@@ -21,9 +25,7 @@ export default function SignInView() {
 
   return (
     <div className={styles.signIn}>
-      <span className={`${styles.brandMark} mx-auto`}>
-        <LocalCafeRoundedIcon fontSize="small" />
-      </span>
+      <span className={`${styles.brandMark} mx-auto`}>{brandMark}</span>
       <h1 className={styles.title}>Sign in to Daily Roast</h1>
       <p className={styles.subtitle}>
         Vote on the daily batch, keep your streak, and get your own photos roasted.

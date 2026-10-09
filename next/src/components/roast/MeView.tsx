@@ -15,8 +15,13 @@ import {LoadError, Loading} from './Status';
 import ViewerAvatar from './ViewerAvatar';
 import styles from './roast.module.css';
 
+interface MeViewProps {
+  // The section of the viewer's batches, which the page composes; a route of Week 5 on
+  batchesSection?: React.ReactNode;
+}
+
 // The viewer's own page: profile, standing, taste, and uploads
-export default function MeView() {
+export default function MeView({ batchesSection }: MeViewProps) {
   const { viewer, viewerLoaded, paths, signOut } = useRoast();
   const router = useRouter();
   const roastLogic = React.useMemo(() => new RoastLogic(), []);
@@ -54,6 +59,8 @@ export default function MeView() {
       {stats.error && <LoadError message={stats.error} onRetry={stats.reload} />}
       {!stats.data && !stats.error && <Loading />}
       {stats.data && <Standing stats={stats.data} />}
+
+      {batchesSection}
 
       <h2 className={styles.sectionTitle}>Your photos</h2>
       {photos.error && <LoadError message={photos.error} onRetry={photos.reload} />}
@@ -227,7 +234,7 @@ function Standing({ stats }: { stats: StatsResDto }) {
         </div>
         <div className={styles.stat}>
           <div className={styles.statValue}>{stats.picksReceived}</div>
-          <div className={styles.statLabel}>picks on your photos</div>
+          <div className={styles.statLabel}>picks received</div>
         </div>
       </div>
 

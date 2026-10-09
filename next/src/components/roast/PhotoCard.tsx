@@ -109,7 +109,8 @@ export default function PhotoCard({ photo, onVoted }: PhotoCardProps) {
               </div>
             ) : (
               <button type="button" className={styles.option} disabled={isVoting} onClick={() => vote(caption.id)}>
-                <div className={styles.optionBody}>
+                <div className={`${styles.optionBody} ${styles.optionChoice}`}>
+                  <span className={styles.optionMark} aria-hidden="true" />
                   <div className={styles.optionText}>{caption.content}</div>
                 </div>
               </button>

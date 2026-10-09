@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -184,6 +185,9 @@ export class ImagesService {
     captionId: string | null,
   ): Promise<Image> {
     const image = await this.findOne(id);
+    if (await this.photosService.isClosed(id)) {
+      throw new ConflictException('Voting on this photo ended with its batch');
+    }
     await this.votesService.vote(user.id, image, captionId);
     return image;
   }

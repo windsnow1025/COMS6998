@@ -2,6 +2,8 @@ import {
   BatchesApi,
   BatchResDto,
   BatchSummaryResDto,
+  FlavorResDto,
+  FlavorsApi,
   ImagesApi,
   ImagesControllerFindTopRangeEnum,
   PhotoResDto,
@@ -13,6 +15,12 @@ import {getNestOpenAPIConfiguration} from "@/lib/common/APIConfig";
 export type TopRange = ImagesControllerFindTopRangeEnum;
 
 export default class RoastClient {
+  async fetchFlavors(): Promise<FlavorResDto[]> {
+    const api = new FlavorsApi(getNestOpenAPIConfiguration());
+    const res = await api.flavorsControllerFindAll();
+    return res.data;
+  }
+
   async fetchTodayBatch(): Promise<BatchResDto> {
     const api = new BatchesApi(getNestOpenAPIConfiguration());
     const res = await api.batchesControllerFindToday();
@@ -28,6 +36,12 @@ export default class RoastClient {
   async fetchRecentBatches(): Promise<BatchSummaryResDto[]> {
     const api = new BatchesApi(getNestOpenAPIConfiguration());
     const res = await api.batchesControllerFindRecent();
+    return res.data;
+  }
+
+  async fetchMyBatches(): Promise<BatchSummaryResDto[]> {
+    const api = new BatchesApi(getNestOpenAPIConfiguration());
+    const res = await api.batchesControllerFindMine();
     return res.data;
   }
 

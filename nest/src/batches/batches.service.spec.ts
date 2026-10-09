@@ -1,10 +1,17 @@
+import { PhotoResDto } from '../images/dto/photo.res.dto';
 import {
   chooseBatchImages,
+  chooseTopUpImages,
   MaxBatchSize,
+  MaxCarriedImages,
   MinBatchSize,
+  orderFeed,
 } from './batches.service';
 
 describe('chooseBatchImages', () => {
+  const date = '2026-10-15';
+  const carried = (count: number) =>
+    Array.from({ length: count }, (_, index) => ({ id: `carried-${index}` }));
   const waiting = (uploads: number, others: number) => [
     ...Array.from({ length: uploads }, (_, index) => ({
       id: `upload-${index}`,
@@ -15,23 +22,112 @@ describe('chooseBatchImages', () => {
       uploaderId: null,
     })),
   ];
+  const ids = (images: { id: string }[]) => images.map(({ id }) => id);
+
+  it('leads with the carried photos up to their maximum, then the minimum of new ones', () => {
+    const images = chooseBatchImages(carried(7), waiting(0, 20), date);
+    expect(images).toHaveLength(MaxCarriedImages + MinBatchSize);
+    expect(ids(images).slice(0, MaxCarriedImages)).toEqual(
+      ids(carried(MaxCarriedImages)),
+    );
+    expect(ids(images).slice(MaxCarriedImages)).toEqual(
+      ids(chooseBatchImages([], waiting(0, 20), date)),
+    );
+  });
 
   it('fills up to the minimum with images that have no uploader', () => {
-    const images = chooseBatchImages(waiting(2, 20));
+    const images = chooseBatchImages([], waiting(2, 20), date);
     expect(images).toHaveLength(MinBatchSize);
-    expect(images.map(({ id }) => id).slice(0, 2)).toEqual([
+    expect(ids(images).slice(0, 2)).toEqual(['upload-0', 'upload-1']);
+    expect(
+      ids(images)
+        .slice(2)
+        .every((id) => id.startsWith('other-')),
+    ).toBe(true);
+  });
+
+  it('takes every waiting upload up to the room the carried photos leave', () => {
+    expect(chooseBatchImages([], waiting(7, 20), date)).toHaveLength(7);
+    expect(chooseBatchImages([], waiting(30, 20), date)).toHaveLength(
+      MaxBatchSize,
+    );
+    expect(ids(chooseBatchImages(carried(5), waiting(7, 20), date))).toEqual([
+      ...ids(carried(5)),
       'upload-0',
       'upload-1',
+      'upload-2',
+      'upload-3',
+      'upload-4',
     ]);
   });
 
-  it('takes every waiting upload up to the maximum', () => {
-    expect(chooseBatchImages(waiting(7, 20))).toHaveLength(7);
-    expect(chooseBatchImages(waiting(30, 20))).toHaveLength(MaxBatchSize);
+  it('takes what there is when less than the minimum waits', () => {
+    expect(chooseBatchImages([], waiting(1, 2), date)).toHaveLength(3);
+    expect(chooseBatchImages(carried(2), [], date)).toHaveLength(2);
+    expect(chooseBatchImages([], [], date)).toHaveLength(0);
   });
 
-  it('takes what waits when less than the minimum waits', () => {
-    expect(chooseBatchImages(waiting(1, 2))).toHaveLength(3);
-    expect(chooseBatchImages([])).toHaveLength(0);
+  it('draws the images without an uploader by the date', () => {
+    const drawn = chooseBatchImages([], waiting(0, 20), date);
+    expect(chooseBatchImages([], waiting(0, 20), date)).toEqual(drawn);
+    expect(chooseBatchImages([], waiting(0, 20).reverse(), date)).toEqual(
+      drawn,
+    );
+    expect(chooseBatchImages([], waiting(0, 20), '2026-10-16')).not.toEqual(
+      drawn,
+    );
+  });
+});
+
+describe('chooseTopUpImages', () => {
+  const date = '2026-10-15';
+  const waiting = (uploads: number, others: number) => [
+    ...Array.from({ length: uploads }, (_, index) => ({
+      id: `upload-${index}`,
+      uploaderId: 1,
+    })),
+    ...Array.from({ length: others }, (_, index) => ({
+      id: `other-${index}`,
+      uploaderId: null,
+    })),
+  ];
+  const ids = (images: { id: string }[]) => images.map(({ id }) => id);
+
+  it('takes the waiting uploads in their order, then the draw, as far as the room goes', () => {
+    const images = chooseTopUpImages(waiting(2, 20), date, 4);
+    expect(images).toHaveLength(4);
+    expect(ids(images).slice(0, 2)).toEqual(['upload-0', 'upload-1']);
+    expect(
+      ids(images)
+        .slice(2)
+        .every((id) => id.startsWith('other-')),
+    ).toBe(true);
+    expect(chooseTopUpImages(waiting(0, 2), date, 5)).toHaveLength(2);
+  });
+
+  it('draws the images without an uploader by the date', () => {
+    const drawn = chooseTopUpImages(waiting(0, 20), date, 5);
+    expect(chooseTopUpImages(waiting(0, 20).reverse(), date, 5)).toEqual(drawn);
+    expect(ids(drawn)).toEqual(
+      ids(chooseBatchImages([], waiting(0, 20), date)),
+    );
+    expect(chooseTopUpImages(waiting(0, 20), '2026-10-16', 5)).not.toEqual(
+      drawn,
+    );
+  });
+});
+
+describe('orderFeed', () => {
+  const photo = (id: string, revealed: boolean) =>
+    ({ id, revealed }) as PhotoResDto;
+
+  it('puts the photos not yet revealed to the viewer first, each group as served', () => {
+    const feed = orderFeed([
+      photo('a', true),
+      photo('b', false),
+      photo('c', true),
+      photo('d', false),
+    ]);
+    expect(feed.map(({ id }) => id)).toEqual(['b', 'd', 'a', 'c']);
   });
 });

@@ -34,7 +34,7 @@ export class PhotoResDto {
   place: string | null;
   @ApiProperty({ type: PhotoUploaderResDto, nullable: true })
   uploader: PhotoUploaderResDto | null;
-  // The campus date of the batch that serves the photo; null while the photo waits in line
+  // The campus date of the latest batch that serves the photo; null while the photo waits in line
   @ApiProperty({ type: String, nullable: true })
   batchDate: string | null;
   // The photo's place in line for a batch; present for the uploader of a waiting photo

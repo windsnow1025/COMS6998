@@ -9,7 +9,11 @@ describe('judgePick', () => {
 
   it('tells no verdict while too few users have voted', () => {
     expect(judgePick(undefined, 'a')).toBeNull();
-    expect(judgePick(tally(2, [['a', 2]]), 'a')).toBeNull();
+    expect(judgePick(tally(1, [['a', 1]]), 'a')).toBeNull();
+  });
+
+  it('tells a verdict once two users have voted', () => {
+    expect(judgePick(tally(2, [['a', 2]]), 'a')).toBe(true);
   });
 
   it('matches the caption with the most picks, ties included', () => {

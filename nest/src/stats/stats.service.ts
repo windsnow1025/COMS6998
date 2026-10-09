@@ -54,10 +54,13 @@ export class StatsService {
     const count = (ids: (string | undefined)[], flavorId: string) =>
       ids.filter((id) => id === flavorId).length;
 
+    const streakDates = await this.findStreakDates(user.id, votes);
+
     return {
       streak: countStreak(
         toCampusDate(new Date()),
-        await this.findFinishedDates(user.id, votes),
+        streakDates.finished,
+        streakDates.missed,
       ),
       votes: votedImageIds.length,
       judged: verdicts.length,
@@ -75,33 +78,47 @@ export class StatsService {
     };
   }
 
-  // The dates of the batches that the user finished on their own date:
-  // every photo of the batch that the user may vote on has the user's vote of that date.
-  private async findFinishedDates(
+  // Sorts the batches' dates for the streak by what they asked of the user. A date's batch asks for a vote
+  // on each photo the user could still vote on that date: not the user's own, not added late to the batch,
+  // and not judged by the user on an earlier date. A date that asked for votes and got them all by its end
+  // is finished; one that asked and did not is missed; one that asked nothing is in neither set.
+  private async findStreakDates(
     userId: number,
     votes: CaptionVote[],
-  ): Promise<Set<string>> {
-    const voteDates = new Map(
-      votes.map(({ image, createdAt }) => [image.id, toCampusDate(createdAt)]),
-    );
+  ): Promise<{ finished: Set<string>; missed: Set<string> }> {
+    const voteDates = new Map<string, string>();
+    for (const { image, createdAt } of votes) {
+      const date = toCampusDate(createdAt);
+      const known = voteDates.get(image.id);
+      if (known === undefined || date < known) {
+        voteDates.set(image.id, date);
+      }
+    }
     const batches = await this.batchRepository.find({
       relations: { items: { image: { uploader: true } } },
       order: { date: 'DESC' },
       take: StreakWindow,
     });
 
-    const finishedDates = new Set<string>();
+    const finished = new Set<string>();
+    const missed = new Set<string>();
     for (const batch of batches) {
-      const votable = batch.items.filter(
-        ({ image }) => image.uploader?.id !== userId,
-      );
-      if (
-        votable.length > 0 &&
-        votable.every(({ image }) => voteDates.get(image.id) === batch.date)
-      ) {
-        finishedDates.add(batch.date);
+      const asked = batch.items.filter(({ image, lateAddition }) => {
+        if (image.uploader?.id === userId || lateAddition) {
+          return false;
+        }
+        const voteDate = voteDates.get(image.id);
+        return voteDate === undefined || voteDate >= batch.date;
+      });
+      if (asked.length === 0) {
+        continue;
       }
+      const done = asked.every(({ image }) => {
+        const voteDate = voteDates.get(image.id);
+        return voteDate !== undefined && voteDate <= batch.date;
+      });
+      (done ? finished : missed).add(batch.date);
     }
-    return finishedDates;
+    return { finished, missed };
   }
 }
