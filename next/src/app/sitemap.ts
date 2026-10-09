@@ -31,6 +31,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/w5`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/w5/top`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/auth/signin`,
       lastModified: new Date(),
     },
