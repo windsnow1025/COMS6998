@@ -9,7 +9,7 @@ function W4() {
     <RoastShell base={W4Base} active="today">
       <Head>
         <title>Daily Roast</title>
-        <meta name="description" content="A fresh batch of photos every day. AI writes the roasts. You pick the winner."/>
+        <meta name="description" content="A daily caption game for Columbia students. AI writes 3 captions for each photo in different comedic voices. You pick the funniest."/>
       </Head>
       <TodayView/>
     </RoastShell>

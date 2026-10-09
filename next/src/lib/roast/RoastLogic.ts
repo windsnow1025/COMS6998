@@ -1,12 +1,20 @@
 import RoastClient, {TopRange} from "./RoastClient";
 import {toRoastError} from "./RoastError";
-import {BatchResDto, BatchSummaryResDto, PhotoResDto, StatsResDto} from "@/client/nest";
+import {BatchResDto, BatchSummaryResDto, FlavorResDto, PhotoResDto, StatsResDto} from "@/client/nest";
 
 export default class RoastLogic {
   private roastClient: RoastClient;
 
   constructor() {
     this.roastClient = new RoastClient();
+  }
+
+  async fetchFlavors(): Promise<FlavorResDto[]> {
+    try {
+      return await this.roastClient.fetchFlavors();
+    } catch (error) {
+      throw toRoastError(error, "The voices did not load. Try again.");
+    }
   }
 
   async fetchTodayBatch(): Promise<BatchResDto> {

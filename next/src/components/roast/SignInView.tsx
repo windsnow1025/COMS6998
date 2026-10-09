@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import LocalCafeRoundedIcon from '@mui/icons-material/LocalCafeRounded';
+import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded';
 import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import {useRoast} from './RoastContext';
 import styles from './roast.module.css';
@@ -22,7 +22,7 @@ export default function SignInView() {
   return (
     <div className={styles.signIn}>
       <span className={`${styles.brandMark} mx-auto`}>
-        <LocalCafeRoundedIcon fontSize="small" />
+        <LocalFireDepartmentRoundedIcon fontSize="small" />
       </span>
       <h1 className={styles.title}>Sign in to Daily Roast</h1>
       <p className={styles.subtitle}>

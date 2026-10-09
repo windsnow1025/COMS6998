@@ -6,13 +6,16 @@ import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
 import BatchFeed from './BatchFeed';
+import Intro from './Intro';
 import {LoadError, Loading} from './Status';
 import styles from './roast.module.css';
 
-// The home of the product: today's batch, and the way to the previous batch's verdicts
+// The home of the product: today's batch, and the way to the previous batch's verdicts.
+// A visitor who is not signed in gets the product's introduction first.
 export default function TodayView() {
   const { viewer, viewerLoaded, paths } = useRoast();
   const roastLogic = React.useMemo(() => new RoastLogic(), []);
+  const batchRef = React.useRef<HTMLDivElement>(null);
 
   // The batch depends on the viewer, whose votes and uploads it reflects
   const key = viewerLoaded ? `today:${viewer?.id ?? ''}` : null;
@@ -25,14 +28,23 @@ export default function TodayView() {
 
   return (
     <>
-      <h1 className={styles.title}>
-        {viewer ? "Today's batch" : 'Pick the funniest caption.'}
-      </h1>
-      <p className={styles.subtitle}>
-        {viewer && batch.data
-          ? formatCampusDate(batch.data.date)
-          : 'A fresh batch of photos every day. AI writes the roasts. You pick the winner.'}
-      </p>
+      {viewerLoaded && !viewer && (
+        <>
+          <Intro batchRef={batchRef} />
+          <div ref={batchRef} className={styles.batchHead}>
+            <h2 className={styles.sectionTitle}>Today&apos;s batch</h2>
+            {batch.data && (
+              <span className={`${styles.muted} ${styles.small}`}>{formatCampusDate(batch.data.date)}</span>
+            )}
+          </div>
+        </>
+      )}
+      {viewer && (
+        <>
+          <h1 className={styles.title}>Today&apos;s batch</h1>
+          {batch.data && <p className={styles.subtitle}>{formatCampusDate(batch.data.date)}</p>}
+        </>
+      )}
 
       <div className="mt-5">
         {batch.error && <LoadError message={batch.error} onRetry={batch.reload} />}

@@ -78,6 +78,13 @@ export default function PhotoCard({ photo, onVoted }: PhotoCardProps) {
         </figcaption>
       </figure>
 
+      {!photo.revealed && (
+        <p className={styles.prompt}>
+          Which caption is funniest?
+          {!viewer && <span className={styles.muted}> Sign in to vote.</span>}
+        </p>
+      )}
+
       <ol className={styles.options}>
         {photo.captions.map((caption) => (
           <li key={caption.id}>

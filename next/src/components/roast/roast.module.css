@@ -379,6 +379,67 @@
   padding: 48px 0;
 }
 
+/* Intro, for a visitor who is not signed in */
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--dr-accent-strong);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.introTitle {
+  composes: title;
+  font-size: clamp(32px, 7.5vw, 42px);
+}
+
+.introText {
+  margin: 12px 0 0;
+}
+
+.voiceList {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.voiceItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voiceItem > :last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.introActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-top: 20px;
+}
+
+.batchHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 40px;
+  scroll-margin-top: 12px;
+}
+
+.batchHead .sectionTitle {
+  margin: 0;
+}
+
 /* Meter */
 
 .meter {
@@ -466,12 +527,21 @@
   white-space: nowrap;
 }
 
+.prompt {
+  margin: 14px 0 0;
+  font-weight: 700;
+}
+
 .options {
   display: grid;
   gap: 10px;
   margin: 14px 0 0;
   padding: 0;
   list-style: none;
+}
+
+.prompt + .options {
+  margin-top: 8px;
 }
 
 .option {

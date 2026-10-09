@@ -7,7 +7,7 @@ import AddAPhotoRoundedIcon from '@mui/icons-material/AddAPhotoRounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import LocalCafeRoundedIcon from '@mui/icons-material/LocalCafeRounded';
+import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import {createRoastPaths} from '@/lib/roast/RoastPaths';
@@ -66,7 +66,7 @@ function Header({ active }: { active: RoastTab | null }) {
     <header className={styles.header}>
       <Link href={paths.today} className={styles.brand}>
         <span className={styles.brandMark}>
-          <LocalCafeRoundedIcon fontSize="small" />
+          <LocalFireDepartmentRoundedIcon fontSize="small" />
         </span>
         Daily Roast
       </Link>
