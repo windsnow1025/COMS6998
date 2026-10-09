@@ -201,6 +201,18 @@
   color: var(--dr-accent);
 }
 
+/* A narrow phone keeps the name and both header buttons on one line */
+@media (max-width: 359px) {
+  .header {
+    gap: 12px;
+  }
+
+  .brand {
+    gap: 6px;
+    font-size: 19px;
+  }
+}
+
 @media (min-width: 768px) {
   .nav {
     display: flex;
@@ -379,6 +391,117 @@
   padding: 48px 0;
 }
 
+/* Intro, for a visitor who is not signed in */
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--dr-accent-strong);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.introTitle {
+  composes: title;
+  font-size: clamp(32px, 7.5vw, 42px);
+}
+
+.introText {
+  margin: 12px 0 0;
+}
+
+.voiceList {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.voiceItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voiceItem > :last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.introActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-top: 20px;
+}
+
+/* Google's button draws itself at its container's width */
+.introSignIn {
+  width: min(300px, 100%);
+}
+
+/* The way between a batch's page and the pages of the batches around it */
+.batchNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.batchHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 40px;
+  scroll-margin-top: 12px;
+}
+
+.batchHead .sectionTitle {
+  margin: 0;
+}
+
+/* Earlier batches: a tile per batch, its cover above its date */
+
+.archive {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 480px) {
+  .archive {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.archiveTile {
+  composes: card;
+  display: block;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.archiveCover {
+  aspect-ratio: 4 / 3;
+  background: var(--dr-surface-2);
+}
+
+.archiveBody {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px 12px;
+  font-size: 14px;
+}
+
 /* Meter */
 
 .meter {
@@ -523,6 +646,27 @@ button.option:disabled {
 
 .optionBody {
   position: relative;
+}
+
+/* An option the viewer can pick carries an empty mark, as a choice in a poll */
+.optionChoice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.optionMark {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border: 2px solid var(--dr-line);
+  border-radius: 999px;
+  transition: border-color 120ms ease;
+}
+
+button.option:hover .optionMark {
+  border-color: var(--dr-ink);
 }
 
 .optionText {

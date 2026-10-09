@@ -9,7 +9,8 @@ export class FlavorStatResDto {
 }
 
 export class StatsResDto {
-  // Consecutive campus dates, ending today or yesterday, on which the user finished that date's batch
+  // Consecutive campus dates, ending today or yesterday, on which the user finished that date's batch;
+  // a date that gave the user nothing to vote on neither extends nor breaks the run
   streak: number;
   // Photos the user voted on
   votes: number;

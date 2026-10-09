@@ -7,7 +7,6 @@ import AddAPhotoRoundedIcon from '@mui/icons-material/AddAPhotoRounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import LocalCafeRoundedIcon from '@mui/icons-material/LocalCafeRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import {createRoastPaths} from '@/lib/roast/RoastPaths';
@@ -23,19 +22,21 @@ export type RoastTab = 'today' | 'top' | 'roast' | 'me';
 interface RoastShellProps {
   // The week's base path, under which the product's routes live
   base: string;
+  // The icon of the product's mark in the header
+  brandMark: React.ReactNode;
   // The tab of the current page; null for a page outside the tabs
   active: RoastTab | null;
   wide?: boolean;
   children: React.ReactNode;
 }
 
-export default function RoastShell({ base, active, wide, children }: RoastShellProps) {
+export default function RoastShell({ base, brandMark, active, wide, children }: RoastShellProps) {
   const paths = React.useMemo(() => createRoastPaths(base), [base]);
 
   return (
     <div className={`local-scroll-container ${styles.root} ${displayFont.variable} ${bodyFont.variable}`}>
       <RoastProvider paths={paths}>
-        <Header active={active} />
+        <Header brandMark={brandMark} active={active} />
         <main className={styles.main}>
           <div className={wide ? `${styles.page} ${styles.pageWide}` : styles.page}>
             {children}
@@ -57,7 +58,7 @@ function useTabs() {
   ] as const;
 }
 
-function Header({ active }: { active: RoastTab | null }) {
+function Header({ brandMark, active }: { brandMark: React.ReactNode; active: RoastTab | null }) {
   const { paths, viewer, viewerLoaded } = useRoast();
   const router = useRouter();
   const tabs = useTabs();
@@ -65,9 +66,7 @@ function Header({ active }: { active: RoastTab | null }) {
   return (
     <header className={styles.header}>
       <Link href={paths.today} className={styles.brand}>
-        <span className={styles.brandMark}>
-          <LocalCafeRoundedIcon fontSize="small" />
-        </span>
+        <span className={styles.brandMark}>{brandMark}</span>
         Daily Roast
       </Link>
       <nav className={styles.nav} aria-label="Sections">

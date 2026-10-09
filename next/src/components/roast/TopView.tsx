@@ -59,7 +59,10 @@ export default function TopView() {
       {!photos.data && !photos.error && <Loading />}
       {photos.data && photos.data.length === 0 && (
         <div className={`${styles.card} ${styles.empty} mt-5`}>
-          <p>No batch has closed {range === 'week' ? 'this week' : 'yet'}. A batch closes at midnight.</p>
+          <p>
+            No caption has won {range === 'week' ? 'this week' : 'yet'}. A photo lands here once its batch has closed
+            at midnight with votes on it.
+          </p>
         </div>
       )}
       {photos.data && photos.data.length > 0 && (
@@ -82,9 +85,13 @@ export default function TopView() {
   );
 }
 
+// A photo of the list: its batch has closed, so its results show, and a caption of it has a pick
 function TopTile({ photo, rank }: { photo: PhotoResDto; rank: number }) {
   const { paths } = useRoast();
   const winner = getWinners(photo).at(0);
+  if (!winner) {
+    throw new Error('A photo of the top list has no winning caption');
+  }
 
   return (
     <Link href={paths.photo(photo.id)} className={styles.tile}>
@@ -93,19 +100,13 @@ function TopTile({ photo, rank }: { photo: PhotoResDto; rank: number }) {
       <img src={photo.url} alt={photo.description} className={styles.photoImage} loading="lazy" />
       <span className={styles.tileRank}>{rank}</span>
       <div className={styles.tileShade}>
-        {!photo.revealed && <p className={styles.tileCaption}>Vote to see the winner</p>}
-        {photo.revealed && !winner && <p className={styles.tileCaption}>No caption won this one</p>}
-        {photo.revealed && winner && (
-          <>
-            <p className={styles.tileCaption}>{winner.content}</p>
-            <div className={styles.tileMeta}>
-              {winner.flavor && <FlavorChip flavor={winner.flavor} />}
-              <span>
-                {formatPercent(getPickShare(photo, winner))} of {photo.voters} votes
-              </span>
-            </div>
-          </>
-        )}
+        <p className={styles.tileCaption}>{winner.content}</p>
+        <div className={styles.tileMeta}>
+          {winner.flavor && <FlavorChip flavor={winner.flavor} />}
+          <span>
+            {formatPercent(getPickShare(photo, winner))} of {photo.voters} votes
+          </span>
+        </div>
       </div>
     </Link>
   );

@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from '../core/core.module';
 import { ImagesModule } from '../images/images.module';
+import { VotesModule } from '../votes/votes.module';
 import { BatchesController } from './batches.controller';
 import { BatchesService } from './batches.service';
 import { DailyBatchItem } from './daily-batch-item.entity';
@@ -14,6 +15,7 @@ import { DailyBatch } from './daily-batch.entity';
     JwtModule,
     CoreModule,
     ImagesModule,
+    VotesModule,
   ],
   providers: [BatchesService],
   controllers: [BatchesController],

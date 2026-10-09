@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useRouter} from 'next/router';
 import UserClient from '@/lib/common/user/UserClient';
 import {getErrorStatus} from '@/lib/common/ErrorHandler';
 import {StorageKeys} from '@/lib/common/Constants';
@@ -56,6 +57,7 @@ interface RoastProviderProps {
 }
 
 export function RoastProvider({ paths, children }: RoastProviderProps) {
+  const router = useRouter();
   const [viewer, setViewer] = React.useState<UserResDto | null>(cachedViewer);
   const [viewerLoaded, setViewerLoaded] = React.useState(cachedViewer !== null);
   const [toast, setToast] = React.useState('');
@@ -82,6 +84,16 @@ export function RoastProvider({ paths, children }: RoastProviderProps) {
       setViewerLoaded(true);
     });
   }, [applyViewer]);
+
+  // A sign-in can finish on the page itself (the introduction's Google button) and land the router on the
+  // same page without a remount, so the viewer is read again after every navigation
+  React.useEffect(() => {
+    const handleRouteChange = () => {
+      fetchViewer().then(applyViewer, () => undefined);
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => router.events.off('routeChangeComplete', handleRouteChange);
+  }, [router, applyViewer]);
 
   React.useEffect(() => {
     if (!toast) {

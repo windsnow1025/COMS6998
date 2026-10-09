@@ -1,65 +1,73 @@
 import * as React from 'react';
 import Link from 'next/link';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import RoastLogic from '@/lib/roast/RoastLogic';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
+import {isDone} from '@/lib/roast/PhotoResults';
 import {useRoast} from './RoastContext';
-import {useLoad} from './useLoad';
-import BatchFeed from './BatchFeed';
-import {LoadError, Loading} from './Status';
+import {useTodayBatch} from './useTodayBatch';
+import Intro from './Intro';
+import TodayBatch from './TodayBatch';
+import EarlierPicks from './EarlierPicks';
+import EarlierBatches from './EarlierBatches';
 import styles from './roast.module.css';
 
-// The home of the product: today's batch, and the way to the previous batch's verdicts
+// The home of the product: today's batch, under the introduction for a visitor who is not signed in,
+// the viewer's earlier picks the batch serves again, and the earlier batches
 export default function TodayView() {
   const { viewer, viewerLoaded, paths } = useRoast();
-  const roastLogic = React.useMemo(() => new RoastLogic(), []);
+  const load = useTodayBatch();
+  const batchRef = React.useRef<HTMLDivElement>(null);
 
-  // The batch depends on the viewer, whose votes and uploads it reflects
-  const key = viewerLoaded ? `today:${viewer?.id ?? ''}` : null;
-  const loadBatch = React.useCallback(() => roastLogic.fetchTodayBatch(), [roastLogic]);
-  const batch = useLoad(key, loadBatch);
-  const loadRecent = React.useCallback(() => roastLogic.fetchRecentBatches(), [roastLogic]);
-  const recent = useLoad(key, loadRecent);
-
-  const previous = batch.data && recent.data?.find(({ date }) => date < batch.data!.date);
+  const date = load.batch.data?.date ?? null;
+  // The batch as loaded; the viewer's votes since then are the feed's
+  const isJudged = load.batch.data?.photos.every(isDone) ?? false;
 
   return (
     <>
-      <h1 className={styles.title}>
-        {viewer ? "Today's batch" : 'Pick the funniest caption.'}
-      </h1>
-      <p className={styles.subtitle}>
-        {viewer && batch.data
-          ? formatCampusDate(batch.data.date)
-          : 'A fresh batch of photos every day. AI writes the roasts. You pick the winner.'}
-      </p>
-
-      <div className="mt-5">
-        {batch.error && <LoadError message={batch.error} onRetry={batch.reload} />}
-        {!batch.data && !batch.error && <Loading />}
-        {batch.data && batch.data.photos.length === 0 && (
-          <div className={`${styles.card} ${styles.empty}`}>
-            <p>No photo is in line for today&apos;s batch. Yours can open it.</p>
-            <Link href={paths.roast} className={styles.button}>
-              Roast my photo
-            </Link>
+      {viewerLoaded && !viewer && (
+        <>
+          <Intro
+            actions={
+              <>
+                <div className={styles.introSignIn}>
+                  <GoogleSignInButton />
+                </div>
+                <button
+                  type="button"
+                  className={styles.linkButton}
+                  onClick={() => batchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                >
+                  Browse today&apos;s batch
+                  <ArrowDownwardRoundedIcon sx={{ fontSize: 16, verticalAlign: 'text-bottom' }} />
+                </button>
+              </>
+            }
+          />
+          <div ref={batchRef} className={styles.batchHead}>
+            <h2 className={styles.sectionTitle}>Today&apos;s batch</h2>
+            {date && <span className={`${styles.muted} ${styles.small}`}>{formatCampusDate(date)}</span>}
           </div>
-        )}
-        {batch.data && batch.data.photos.length > 0 && (
-          <BatchFeed key={key} batch={batch.data} />
-        )}
-      </div>
-
-      {previous && (
-        <Link href={paths.batch(previous.date)} className={`${styles.notice} mt-7`}>
-          <span className={styles.noticeText}>
-            <strong>{formatCampusDate(previous.date)}</strong>
-            <br />
-            <span className={`${styles.muted} ${styles.small}`}>See how the crowd voted on the last batch</span>
-          </span>
-          <ArrowForwardRoundedIcon />
-        </Link>
+        </>
       )}
+      {viewer && (
+        <>
+          <h1 className={styles.title}>Today&apos;s batch</h1>
+          {date && (
+            <p className={styles.subtitle}>
+              {isJudged ? formatCampusDate(date) : 'Tap the funniest caption under each photo.'}
+            </p>
+          )}
+          <p className={`${styles.muted} ${styles.small} mt-2`}>
+            <Link href={paths.about} className={styles.link}>
+              How Daily Roast works
+            </Link>
+          </p>
+        </>
+      )}
+      <TodayBatch load={load} />
+      <EarlierPicks photos={load.batch.data?.judgedBefore} />
+      <EarlierBatches batches={load.earlier} />
     </>
   );
 }
