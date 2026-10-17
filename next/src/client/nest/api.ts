@@ -23,6 +23,143 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface AdminCaptionReqDto {
+    'content': string;
+}
+export interface AdminCaptionResDto {
+    'flavor': FlavorResDto | null;
+    'llmCallId': string | null;
+    'id': string;
+    'content': string;
+    'picks': number;
+    'downs': number;
+    'createdAt': string;
+}
+export interface AdminDayResDto {
+    'date': string;
+    'voters': number;
+    'picks': number;
+    'uploads': number;
+    'captions': number;
+}
+export interface AdminLlmCallResDto {
+    'userId': number | null;
+    'id': string;
+    'imageId': string;
+    'step': string;
+    'model': string;
+    'systemPrompt': string;
+    'userPrompt': string;
+    'response': string;
+    'inputTokens': number;
+    'outputTokens': number;
+    'durationMs': number;
+    'createdAt': string;
+}
+export interface AdminLlmStepResDto {
+    'step': string;
+    'calls': number;
+    'inputTokens': number;
+    'outputTokens': number;
+    'averageDurationMs': number;
+}
+export interface AdminOverviewResDto {
+    'totals': AdminTotalsResDto;
+    'days': Array<AdminDayResDto>;
+    'voices': Array<AdminVoiceResDto>;
+    'llmSteps': Array<AdminLlmStepResDto>;
+}
+export interface AdminPhotoDetailResDto {
+    'place': string | null;
+    'uploader': AdminPhotoUploaderResDto | null;
+    'id': string;
+    'url': string;
+    'description': string;
+    'createdAt': string;
+    'batchDates': Array<string>;
+    'captions': Array<AdminCaptionResDto>;
+    'votes': Array<AdminPhotoVoteResDto>;
+}
+export interface AdminPhotoPageResDto {
+    'total': number;
+    'photos': Array<AdminPhotoResDto>;
+}
+export interface AdminPhotoResDto {
+    'place': string | null;
+    'uploader': AdminPhotoUploaderResDto | null;
+    'latestBatchDate': string | null;
+    'id': string;
+    'url': string;
+    'description': string;
+    'createdAt': string;
+    'captions': number;
+    'voters': number;
+    'picks': number;
+}
+export interface AdminPhotoUploaderResDto {
+    'id': number;
+    'username': string;
+}
+export interface AdminPhotoVoteResDto {
+    'id': string;
+    'user': AdminVoteUserResDto;
+    'captionId': string;
+    'value': number;
+    'createdAt': string;
+}
+export interface AdminTotalsResDto {
+    'users': number;
+    'photos': number;
+    'photosWithoutCaptions': number;
+    'captions': number;
+    'picks': number;
+    'downs': number;
+    'batches': number;
+    'llmCalls': number;
+}
+export interface AdminUserResDto {
+    'roles': Array<AdminUserResDtoRolesEnum> | null;
+    'lastActiveAt': string | null;
+    'id': number;
+    'username': string;
+    'email': string;
+    'createdAt': string;
+    'photos': number;
+    'photosJudged': number;
+}
+
+export const AdminUserResDtoRolesEnum = {
+    User: 'user',
+    Admin: 'admin'
+} as const;
+
+export type AdminUserResDtoRolesEnum = typeof AdminUserResDtoRolesEnum[keyof typeof AdminUserResDtoRolesEnum];
+
+export interface AdminVoiceResDto {
+    'slug': string;
+    'name': string;
+    'captions': number;
+    'picks': number;
+    'downs': number;
+}
+export interface AdminVotePageResDto {
+    'total': number;
+    'votes': Array<AdminVoteResDto>;
+}
+export interface AdminVoteResDto {
+    'id': string;
+    'user': AdminVoteUserResDto;
+    'imageId': string;
+    'imageUrl': string;
+    'captionId': string;
+    'captionContent': string;
+    'value': number;
+    'createdAt': string;
+}
+export interface AdminVoteUserResDto {
+    'id': number;
+    'username': string;
+}
 export interface AuthGoogleClientIdResDto {
     'clientId': string;
 }
@@ -205,6 +342,612 @@ export interface VoteReqDto {
 export interface WebUrlResDto {
     'webUrl': string;
 }
+
+/**
+ * AdminApi - axios parameter creator
+ */
+export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindLlmCall: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminControllerFindLlmCall', 'id', id)
+            const localVarPath = `/admin/llm-calls/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindOverview: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/overview`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindPhoto: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminControllerFindPhoto', 'id', id)
+            const localVarPath = `/admin/photos/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindPhotos: async (limit: number, offset: number, q?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('adminControllerFindPhotos', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('adminControllerFindPhotos', 'offset', offset)
+            const localVarPath = `/admin/photos`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (q !== undefined) {
+                localVarQueryParameter['q'] = q;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindUsers: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/users`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindVotes: async (limit: number, offset: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('adminControllerFindVotes', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('adminControllerFindVotes', 'offset', offset)
+            const localVarPath = `/admin/votes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerRemoveCaption: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminControllerRemoveCaption', 'id', id)
+            const localVarPath = `/admin/captions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminCaptionReqDto} adminCaptionReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerUpdateCaption: async (id: string, adminCaptionReqDto: AdminCaptionReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminControllerUpdateCaption', 'id', id)
+            // verify required parameter 'adminCaptionReqDto' is not null or undefined
+            assertParamExists('adminControllerUpdateCaption', 'adminCaptionReqDto', adminCaptionReqDto)
+            const localVarPath = `/admin/captions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminCaptionReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AdminApi - functional programming interface
+ */
+export const AdminApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindLlmCall(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminLlmCallResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindLlmCall(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindLlmCall']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindOverview(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminOverviewResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindOverview(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindOverview']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindPhoto(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPhotoDetailResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindPhoto(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindPhoto']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindPhotos(limit: number, offset: number, q?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPhotoPageResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindPhotos(limit, offset, q, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindPhotos']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindUsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminUserResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindUsers(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindUsers']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerFindVotes(limit: number, offset: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminVotePageResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerFindVotes(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerFindVotes']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerRemoveCaption(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerRemoveCaption(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerRemoveCaption']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminCaptionReqDto} adminCaptionReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerUpdateCaption(id: string, adminCaptionReqDto: AdminCaptionReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminCaptionResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerUpdateCaption(id, adminCaptionReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerUpdateCaption']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AdminApi - factory interface
+ */
+export const AdminApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindLlmCall(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminLlmCallResDto> {
+            return localVarFp.adminControllerFindLlmCall(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindOverview(options?: RawAxiosRequestConfig): AxiosPromise<AdminOverviewResDto> {
+            return localVarFp.adminControllerFindOverview(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindPhoto(id: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminPhotoDetailResDto> {
+            return localVarFp.adminControllerFindPhoto(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindPhotos(limit: number, offset: number, q?: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminPhotoPageResDto> {
+            return localVarFp.adminControllerFindPhotos(limit, offset, q, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindUsers(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminUserResDto>> {
+            return localVarFp.adminControllerFindUsers(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerFindVotes(limit: number, offset: number, options?: RawAxiosRequestConfig): AxiosPromise<AdminVotePageResDto> {
+            return localVarFp.adminControllerFindVotes(limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerRemoveCaption(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminControllerRemoveCaption(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminCaptionReqDto} adminCaptionReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerUpdateCaption(id: string, adminCaptionReqDto: AdminCaptionReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminCaptionResDto> {
+            return localVarFp.adminControllerUpdateCaption(id, adminCaptionReqDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AdminApi - object-oriented interface
+ */
+export class AdminApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindLlmCall(id: string, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindLlmCall(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindOverview(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindOverview(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindPhoto(id: string, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindPhoto(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {string} [q] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindPhotos(limit: number, offset: number, q?: string, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindPhotos(limit, offset, q, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindUsers(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindUsers(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerFindVotes(limit: number, offset: number, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerFindVotes(limit, offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerRemoveCaption(id: string, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerRemoveCaption(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminCaptionReqDto} adminCaptionReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerUpdateCaption(id: string, adminCaptionReqDto: AdminCaptionReqDto, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerUpdateCaption(id, adminCaptionReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
 
 /**
  * AppApi - axios parameter creator

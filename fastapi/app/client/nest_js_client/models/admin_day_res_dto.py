@@ -1,0 +1,93 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+
+T = TypeVar("T", bound="AdminDayResDto")
+
+
+@_attrs_define
+class AdminDayResDto:
+    """
+    Attributes:
+        date (str):
+        voters (float):
+        picks (float):
+        uploads (float):
+        captions (float):
+    """
+
+    date: str
+    voters: float
+    picks: float
+    uploads: float
+    captions: float
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        date = self.date
+
+        voters = self.voters
+
+        picks = self.picks
+
+        uploads = self.uploads
+
+        captions = self.captions
+
+        field_dict: dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "date": date,
+                "voters": voters,
+                "picks": picks,
+                "uploads": uploads,
+                "captions": captions,
+            }
+        )
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        date = d.pop("date")
+
+        voters = d.pop("voters")
+
+        picks = d.pop("picks")
+
+        uploads = d.pop("uploads")
+
+        captions = d.pop("captions")
+
+        admin_day_res_dto = cls(
+            date=date,
+            voters=voters,
+            picks=picks,
+            uploads=uploads,
+            captions=captions,
+        )
+
+        admin_day_res_dto.additional_properties = d
+        return admin_day_res_dto
+
+    @property
+    def additional_keys(self) -> list[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties
