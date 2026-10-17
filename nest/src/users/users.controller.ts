@@ -40,6 +40,7 @@ export class UsersController {
   ) {}
 
   @Get()
+  @Roles([Role.Admin])
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map((user) => this.usersCoreService.toUserDto(user));

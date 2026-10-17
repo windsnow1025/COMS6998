@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-next-deployment
+  labels:
+    app: admin-next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-next
+  template:
+    metadata:
+      labels:
+        app: admin-next
+    spec:
+      containers:
+        - name: admin-next
+          image: windsnow1025/coms6998-admin-next
+          ports:
+            - containerPort: 3000
+  revisionHistoryLimit: 0

@@ -29,6 +29,9 @@ kubectl apply -f ./fastapi/fastapi-service.yaml
 # Next.js
 kubectl apply -f ./next/next-service.yaml
 
+# Admin Next.js
+kubectl apply -f ./admin-next/admin-next-service.yaml
+
 # Nginx
 kubectl apply -f ./nginx/nginx-configmap.yaml
 kubectl apply -f ./nginx/nginx-deployment.yaml
@@ -49,6 +52,9 @@ kubectl apply -f ./fastapi/fastapi-deployment.yaml
 
 # Next
 kubectl apply -f ./next/next-deployment.yaml
+
+# Admin Next
+kubectl apply -f ./admin-next/admin-next-deployment.yaml
 ```
 
 ### Test
@@ -90,6 +96,9 @@ kubectl rollout restart deployment fastapi-deployment
 
 # Next.js
 kubectl rollout restart deployment next-deployment
+
+# Admin Next.js
+kubectl rollout restart deployment admin-next-deployment
 
 # Nginx
 kubectl rollout restart deployment nginx-deployment

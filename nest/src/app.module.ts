@@ -28,6 +28,7 @@ import { DailyBatch } from './batches/daily-batch.entity';
 import { DailyBatchItem } from './batches/daily-batch-item.entity';
 import { BatchesModule } from './batches/batches.module';
 import { StatsModule } from './stats/stats.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { StatsModule } from './stats/stats.module';
     ImagesModule,
     BatchesModule,
     StatsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
