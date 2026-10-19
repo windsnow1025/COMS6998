@@ -581,7 +581,7 @@ requires-dist = [
     { name = "attrs", specifier = ">=22.2.0" },
     { name = "fastapi", extras = ["standard"], specifier = "==0.128.0" },
     { name = "httpx", specifier = ">=0.23.0,<0.29.0" },
-    { name = "llm-bridge", specifier = "==2.2.0" },
+    { name = "llm-bridge", specifier = "==2.3.1" },
     { name = "python-dateutil", specifier = ">=2.8.0,<3.0.0" },
     { name = "python-dotenv", specifier = "==1.2.2" },
     { name = "python-jose", extras = ["cryptography"], specifier = "==3.5.0" },
@@ -756,15 +756,15 @@ wheels = [
 
 [[package]]
 name = "google-auth"
-version = "2.55.0"
+version = "2.62.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
     { name = "pyasn1-modules" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/81/1c/70b23fc52b2bb3c70b379f3bd05c4a60ab3a873e30c6bd21c57e0154848a/google_auth-2.55.0.tar.gz", hash = "sha256:fcd3a130f575fa36403d38774af1c64a4fbfbca09215f0589d2372b5119697cb", size = 349379, upload-time = "2026-06-15T22:33:16.466Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/b9/4b2528f30114b106e3c3a7298ba38d85e682fd1f83fe7c4a5b77c7677082/google_auth-2.62.0.tar.gz", hash = "sha256:0bef0ce54bdf9ce226c5d66e4264413bd918141c31bbe49fb52eac882f513d69", size = 398180, upload-time = "2026-10-12T19:20:48.328Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/71/c0321dc6d63d99946da45f7c06299b934e4f7f7da5c4f14d101bcb39adf1/google_auth-2.55.0-py3-none-any.whl", hash = "sha256:a17cef9dedf98c4ebae2fb0c48c8f75952c877cbc2efe09f329ef16c2783d88a", size = 252400, upload-time = "2026-06-15T22:33:14.992Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/a3/87fe9b7203ec2e56ea6a57c75e6d632eaf9487c7f7978cdad1d801bee0af/google_auth-2.62.0-py3-none-any.whl", hash = "sha256:4ff4319aeb4ad128409759d397a9fcafad126d0031d241cc0dd6b9a00b43e3f3", size = 267911, upload-time = "2026-10-12T19:20:46.355Z" },
 ]
 
 [package.optional-dependencies]
@@ -774,7 +774,7 @@ requests = [
 
 [[package]]
 name = "google-genai"
-version = "1.70.0"
+version = "2.31.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -788,9 +788,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/dd/28e4682904b183acbfad3fe6409f13a42f69bb8eab6e882d3bcbea1dde01/google_genai-1.70.0.tar.gz", hash = "sha256:36b67b0fc6f319e08d1f1efd808b790107b1809c8743a05d55dfcf9d9fad7719", size = 519550, upload-time = "2026-04-01T10:52:46.487Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/69/6a3d3839ab56ec17d7923c8679b38955e286e0a9793df10ce6d13bc5f122/google_genai-2.31.0.tar.gz", hash = "sha256:71518537de2ba967a61960cba844691dca3dd4ff07726c01a6917d132213541e", size = 745679, upload-time = "2026-10-14T23:52:24.836Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/a3/d4564c8a9beaf6a3cef8d70fa6354318572cebfee65db4f01af0d41f45ba/google_genai-1.70.0-py3-none-any.whl", hash = "sha256:b74c24549d8b4208f4c736fd11857374788e1ffffc725de45d706e35c97fceee", size = 760584, upload-time = "2026-04-01T10:52:44.349Z" },
+    { url = "https://files.pythonhosted.org/packages/1c/64/1e9ab799830101ccbdcb67376a3f12b59e51f57643862999fd31af6938a1/google_genai-2.31.0-py3-none-any.whl", hash = "sha256:c87b9d495a24b09dedb29b852a201bea69ecd0b3f6c2561dc68f4055451b1b90", size = 1208245, upload-time = "2026-10-14T23:52:22.766Z" },
 ]
 
 [[package]]
@@ -1062,7 +1062,7 @@ wheels = [
 
 [[package]]
 name = "llm-bridge"
-version = "2.2.0"
+version = "2.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anthropic" },
@@ -1076,9 +1076,9 @@ dependencies = [
     { name = "tenacity" },
     { name = "xai-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e8/19/4a6e8090f3e2933cf2a8715ceb3b85317dc1a0b6d2dfa55b6653fd85b489/llm_bridge-2.2.0.tar.gz", hash = "sha256:7e896fecdb6f7cc101e41f65c010a19cb053ebfbb645d4eba29d0ba29056ad22", size = 134016, upload-time = "2026-10-13T12:24:50.19Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a8/d8/059cfa3dc8f6d7376a93ee3b0dc5a5a95b3118f6a9e8f77d0f6945023003/llm_bridge-2.3.1.tar.gz", hash = "sha256:d1679b1d9c6dc6ff51c120ec9b514e80cc206b7f07338adfa70b32d28ae844b7", size = 134259, upload-time = "2026-10-19T11:29:23.41Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4d/b1/024299b4bbcafc407ecc482ed69084efbf15f3bab59386cd46461c03be24/llm_bridge-2.2.0-py3-none-any.whl", hash = "sha256:2431c3b253c240170f0b263507ce32a629096d2b9ed98653cd3b265f7896d9b8", size = 49083, upload-time = "2026-10-13T12:24:48.993Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/bf/7d7bedfee1caafc761be531535cc0b85ca2dba7bb7750711d5dfe02e84e4/llm_bridge-2.3.1-py3-none-any.whl", hash = "sha256:a722cf4727d134c2250158dc93e37235fe65131d64824ca3f71a6b32faecc049", size = 49321, upload-time = "2026-10-19T11:29:22.238Z" },
 ]
 
 [[package]]
