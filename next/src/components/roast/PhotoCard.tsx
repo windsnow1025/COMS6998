@@ -1,13 +1,12 @@
 import * as React from 'react';
 import {useRouter} from 'next/router';
-import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {RoastError} from '@/lib/roast/RoastError';
-import {formatPercent, getNoneShare, getOutcome, getPickShare, getWinners} from '@/lib/roast/PhotoResults';
+import {formatPercent, getNoneShare, getOutcome, getWinner, isTied} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
-import FlavorChip from './FlavorChip';
+import RevealedOption from './RevealedOption';
 import styles from './roast.module.css';
 
 const Unauthorized = 401;
@@ -53,9 +52,7 @@ export default function PhotoCard({ photo, onVoted }: PhotoCardProps) {
     }
   };
 
-  const winnerIds = getWinners(photo).map(({ id }) => id);
-  // A photo that nobody has voted on has no shares to show
-  const hasVotes = (photo.voters ?? 0) > 0;
+  const winnerId = getWinner(photo)?.id;
 
   return (
     <article>
@@ -82,31 +79,7 @@ export default function PhotoCard({ photo, onVoted }: PhotoCardProps) {
         {photo.captions.map((caption) => (
           <li key={caption.id}>
             {photo.revealed ? (
-              <div
-                className={styles.option}
-                data-picked={photo.viewer.captionId === caption.id}
-                data-winner={winnerIds.includes(caption.id)}
-              >
-                <span
-                  className={styles.optionBar}
-                  style={{ '--dr-share': formatPercent(getPickShare(photo, caption)) } as React.CSSProperties}
-                />
-                <div className={styles.optionBody}>
-                  <div className={styles.optionText}>{caption.content}</div>
-                  <div className={styles.optionMeta}>
-                    {caption.flavor && <FlavorChip flavor={caption.flavor} />}
-                    {photo.viewer.captionId === caption.id && <span className={styles.tag}>Your pick</span>}
-                    {winnerIds.includes(caption.id) && (
-                      <span className={styles.crown} title="Most picked">
-                        <EmojiEventsRoundedIcon fontSize="small" />
-                      </span>
-                    )}
-                    {hasVotes && (
-                      <span className={styles.optionShare}>{formatPercent(getPickShare(photo, caption))}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <RevealedOption photo={photo} caption={caption} isWinner={caption.id === winnerId} />
             ) : (
               <button type="button" className={styles.option} disabled={isVoting} onClick={() => vote(caption.id)}>
                 <div className={`${styles.optionBody} ${styles.optionChoice}`}>
@@ -137,17 +110,21 @@ function Outcome({ photo }: { photo: PhotoResDto }) {
   const votes = `${voters} ${voters === 1 ? 'vote' : 'votes'}`;
   const noneShare = getNoneShare(photo);
   const none = noneShare > 0 ? ` ${formatPercent(noneShare)} picked none.` : '';
+  // A tie at the top is never broken: the photo goes back into a batch until a vote breaks it
+  const tie = isTied(photo) ? ' The top captions are tied.' : '';
 
   if (!photo.viewer.isOwner && !photo.viewer.hasVoted) {
-    return <p className={styles.outcome}>{votes}.{none}</p>;
+    return <p className={styles.outcome}>{votes}.{tie}{none}</p>;
   }
 
   const outcome = getOutcome(photo);
   const text = {
-    owner: `Your photo. ${votes} so far.${none}`,
+    owner: `Your photo. ${votes} so far.${tie}${none}`,
     match: `You picked the crowd favorite. ${votes}.${none}`,
     miss: `Hot take. The crowd went another way. ${votes}.${none}`,
-    early: `${votes} so far. Too few for a verdict yet.`,
+    early: isTied(photo)
+      ? `${votes} so far, tied at the top. The photo goes back into a batch until a vote breaks the tie.`
+      : `${votes} so far. Too few for a verdict yet.`,
     none: voters === 1
       ? 'None for you. You are the first to vote.'
       : `None for you. ${formatPercent(noneShare)} of the ${voters} voters said the same.`,

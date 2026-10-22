@@ -11,7 +11,6 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import {createRoastPaths} from '@/lib/roast/RoastPaths';
 import {RoastProvider, useRoast} from './RoastContext';
-import ViewerAvatar from './ViewerAvatar';
 import styles from './roast.module.css';
 
 const displayFont = Bricolage_Grotesque({ subsets: ['latin'], variable: '--dr-font-display' });
@@ -24,19 +23,21 @@ interface RoastShellProps {
   base: string;
   // The icon of the product's mark in the header
   brandMark: React.ReactNode;
+  // The viewer's avatar in the header, which renders nothing while signed out: the week's `AccountLink` or `AccountMenu`
+  account: React.ReactNode;
   // The tab of the current page; null for a page outside the tabs
   active: RoastTab | null;
   wide?: boolean;
   children: React.ReactNode;
 }
 
-export default function RoastShell({ base, brandMark, active, wide, children }: RoastShellProps) {
+export default function RoastShell({ base, brandMark, account, active, wide, children }: RoastShellProps) {
   const paths = React.useMemo(() => createRoastPaths(base), [base]);
 
   return (
     <div className={`local-scroll-container ${styles.root} ${displayFont.variable} ${bodyFont.variable}`}>
       <RoastProvider paths={paths}>
-        <Header brandMark={brandMark} active={active} />
+        <Header brandMark={brandMark} account={account} active={active} />
         <main className={styles.main}>
           <div className={wide ? `${styles.page} ${styles.pageWide}` : styles.page}>
             {children}
@@ -58,7 +59,13 @@ function useTabs() {
   ] as const;
 }
 
-function Header({ brandMark, active }: { brandMark: React.ReactNode; active: RoastTab | null }) {
+interface HeaderProps {
+  brandMark: React.ReactNode;
+  account: React.ReactNode;
+  active: RoastTab | null;
+}
+
+function Header({ brandMark, account, active }: HeaderProps) {
   const { paths, viewer, viewerLoaded } = useRoast();
   const router = useRouter();
   const tabs = useTabs();
@@ -78,11 +85,7 @@ function Header({ brandMark, active }: { brandMark: React.ReactNode; active: Roa
       </nav>
       <div className={styles.headerActions}>
         <ColorModeButton />
-        {viewer && (
-          <Link href={paths.me} aria-label="Your profile">
-            <ViewerAvatar user={viewer} className={styles.avatar} />
-          </Link>
-        )}
+        {account}
         {viewerLoaded && !viewer && active !== null && (
           <Link href={paths.signIn(router.asPath)} className={`${styles.buttonGhost} ${styles.buttonSmall}`}>
             Sign in

@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import {useRouter} from "next/router";
+import AccountLink from "@/components/roast/AccountLink";
 import {FlameMark} from "@/components/roast/BrandMarks";
 import RoastShell from "@/components/roast/RoastShell";
 import BatchView from "@/components/roast/BatchView";
@@ -11,7 +12,7 @@ function BatchPage() {
   const date = router.query.date as string | undefined;
 
   return (
-    <RoastShell base={W5Base} brandMark={FlameMark} active={null}>
+    <RoastShell base={W5Base} brandMark={FlameMark} account={<AccountLink/>} active={null}>
       <Head>
         <title>Batch | Daily Roast</title>
       </Head>

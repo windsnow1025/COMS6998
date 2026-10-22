@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -17,7 +18,11 @@ import { FlavorsService } from '../flavors/flavors.service';
 import { LlmCall } from '../llm/llm-call.entity';
 import { CaptionsPerPhoto } from '../llm/llm.constants';
 import { RoastQuotaService } from '../llm/roast-quota.service';
-import { PhotoScreening, RoastService } from '../llm/roast.service';
+import {
+  PhotoScreening,
+  RoastService,
+  WrittenCaptions,
+} from '../llm/roast.service';
 import { UserResDto } from '../users/dto/user.res.dto';
 import { VotesService } from '../votes/votes.service';
 import { detectImageType } from './image-type';
@@ -152,29 +157,68 @@ export class ImagesService {
       voices,
       authorization,
     );
+    await this.saveCaptions(user, id, written, true);
+    return await this.findOne(id);
+  }
 
-    try {
-      await this.dataSource.transaction(async (manager) => {
-        const llmCall = await manager.save(LlmCall, {
-          ...written.record,
-          image: { id },
-          user: { id: user.id },
-        });
-        await manager.save(
-          Caption,
-          written.captions.map(({ flavor, text }) => ({
-            content: text,
-            image: { id },
-            flavor: { id: flavor.id },
-            llmCall: { id: llmCall.id },
-          })),
-        );
-      });
-    } catch (error) {
-      // A concurrent request captioned the photo first, and its captions stand
-      if (!isUniqueViolation(error)) {
-        throw error;
-      }
+  // Writes the photo's drafts once, one in every voice, of which the uploader keeps 3 as its captions:
+  // a photo that has captions keeps them. `authorization` is the Authorization header of the user's request.
+  async writeDrafts(
+    user: UserResDto,
+    id: string,
+    authorization: string,
+  ): Promise<Image> {
+    const image = await this.findOne(id);
+    this.checkCanManage(user, image);
+    if (image.captions.length > 0) {
+      return image;
+    }
+
+    await this.roastQuotaService.takeLlmCall(user);
+    const flavors = await this.flavorsService.findAll();
+    const written = await this.roastService.writeCaptions(
+      image.description,
+      image.place,
+      flavors,
+      flavors,
+      authorization,
+    );
+    await this.saveCaptions(user, id, written, false);
+    return await this.findOne(id);
+  }
+
+  // Keeps the given drafts as the photo's captions and the rest out of sight. The kept captions can change
+  // until a batch serves the photo; from then on its voters vote on them, so they stay.
+  async keepCaptions(
+    user: UserResDto,
+    id: string,
+    captionIds: string[],
+  ): Promise<Image> {
+    const image = await this.findOne(id);
+    this.checkCanManage(user, image);
+    if (new Set(captionIds).size !== captionIds.length) {
+      throw new BadRequestException('Keep different captions');
+    }
+    const draftIds = new Set(image.captions.map(({ id }) => id));
+    if (!captionIds.every((captionId) => draftIds.has(captionId))) {
+      throw new BadRequestException('A caption is not one of this photo');
+    }
+
+    // One statement checks that no batch serves the photo and updates its captions
+    const result = await this.dataSource
+      .createQueryBuilder()
+      .update(Caption)
+      .set({ kept: () => 'id IN (:...captionIds)' })
+      .where('"imageId" = :id')
+      .andWhere(
+        'NOT EXISTS (SELECT 1 FROM daily_batch_item WHERE daily_batch_item."imageId" = :id)',
+      )
+      .setParameters({ id, captionIds })
+      .execute();
+    if (result.affected === 0) {
+      throw new ConflictException(
+        'A batch serves this photo, so its captions stay as they are',
+      );
     }
     return await this.findOne(id);
   }
@@ -199,6 +243,38 @@ export class ImagesService {
     await this.imageRepository.delete(id);
     if (image.storageKey) {
       await this.s3Service.removeObject(image.storageKey);
+    }
+  }
+
+  private async saveCaptions(
+    user: UserResDto,
+    id: string,
+    written: WrittenCaptions,
+    kept: boolean,
+  ): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const llmCall = await manager.save(LlmCall, {
+          ...written.record,
+          image: { id },
+          user: { id: user.id },
+        });
+        await manager.save(
+          Caption,
+          written.captions.map(({ flavor, text }) => ({
+            content: text,
+            image: { id },
+            flavor: { id: flavor.id },
+            llmCall: { id: llmCall.id },
+            kept,
+          })),
+        );
+      });
+    } catch (error) {
+      // A concurrent request captioned the photo first, and its captions stand
+      if (!isUniqueViolation(error)) {
+        throw error;
+      }
     }
   }
 

@@ -75,6 +75,18 @@ export default class RoastClient {
     return res.data;
   }
 
+  async writeDrafts(id: string): Promise<PhotoResDto> {
+    const api = new ImagesApi(getNestOpenAPIConfiguration());
+    const res = await api.imagesControllerWriteDrafts(id);
+    return res.data;
+  }
+
+  async keepCaptions(id: string, captionIds: string[]): Promise<PhotoResDto> {
+    const api = new ImagesApi(getNestOpenAPIConfiguration());
+    const res = await api.imagesControllerKeepCaptions(id, {captionIds});
+    return res.data;
+  }
+
   async vote(id: string, captionId: string | null): Promise<PhotoResDto> {
     const api = new ImagesApi(getNestOpenAPIConfiguration());
     const res = await api.imagesControllerVote(id, {captionId});

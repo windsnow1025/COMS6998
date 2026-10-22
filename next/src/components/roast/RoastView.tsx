@@ -11,6 +11,8 @@ import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
 import PhotoCard from './PhotoCard';
+import KeepPicker from './KeepPicker';
+import DeletePhotoDialog from './DeletePhotoDialog';
 import {Loading} from './Status';
 import styles from './roast.module.css';
 
@@ -19,10 +21,10 @@ const MaxPlaceLength = 80;
 const Unauthorized = 401;
 
 // "pick": choosing a photo. "screening": the photo uploads and the LLM screens and describes it.
-// "writing": the LLM writes the captions. "done": the captions are shown.
-type Stage = 'pick' | 'screening' | 'writing' | 'done';
+// "writing": the LLM writes a draft in each voice. "choosing": the uploader keeps 3 drafts. "done": the kept captions are shown.
+type Stage = 'pick' | 'screening' | 'writing' | 'choosing' | 'done';
 
-// Where a signed-in user uploads a photo and gets it captioned
+// Where a signed-in user uploads a photo, gets a caption in each voice, and keeps 3 of them for the batch
 export default function RoastView() {
   const { viewer, viewerLoaded, paths, notify } = useRoast();
   const router = useRouter();
@@ -36,10 +38,11 @@ export default function RoastView() {
   const [previewUrl, setPreviewUrl] = React.useState('');
   const [place, setPlace] = React.useState('');
   const [stage, setStage] = React.useState<Stage>('pick');
-  // The uploaded photo; with the "pick" stage, a photo whose captions failed and can be retried
+  // The uploaded photo; with the "pick" stage, a photo whose drafts failed and can be retried
   const [photo, setPhoto] = React.useState<PhotoResDto | null>(null);
   const [error, setError] = React.useState('');
   const [isDragOver, setIsDragOver] = React.useState(false);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -57,7 +60,7 @@ export default function RoastView() {
     return (
       <div className={`${styles.card} ${styles.empty}`}>
         <h1 className={styles.title}>Roast my photo</h1>
-        <p className={styles.subtitle}>Sign in to upload a photo and let AI caption it in 3 voices.</p>
+        <p className={styles.subtitle}>Sign in to upload a photo and let AI caption it in 5 voices.</p>
         <Link href={paths.signIn(router.asPath)} className={`${styles.button} mt-5`}>
           Sign in
         </Link>
@@ -84,7 +87,7 @@ export default function RoastView() {
     stats.reload();
   };
 
-  // Uploads the selected file unless a photo is already uploaded, then has its captions written.
+  // Uploads the selected file unless a photo is already uploaded, then has a draft written in each voice.
   const roast = async () => {
     setError('');
     try {
@@ -95,8 +98,8 @@ export default function RoastView() {
         setPhoto(uploaded);
       }
       setStage('writing');
-      setPhoto(await roastLogic.writeCaptions(uploaded.id));
-      setStage('done');
+      setPhoto(await roastLogic.writeDrafts(uploaded.id));
+      setStage('choosing');
     } catch (err) {
       if (err instanceof RoastError && err.status === Unauthorized) {
         await router.push(paths.signIn(router.asPath));
@@ -120,14 +123,55 @@ export default function RoastView() {
     }
   };
 
+  const deleteDialog = (
+    <DeletePhotoDialog
+      photoId={deleteId}
+      onClose={() => setDeleteId(null)}
+      onDeleted={() => {
+        setDeleteId(null);
+        startOver();
+      }}
+    />
+  );
+
+  if (stage === 'choosing' && photo) {
+    return (
+      <>
+        <h1 className={styles.title}>Pick your 3</h1>
+        <p className={styles.subtitle}>AI wrote a caption in each of the 5 voices. Keep the 3 you find funniest.</p>
+        <figure className={`${styles.photo} mt-5`}>
+          {/* The photo is served from object storage, outside the image optimizer */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={photo.url} alt={photo.description} className={styles.photoImage} />
+        </figure>
+        <KeepPicker
+          photo={photo}
+          onKept={(kept) => {
+            setPhoto(kept);
+            setStage('done');
+          }}
+          onCancel={photo.captions.length > 0 ? () => setStage('done') : undefined}
+        />
+        <div className="mt-4">
+          <button type="button" className={styles.linkButton} onClick={() => setDeleteId(photo.id)}>
+            Delete this photo
+          </button>
+        </div>
+        {deleteDialog}
+      </>
+    );
+  }
+
   if (stage === 'done' && photo) {
     return (
       <>
         <h1 className={styles.title}>Roasted.</h1>
         <p className={styles.subtitle}>
-          {photo.queuePosition === 1
-            ? 'Your photo is next in line for a batch. Classmates vote once it is served.'
-            : `Your photo is number ${photo.queuePosition} in line for a batch. Classmates vote once it is served.`}
+          {photo.batchDate && "Your photo is in today's batch. Classmates are voting on your 3."}
+          {!photo.batchDate &&
+            (photo.queuePosition === 1
+              ? 'Your photo is next in line for a batch. You can change your 3 until it is served.'
+              : `Your photo is number ${photo.queuePosition} in line for a batch. You can change your 3 until it is served.`)}
         </p>
         <div className="mt-5">
           <PhotoCard photo={photo} onVoted={setPhoto} />
@@ -136,10 +180,21 @@ export default function RoastView() {
           <button type="button" className={styles.button} onClick={() => handleShare(photo)}>
             Share it
           </button>
+          {photo.drafts && (
+            <button type="button" className={styles.buttonGhost} onClick={() => setStage('choosing')}>
+              Change my 3
+            </button>
+          )}
           <button type="button" className={styles.buttonGhost} onClick={startOver}>
             Roast another
           </button>
         </div>
+        <div className="mt-4">
+          <button type="button" className={styles.linkButton} onClick={() => setDeleteId(photo.id)}>
+            Delete this photo
+          </button>
+        </div>
+        {deleteDialog}
       </>
     );
   }
@@ -151,7 +206,8 @@ export default function RoastView() {
     <>
       <h1 className={styles.title}>Roast my photo</h1>
       <p className={styles.subtitle}>
-        Upload a photo from campus or the city. AI captions it in 3 voices, and classmates pick the winner.
+        Upload a photo from campus or the city. AI captions it in 5 voices, you keep your 3 favorites, and
+        classmates pick the winner.
       </p>
 
       <div className="mt-5">
@@ -215,7 +271,7 @@ export default function RoastView() {
           </li>
           <li className={styles.step} data-state={stage === 'writing' ? 'active' : 'todo'}>
             <span className={styles.stepDot} />
-            Writing the roasts
+            Writing a roast in each voice
           </li>
         </ol>
       )}

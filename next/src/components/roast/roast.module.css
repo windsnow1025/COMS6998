@@ -162,6 +162,30 @@
   overflow: hidden;
 }
 
+/* The header's avatar opens the account menu */
+.avatarMenuButton {
+  display: flex;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  transition: box-shadow 160ms ease;
+}
+
+.avatarMenuButton:hover,
+.avatarMenuButton[aria-expanded='true'] {
+  box-shadow: 0 0 0 3px var(--dr-surface-2);
+}
+
+.accountMenuHead {
+  padding: 8px 12px 10px;
+}
+
+.accountMenuName {
+  font-family: var(--dr-font-display), sans-serif;
+  font-weight: 800;
+}
+
 .main {
   flex-grow: 1;
   overflow: auto;
@@ -391,16 +415,7 @@
   padding: 48px 0;
 }
 
-/* Intro, for a visitor who is not signed in */
-
-.eyebrow {
-  margin: 0 0 10px;
-  color: var(--dr-accent-strong);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+/* The introduction as Week 5 delivered it, on its about page and heading its home for a visitor who is not signed in */
 
 .introTitle {
   composes: title;
@@ -441,6 +456,571 @@
 /* Google's button draws itself at its container's width */
 .introSignIn {
   width: min(300px, 100%);
+}
+
+/* Landing page (Week 7); its hero also heads the Week 7 home for a visitor who is not signed in */
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--dr-accent-strong);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero {
+  display: grid;
+  gap: 40px;
+  align-items: center;
+}
+
+.heroSplit {
+  composes: hero;
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.heroTop .eyebrow {
+  margin: 0;
+}
+
+/* The way to the landing page, at the right end of the home's first row */
+/* `composes` does not carry over what `buttonGhost` composes, so `button` is named too */
+.aboutLink {
+  composes: button buttonGhost buttonSmall;
+  flex: none;
+  gap: 6px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heroTitle {
+  composes: title;
+  font-size: clamp(34px, 8vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+.heroSplit .heroTitle {
+  font-size: clamp(38px, 6.4vw, 66px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.heroAccent {
+  color: var(--dr-accent);
+}
+
+/* On the landing page, each sentence of the title starts a line */
+.heroSplit .heroAccent {
+  display: block;
+}
+
+.heroText {
+  max-width: 34em;
+  margin: 16px 0 0;
+  color: var(--dr-ink-soft);
+  font-size: 17px;
+}
+
+.heroSplit .heroText {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  min-height: 48px;
+  margin-top: 24px;
+}
+
+/* Google's button draws itself at its container's width */
+.heroSignIn {
+  width: min(300px, 100%);
+}
+
+.heroFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--dr-ink-soft);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.heroFacts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heroFacts svg {
+  color: var(--dr-accent);
+}
+
+@media (min-width: 900px) {
+  .heroSplit {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: 56px;
+    min-height: min(640px, calc(100vh - 140px));
+  }
+}
+
+/* The hero's example: a revealed photo card over the next photo, tilted like a print on a table */
+
+.showcase {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 18px 8px 8px;
+}
+
+.showcaseBack {
+  position: absolute;
+  top: 0;
+  /* Keeps the rotated corner inside the page's side padding */
+  right: 16px;
+  width: 70%;
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--dr-line);
+  border-radius: var(--dr-radius);
+  object-fit: cover;
+  box-shadow: var(--dr-shadow);
+  transform: rotate(7deg);
+  opacity: 0.7;
+}
+
+.showcaseCard {
+  composes: card;
+  position: relative;
+  display: block;
+  padding: 12px 12px 14px;
+  transform: rotate(-2deg);
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.showcaseCard:hover {
+  transform: rotate(0) translateY(-4px);
+}
+
+.showcaseCard .options {
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.showcaseCard .option {
+  padding: 11px 14px;
+}
+
+.showcaseCard .optionText {
+  font-size: 15px;
+}
+
+.showcaseTag {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  z-index: 1;
+  box-shadow: var(--dr-shadow);
+}
+
+.skeleton {
+  background: var(--dr-surface-2);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeletonOption {
+  height: 64px;
+  border-radius: 16px;
+}
+
+/* Sections below the hero */
+
+.landing {
+  display: grid;
+  gap: 88px;
+  padding-bottom: 16px;
+}
+
+.landingSection {
+  display: grid;
+  gap: 28px;
+}
+
+.landingTitle {
+  margin: 0;
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.landingText {
+  margin: 10px 0 0;
+  color: var(--dr-ink-soft);
+  font-size: 17px;
+}
+
+.sectionIntroCenter {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sectionIntroRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--dr-accent-strong);
+  font-weight: 700;
+}
+
+.moreLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* How it works: 3 cards, each a piece of the product over its step */
+
+.stepGrid {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepCard {
+  composes: card;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px;
+  box-shadow: none;
+}
+
+.stepVisual {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-height: 210px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--dr-surface-2);
+  overflow: hidden;
+}
+
+.stepVisual .option {
+  padding: 9px 12px;
+  border-radius: 12px;
+}
+
+.stepVisual .option[data-hover='true'] {
+  border-color: var(--dr-ink);
+  box-shadow: var(--dr-shadow);
+}
+
+.stepVisual .optionChoice {
+  align-items: center;
+  gap: 10px;
+}
+
+.stepVisual .optionMark {
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+}
+
+.stepVisual .optionText {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.stepVisual .optionMeta {
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.stepVisual .chip {
+  padding: 1px 8px;
+  font-size: 12px;
+}
+
+.stepVisual .optionShare {
+  font-size: 15px;
+}
+
+.fan {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.fanPhoto {
+  width: 27%;
+  max-width: 96px;
+  aspect-ratio: 3 / 4;
+  margin-left: -7%;
+  border: 3px solid var(--dr-surface);
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: var(--dr-shadow);
+  transform: rotate(-7deg);
+}
+
+.fanPhoto:first-child {
+  margin-left: 0;
+}
+
+.fanPhoto:nth-child(even) {
+  transform: rotate(6deg) translateY(8px);
+}
+
+.fanPhoto:nth-child(3) {
+  z-index: 1;
+  transform: translateY(-6px) scale(1.08);
+}
+
+.stepHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stepNumber {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--dr-accent-soft);
+  color: var(--dr-accent-strong);
+  font-family: var(--dr-font-display), sans-serif;
+  font-weight: 800;
+}
+
+.stepTitle {
+  margin: 4px 0 0;
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.stepText {
+  margin: 4px 0 0;
+  color: var(--dr-ink-soft);
+  font-size: 15px;
+}
+
+@media (min-width: 800px) {
+  .stepGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* The voices: a card each, in the voice's color */
+
+.voiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.voiceCard {
+  composes: card;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-top: 4px solid var(--dr-flavor);
+  box-shadow: none;
+}
+
+.voiceName {
+  margin: 0;
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.voiceCard .voiceTagline {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+/* At the card's foot, so that the quotes of a row line up */
+.voiceQuote {
+  margin: auto 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--dr-line);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .voiceGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .voiceGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* The crowd's favorites: a row to swipe on a phone, a grid of 4 on a wide screen */
+
+.gallery {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 78%);
+  gap: 12px;
+  padding-bottom: 6px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.gallery > * {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 900px) {
+  .gallery {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    overflow: visible;
+  }
+}
+
+/* What a player keeps beyond a day */
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  composes: card;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 20px;
+  box-shadow: none;
+}
+
+.featureIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--dr-accent-soft);
+  color: var(--dr-accent-strong);
+}
+
+.featureTitle {
+  margin: 6px 0 0;
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.featureText {
+  margin: 0;
+  color: var(--dr-ink-soft);
+  font-size: 15px;
+}
+
+/* The way in, at the end of the page */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  padding: 48px 24px;
+  border-radius: 28px;
+  background: var(--dr-accent-soft);
+  text-align: center;
+}
+
+.ctaMark {
+  position: absolute;
+  right: -48px;
+  bottom: -72px;
+  color: var(--dr-accent);
+  opacity: 0.16;
+  transform: rotate(-12deg);
+}
+
+.ctaBody {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+.ctaBody .landingText {
+  margin: 0;
+}
+
+.ctaBody .countdown {
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .landing {
+    gap: 120px;
+  }
+
+  .cta {
+    padding: 72px 32px;
+  }
 }
 
 /* The way between a batch's page and the pages of the batches around it */
@@ -1051,6 +1631,49 @@ button.option:hover .optionMark {
   font-size: 24px;
 }
 
+/* The profile photo is its own way to a new one: the photo darkens on hover, and a camera badge marks it */
+.avatarButton {
+  position: relative;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+}
+
+.avatarButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 160ms ease;
+}
+
+.avatarButton:hover::after {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.avatarButton:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.avatarBadge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--dr-bg);
+  border-radius: 999px;
+  background: var(--dr-accent);
+  color: var(--dr-on-accent);
+}
+
 .profileName {
   margin: 0;
   font-family: var(--dr-font-display), sans-serif;
@@ -1160,6 +1783,115 @@ button.option:hover .optionMark {
   gap: 10px;
 }
 
+/* A photo of the viewer's: the row is the way to its page, with its delete button inside the card at the right */
+.myPhoto {
+  position: relative;
+}
+
+.myPhoto .thumbRow {
+  padding-right: 60px;
+}
+
+.myPhotoDelete {
+  composes: iconButton;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  color: var(--dr-ink-soft);
+  transform: translateY(-50%);
+}
+
+.myPhotoDelete:hover {
+  color: var(--dr-accent-strong);
+}
+
+/* Signing out ends the page, apart from its content and quieter than its buttons */
+.accountFoot {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--dr-line);
+}
+
+.signOut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--dr-ink-soft);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.signOut:hover {
+  background: var(--dr-surface-2);
+  color: var(--dr-accent-strong);
+}
+
+/* The uploader's choice of the drafts to keep: a check box per draft, as a choice of several */
+.keepHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.keepHead .sectionTitle {
+  margin-bottom: 4px;
+}
+
+.keepCount {
+  color: var(--dr-ink-soft);
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.keepCount[data-full='true'] {
+  color: var(--dr-accent);
+}
+
+.option[data-kept='true'] {
+  border-color: var(--dr-accent);
+  background: var(--dr-accent-soft);
+}
+
+.option[data-kept='false']:disabled {
+  opacity: 0.45;
+}
+
+.keepMark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--dr-line);
+  border-radius: 7px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+button.option:hover .keepMark {
+  border-color: var(--dr-ink);
+}
+
+.option[data-kept='true'] .keepMark {
+  border-color: var(--dr-accent);
+  background: var(--dr-accent);
+  color: var(--dr-on-accent);
+}
+
+.keepVoice {
+  margin-top: 8px;
+}
+
 /* Dialog and toast */
 
 .dialog {
@@ -1255,6 +1987,12 @@ button.option:hover .optionMark {
   to {
     opacity: 1;
     transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
   }
 }
 

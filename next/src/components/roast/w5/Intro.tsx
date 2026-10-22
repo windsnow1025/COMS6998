@@ -2,9 +2,9 @@ import * as React from 'react';
 import Link from 'next/link';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {FlavorResDto} from '@/client/nest';
-import {useRoast} from './RoastContext';
-import FlavorChip from './FlavorChip';
-import styles from './roast.module.css';
+import {useRoast} from '../RoastContext';
+import FlavorChip from '../FlavorChip';
+import styles from '../roast.module.css';
 
 interface IntroProps {
   // The ways on from the introduction, which the page composes

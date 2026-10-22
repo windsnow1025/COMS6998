@@ -1,21 +1,22 @@
 import * as React from 'react';
 import Link from 'next/link';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {isDone} from '@/lib/roast/PhotoResults';
 import {useRoast} from './RoastContext';
 import {useTodayBatch} from './useTodayBatch';
-import Intro from './Intro';
+import LandingHero from './LandingHero';
 import TodayBatch from './TodayBatch';
 import EarlierPicks from './EarlierPicks';
 import EarlierBatches from './EarlierBatches';
 import styles from './roast.module.css';
 
-// The home of the product: today's batch, under the introduction for a visitor who is not signed in,
+// The home of the product: today's batch, under the landing page's hero for a visitor who is not signed in,
 // the viewer's earlier picks the batch serves again, and the earlier batches
 export default function TodayView() {
-  const { viewer, viewerLoaded, paths } = useRoast();
+  const { viewer, viewerLoaded } = useRoast();
   const load = useTodayBatch();
   const batchRef = React.useRef<HTMLDivElement>(null);
 
@@ -27,10 +28,11 @@ export default function TodayView() {
     <>
       {viewerLoaded && !viewer && (
         <>
-          <Intro
+          <LandingHero
+            corner={<AboutLink />}
             actions={
               <>
-                <div className={styles.introSignIn}>
+                <div className={styles.heroSignIn}>
                   <GoogleSignInButton />
                 </div>
                 <button
@@ -52,22 +54,32 @@ export default function TodayView() {
       )}
       {viewer && (
         <>
-          <h1 className={styles.title}>Today&apos;s batch</h1>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>Today&apos;s batch</h1>
+            <AboutLink />
+          </div>
           {date && (
             <p className={styles.subtitle}>
               {isJudged ? formatCampusDate(date) : 'Tap the funniest caption under each photo.'}
             </p>
           )}
-          <p className={`${styles.muted} ${styles.small} mt-2`}>
-            <Link href={paths.about} className={styles.link}>
-              How Daily Roast works
-            </Link>
-          </p>
         </>
       )}
       <TodayBatch load={load} />
       <EarlierPicks photos={load.batch.data?.judgedBefore} />
       <EarlierBatches batches={load.earlier} />
     </>
+  );
+}
+
+// The way to the landing page, at the right end of the home's first row
+function AboutLink() {
+  const { paths } = useRoast();
+
+  return (
+    <Link href={paths.about} className={styles.aboutLink}>
+      <InfoOutlinedIcon sx={{ fontSize: 18 }} />
+      How it works
+    </Link>
   );
 }

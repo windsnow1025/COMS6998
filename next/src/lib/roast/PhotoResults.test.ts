@@ -1,4 +1,4 @@
-import {buildShareGrid, getNoneShare, getOutcome, getPickShare, getWinners, isDone} from "./PhotoResults";
+import {buildShareGrid, getNoneShare, getOutcome, getPickShare, getWinner, isDone, isTied} from "./PhotoResults";
 import {PhotoResDto} from "@/client/nest";
 
 const photo = (overrides: Partial<PhotoResDto>): PhotoResDto => ({
@@ -29,10 +29,16 @@ describe("photo results", () => {
     expect(getPickShare(photo({voters: 0}), revealed.captions[0])).toBe(0);
   });
 
-  it("names every caption with the most picks a winner", () => {
-    expect(getWinners(photo({})).map(({id}) => id)).toEqual(["a", "b"]);
+  it("names the caption that leads alone the winner, and none at a tie or without a pick", () => {
+    const tied = photo({});
+    expect(getWinner(tied)).toBeUndefined();
+    expect(isTied(tied)).toBe(true);
+    const led = photo({captions: [{id: "a", content: "first", picks: 3}, {id: "b", content: "second", picks: 2}]});
+    expect(getWinner(led)?.id).toBe("a");
+    expect(isTied(led)).toBe(false);
     const unpicked = photo({captions: [{id: "a", content: "first", picks: 0}]});
-    expect(getWinners(unpicked)).toEqual([]);
+    expect(getWinner(unpicked)).toBeUndefined();
+    expect(isTied(unpicked)).toBe(false);
   });
 
   it("reads the viewer's outcome", () => {

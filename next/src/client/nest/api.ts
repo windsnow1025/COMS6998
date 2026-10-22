@@ -229,11 +229,20 @@ export interface ImageResDto {
     'url': string;
     'description': string;
 }
+export interface KeptCaptionsReqDto {
+    'captionIds': Array<string>;
+}
 export interface PhotoCaptionResDto {
     'id': string;
     'content': string;
     'flavor'?: FlavorResDto;
     'picks'?: number;
+}
+export interface PhotoDraftResDto {
+    'id': string;
+    'content': string;
+    'flavor': FlavorResDto;
+    'kept': boolean;
 }
 export interface PhotoResDto {
     'place': string | null;
@@ -245,6 +254,7 @@ export interface PhotoResDto {
     'queuePosition'?: number;
     'createdAt': string;
     'captions': Array<PhotoCaptionResDto>;
+    'drafts'?: Array<PhotoDraftResDto>;
     'revealed': boolean;
     'voters'?: number;
     'nonePicks'?: number;
@@ -2405,6 +2415,49 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @param {string} id 
+         * @param {KeptCaptionsReqDto} keptCaptionsReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerKeepCaptions: async (id: string, keptCaptionsReqDto: KeptCaptionsReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerKeepCaptions', 'id', id)
+            // verify required parameter 'keptCaptionsReqDto' is not null or undefined
+            assertParamExists('imagesControllerKeepCaptions', 'keptCaptionsReqDto', keptCaptionsReqDto)
+            const localVarPath = `/images/{id}/kept`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(keptCaptionsReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2519,6 +2572,43 @@ export const ImagesApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerWriteDrafts: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('imagesControllerWriteDrafts', 'id', id)
+            const localVarPath = `/images/{id}/drafts`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -2594,6 +2684,19 @@ export const ImagesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
+         * @param {KeptCaptionsReqDto} keptCaptionsReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerKeepCaptions(id: string, keptCaptionsReqDto: KeptCaptionsReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerKeepCaptions(id, keptCaptionsReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerKeepCaptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2626,6 +2729,18 @@ export const ImagesApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerWriteCaptions(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerWriteCaptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async imagesControllerWriteDrafts(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.imagesControllerWriteDrafts(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ImagesApi.imagesControllerWriteDrafts']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -2688,6 +2803,16 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
         /**
          * 
          * @param {string} id 
+         * @param {KeptCaptionsReqDto} keptCaptionsReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerKeepCaptions(id: string, keptCaptionsReqDto: KeptCaptionsReqDto, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerKeepCaptions(id, keptCaptionsReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2712,6 +2837,15 @@ export const ImagesApiFactory = function (configuration?: Configuration, basePat
          */
         imagesControllerWriteCaptions(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
             return localVarFp.imagesControllerWriteCaptions(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        imagesControllerWriteDrafts(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PhotoResDto> {
+            return localVarFp.imagesControllerWriteDrafts(id, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2776,6 +2910,17 @@ export class ImagesApi extends BaseAPI {
     /**
      * 
      * @param {string} id 
+     * @param {KeptCaptionsReqDto} keptCaptionsReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerKeepCaptions(id: string, keptCaptionsReqDto: KeptCaptionsReqDto, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerKeepCaptions(id, keptCaptionsReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -2802,6 +2947,16 @@ export class ImagesApi extends BaseAPI {
      */
     public imagesControllerWriteCaptions(id: string, options?: RawAxiosRequestConfig) {
         return ImagesApiFp(this.configuration).imagesControllerWriteCaptions(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public imagesControllerWriteDrafts(id: string, options?: RawAxiosRequestConfig) {
+        return ImagesApiFp(this.configuration).imagesControllerWriteDrafts(id, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

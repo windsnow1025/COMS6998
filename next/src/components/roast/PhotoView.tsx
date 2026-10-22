@@ -2,15 +2,18 @@ import * as React from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import IosShareRoundedIcon from '@mui/icons-material/IosShareRounded';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
-import {getWinners} from '@/lib/roast/PhotoResults';
+import {getWinner} from '@/lib/roast/PhotoResults';
 import {share} from '@/lib/roast/Share';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
 import PhotoCard from './PhotoCard';
+import KeepPicker from './KeepPicker';
+import DeletePhotoDialog from './DeletePhotoDialog';
 import {LoadError, Loading} from './Status';
 import styles from './roast.module.css';
 
@@ -19,7 +22,8 @@ interface PhotoViewProps {
   id: string | undefined;
 }
 
-// One photo on its own page, which is the link that people share
+// One photo on its own page, which is the link that people share. For its uploader, the photo's drafts
+// stay open until a batch serves it: the 3 kept captions can change, and a photo without them gets them here.
 export default function PhotoView({ id }: PhotoViewProps) {
   const { viewer, viewerLoaded, paths, notify } = useRoast();
   const router = useRouter();
@@ -30,8 +34,9 @@ export default function PhotoView({ id }: PhotoViewProps) {
   const { data: photo, error: loadError, reload, setData: setPhoto } = useLoad(key, loadPhoto);
 
   const [isWorking, setIsWorking] = React.useState(false);
+  const [isChoosing, setIsChoosing] = React.useState(false);
   const [error, setError] = React.useState('');
-  const deleteDialogRef = React.useRef<HTMLDialogElement>(null);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
   if (loadError) {
     return <LoadError message={loadError} onRetry={reload} />;
@@ -41,7 +46,7 @@ export default function PhotoView({ id }: PhotoViewProps) {
   }
 
   const handleShare = async () => {
-    const winner = photo.revealed ? getWinners(photo).at(0) : undefined;
+    const winner = photo.revealed ? getWinner(photo) : undefined;
     const result = await share({
       title: 'Daily Roast',
       text: winner ? `“${winner.content}”` : 'Which roast wins this photo?',
@@ -52,11 +57,11 @@ export default function PhotoView({ id }: PhotoViewProps) {
     }
   };
 
-  const handleWriteCaptions = async () => {
+  const handleWriteDrafts = async () => {
     setIsWorking(true);
     setError('');
     try {
-      setPhoto(await roastLogic.writeCaptions(photo.id));
+      setPhoto(await roastLogic.writeDrafts(photo.id));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -64,31 +69,41 @@ export default function PhotoView({ id }: PhotoViewProps) {
     }
   };
 
-  const handleDelete = async () => {
-    setIsWorking(true);
-    setError('');
-    try {
-      await roastLogic.deletePhoto(photo.id);
-      notify('Photo deleted.');
-      await router.push(paths.me);
-    } catch (err) {
-      deleteDialogRef.current?.close();
-      setError((err as Error).message);
-      setIsWorking(false);
-    }
+  const handleKept = (kept: PhotoResDto) => {
+    setPhoto(kept);
+    setIsChoosing(false);
   };
+
+  const hasDrafts = photo.drafts !== undefined;
+  // The drafts are written and none is kept yet
+  const isUnkept = hasDrafts && photo.captions.length === 0;
 
   return (
     <>
-      {photo.captions.length > 0 ? (
+      {isUnkept && (
+        <>
+          <h1 className={`${styles.title} ${styles.photoTitle}`}>Pick your 3</h1>
+          <PhotoImage photo={photo} />
+          <KeepPicker photo={photo} onKept={handleKept} />
+        </>
+      )}
+      {!isUnkept && photo.captions.length > 0 && (
         <>
           <h1 className={`${styles.title} ${styles.photoTitle}`}>
             {photo.revealed ? 'The verdict' : 'Which roast wins?'}
           </h1>
-          <PhotoCard photo={photo} onVoted={setPhoto} />
+          {isChoosing ? (
+            <>
+              <PhotoImage photo={photo} />
+              <KeepPicker photo={photo} onKept={handleKept} onCancel={() => setIsChoosing(false)} />
+            </>
+          ) : (
+            <PhotoCard photo={photo} onVoted={setPhoto} />
+          )}
         </>
-      ) : (
-        <UncaptionedPhoto photo={photo} isWorking={isWorking} onWriteCaptions={handleWriteCaptions} />
+      )}
+      {!hasDrafts && photo.captions.length === 0 && (
+        <UncaptionedPhoto photo={photo} isWorking={isWorking} onWriteDrafts={handleWriteDrafts} />
       )}
 
       {error && <p className={styles.error}>{error}</p>}
@@ -104,7 +119,8 @@ export default function PhotoView({ id }: PhotoViewProps) {
           </>
         )}
         {!photo.batchDate && photo.queuePosition !== undefined && `Number ${photo.queuePosition} in line for a batch.`}
-        {!photo.batchDate && photo.queuePosition === undefined && 'Waiting in line for a batch.'}
+        {!photo.batchDate && photo.queuePosition === undefined && isUnkept && 'In line for a batch once you keep 3.'}
+        {!photo.batchDate && photo.queuePosition === undefined && !isUnkept && 'Waiting in line for a batch.'}
       </p>
 
       <div className={`${styles.actions} mt-3`}>
@@ -112,49 +128,54 @@ export default function PhotoView({ id }: PhotoViewProps) {
           <IosShareRoundedIcon fontSize="small" />
           Share
         </button>
+        {hasDrafts && !isUnkept && !isChoosing && (
+          <button type="button" className={styles.buttonGhost} onClick={() => setIsChoosing(true)}>
+            <EditRoundedIcon fontSize="small" />
+            Change my 3
+          </button>
+        )}
         {photo.viewer.isOwner && (
-          <button type="button" className={styles.buttonGhost} onClick={() => deleteDialogRef.current?.showModal()}>
+          <button type="button" className={styles.buttonGhost} onClick={() => setDeleteId(photo.id)}>
             <DeleteOutlineRoundedIcon fontSize="small" />
             Delete
           </button>
         )}
       </div>
 
-      <dialog ref={deleteDialogRef} className={styles.dialog}>
-        <h2 className={styles.dialogTitle}>Delete this photo?</h2>
-        <p className={styles.muted}>Its captions and votes are deleted with it. This cannot be undone.</p>
-        <div className={`${styles.actions} ${styles.actionsFill} mt-5`}>
-          <button type="button" className={styles.buttonGhost} onClick={() => deleteDialogRef.current?.close()}>
-            Keep it
-          </button>
-          <button type="button" className={styles.button} disabled={isWorking} onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
-      </dialog>
+      <DeletePhotoDialog
+        photoId={deleteId}
+        onClose={() => setDeleteId(null)}
+        onDeleted={() => router.push(paths.me)}
+      />
     </>
+  );
+}
+
+function PhotoImage({ photo }: { photo: PhotoResDto }) {
+  return (
+    <figure className={styles.photo}>
+      {/* The photo is served from object storage, outside the image optimizer */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={photo.url} alt={photo.description} className={styles.photoImage} />
+    </figure>
   );
 }
 
 interface UncaptionedPhotoProps {
   photo: PhotoResDto;
   isWorking: boolean;
-  onWriteCaptions: () => void;
+  onWriteDrafts: () => void;
 }
 
 // A photo whose captions were never written: its uploader left, or the LLM failed, between the two steps
-function UncaptionedPhoto({ photo, isWorking, onWriteCaptions }: UncaptionedPhotoProps) {
+function UncaptionedPhoto({ photo, isWorking, onWriteDrafts }: UncaptionedPhotoProps) {
   return (
     <>
-      <figure className={styles.photo}>
-        {/* The photo is served from object storage, outside the image optimizer */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photo.url} alt={photo.description} className={styles.photoImage} />
-      </figure>
+      <PhotoImage photo={photo} />
       <div className={`${styles.card} ${styles.empty} mt-5`}>
         <p>{photo.viewer.isOwner ? 'The roast of this photo stopped halfway.' : 'This photo has no captions yet.'}</p>
         {photo.viewer.isOwner && (
-          <button type="button" className={styles.button} disabled={isWorking} onClick={onWriteCaptions}>
+          <button type="button" className={styles.button} disabled={isWorking} onClick={onWriteDrafts}>
             {isWorking ? 'Writing the roasts' : 'Write the roasts'}
           </button>
         )}

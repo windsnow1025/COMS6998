@@ -5,7 +5,7 @@ import { DailyBatchItem } from '../batches/daily-batch-item.entity';
 import { toCampusDate } from '../common/utils/campus-date';
 import { FlavorsService } from '../flavors/flavors.service';
 import { User } from '../users/user.entity';
-import { judgePick, MinVotersForVerdict } from '../votes/verdict';
+import { hasVerdict, judgePick } from '../votes/verdict';
 import { VotesService } from '../votes/votes.service';
 import { PhotoResDto, PhotoUploaderResDto } from './dto/photo.res.dto';
 import { Image } from './image.entity';
@@ -70,6 +70,15 @@ export class PhotosService {
       const queueIndex = waitingIds.indexOf(image.id);
       const captionId = picks.get(image.id) ?? null;
       const matched = captionId ? judgePick(tally, captionId) : null;
+      // Ordered by the random caption ids, so that a caption's place says nothing of its flavor
+      const written = image.captions
+        .filter((caption) => caption.flavor)
+        .sort((a, b) => a.id.localeCompare(b.id));
+      // A photo whose captions were written as drafts has drafts that it does not keep
+      const showsDrafts =
+        isOwner(image) &&
+        batchDate === null &&
+        written.some(({ kept }) => !kept);
 
       return {
         id: image.id,
@@ -81,10 +90,8 @@ export class PhotosService {
         ...(isOwner(image) &&
           queueIndex !== -1 && { queuePosition: queueIndex + 1 }),
         createdAt: image.createdAt,
-        // Ordered by the random caption ids, so that a caption's place says nothing of its flavor
-        captions: image.captions
-          .filter((caption) => caption.flavor)
-          .sort((a, b) => a.id.localeCompare(b.id))
+        captions: written
+          .filter(({ kept }) => kept)
           .map((caption) => ({
             id: caption.id,
             content: caption.content,
@@ -93,6 +100,14 @@ export class PhotosService {
               picks: tally?.picks.get(caption.id) ?? 0,
             }),
           })),
+        ...(showsDrafts && {
+          drafts: written.map((caption) => ({
+            id: caption.id,
+            content: caption.content,
+            flavor: this.flavorsService.toFlavorDto(caption.flavor!),
+            kept: caption.kept,
+          })),
+        }),
         revealed,
         ...(revealed && {
           voters: tally?.voters ?? 0,
@@ -108,12 +123,12 @@ export class PhotosService {
     });
   }
 
-  // The photos that no batch has served yet: uploads of users first, older before newer,
+  // The photos with kept captions that no batch has served yet: uploads of users first, older before newer,
   // which is their order in line, then the images without an uploader, which a batch draws by its date.
   async findWaiting(): Promise<WaitingImage[]> {
     const rows = await this.imageRepository
       .createQueryBuilder('image')
-      .innerJoin('image.captions', 'caption')
+      .innerJoin('image.captions', 'caption', 'caption.kept')
       .innerJoin('caption.flavor', 'flavor')
       .leftJoin('image.uploader', 'uploader')
       .leftJoin(DailyBatchItem, 'item', 'item."imageId" = image.id')
@@ -149,9 +164,9 @@ export class PhotosService {
     const topPicks = (image: Image) =>
       Math.max(0, ...(tallies.get(image.id)?.picks.values() ?? []));
     const voters = (image: Image) => tallies.get(image.id)?.voters ?? 0;
-    // A photo without a pick has no winning caption and no place on the list
+    // A photo without a verdict has no winning caption and no place on the list
     return images
-      .filter((image) => topPicks(image) > 0)
+      .filter((image) => hasVerdict(tallies.get(image.id)))
       .sort(
         (a, b) =>
           topPicks(b) - topPicks(a) ||
@@ -160,8 +175,9 @@ export class PhotosService {
       );
   }
 
-  // The photos that an earlier batch served and that have no verdict yet, for the batch of `date` to carry over:
-  // the most voted first, then the earliest served, so that votes gather on a few photos until they decide them.
+  // The photos that an earlier batch served and that have no verdict yet (too few voters, or a tie among the
+  // most picked captions), for the batch of `date` to carry over: the most voted first, then the earliest served,
+  // so that votes gather on a few photos until they decide them.
   // A photo whose latest batch is of `date` or later is being served and is left out.
   async findCarryOver(date: string): Promise<CarriedImage[]> {
     const served = [...(await this.findServings()).values()].filter(
@@ -171,12 +187,12 @@ export class PhotosService {
       served.map(({ image }) => image.id),
     );
     return served
+      .filter(({ image }) => !hasVerdict(tallies.get(image.id)))
       .map(({ image, dates }) => ({
         id: image.id,
         voters: tallies.get(image.id)?.voters ?? 0,
         firstDate: dates[0],
       }))
-      .filter(({ voters }) => voters < MinVotersForVerdict)
       .sort(
         (a, b) =>
           b.voters - a.voters ||

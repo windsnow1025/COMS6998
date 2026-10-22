@@ -69,6 +69,34 @@ export function chooseTopUpImages(
   return [...uploads, ...drawn].slice(0, room);
 }
 
+// The date of the batch a vote was cast in: the photo's latest batch on or before the campus date of the vote.
+// A vote cast before any batch served the photo, through the photo's own page, counts for the photo's first batch.
+// `dates` are the dates of the batches that served the photo, earliest first; for a photo no batch served, it is null.
+export function findVotedBatchDate(
+  dates: string[],
+  votedOn: string,
+): string | null {
+  return dates.filter((date) => date <= votedOn).at(-1) ?? dates.at(0) ?? null;
+}
+
+// The photo a batch shows a viewer as its cover. For a batch the viewer voted in, a photo the viewer voted on
+// in it; otherwise the first photo the batch brought, since a photo carried over leads several batches in a row
+// and so covers only the batch that first served it; for a batch that brought no photo, its first one.
+// `images` are the batch's photos in their order, `firstDates` the date each was first served, and
+// `votedDates` the date of the batch each of the viewer's votes was cast in, by photo.
+export function chooseCover<Photo extends { id: string }>(
+  images: Photo[],
+  firstDates: Map<string, string>,
+  votedDates: Map<string, string>,
+  date: string,
+): Photo | undefined {
+  return (
+    images.find(({ id }) => votedDates.get(id) === date) ??
+    images.find(({ id }) => firstDates.get(id) === date) ??
+    images.at(0)
+  );
+}
+
 // A batch's photos in the order shown to a viewer: those whose results the viewer has yet to see first,
 // as the batch orders them, so that a vote goes to the most voted photo the viewer has not voted on
 export function orderFeed(photos: PhotoResDto[]): PhotoResDto[] {
@@ -129,26 +157,46 @@ export class BatchesService {
     });
   }
 
-  // The batches the user took part in, the latest first: the user voted on a photo of the batch
-  // on the batch's date, or uploaded a photo that the batch served
+  // The batches the user took part in, the latest first: a batch a vote of the user was cast in,
+  // or a batch that served a photo the user uploaded
   async findMine(userId: number): Promise<DailyBatch[]> {
-    const votes = await this.votesService.findByUser(userId);
-    const voteDays = new Set(
-      votes.map(
-        ({ image, createdAt }) => `${toCampusDate(createdAt)}:${image.id}`,
-      ),
-    );
+    const votedDates = new Set((await this.findVotedDates(userId)).values());
     const batches = await this.batchRepository.find({
       relations: { items: { image: { uploader: true } } },
       order: { date: 'DESC' },
     });
-    return batches.filter((batch) =>
-      batch.items.some(
-        ({ image }) =>
-          image.uploader?.id === userId ||
-          voteDays.has(`${batch.date}:${image.id}`),
-      ),
+    return batches.filter(
+      (batch) =>
+        votedDates.has(batch.date) ||
+        batch.items.some(({ image }) => image.uploader?.id === userId),
     );
+  }
+
+  // The date of the batch each of the user's votes was cast in, by photo
+  async findVotedDates(userId: number): Promise<Map<string, string>> {
+    const votes = await this.votesService.findByUser(userId);
+    const batches = await this.batchRepository.find({
+      relations: { items: { image: true } },
+      order: { date: 'ASC' },
+    });
+
+    const servings = new Map<string, string[]>();
+    for (const batch of batches) {
+      for (const { image } of batch.items) {
+        servings.set(image.id, [...(servings.get(image.id) ?? []), batch.date]);
+      }
+    }
+    const votedDates = new Map<string, string>();
+    for (const { image, createdAt } of votes) {
+      const date = findVotedBatchDate(
+        servings.get(image.id) ?? [],
+        toCampusDate(createdAt),
+      );
+      if (date !== null) {
+        votedDates.set(image.id, date);
+      }
+    }
+    return votedDates;
   }
 
   // The dates of the stored batches around the given one, up to today's; null where none exists

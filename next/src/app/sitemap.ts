@@ -43,6 +43,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: `${baseUrl}/w7`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/w7/top`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/w7/about`,
+      lastModified: new Date(),
+    },
+    {
       url: `${baseUrl}/auth/signin`,
       lastModified: new Date(),
     },

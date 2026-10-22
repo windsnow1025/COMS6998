@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import {getOutcome, getWinners} from '@/lib/roast/PhotoResults';
+import {getOutcome, getWinner, isTied} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import styles from './roast.module.css';
@@ -35,12 +35,12 @@ export default function EarlierPicks({ photos }: EarlierPicksProps) {
 function EarlierPick({ photo }: { photo: PhotoResDto }) {
   const { paths } = useRoast();
   const pick = photo.captions.find(({ id }) => id === photo.viewer.captionId);
-  const caption = pick ?? getWinners(photo).at(0) ?? photo.captions.at(0);
+  const caption = pick ?? getWinner(photo) ?? photo.captions.at(0);
   const voters = photo.voters ?? 0;
   const votes = `${voters} ${voters === 1 ? 'vote' : 'votes'}`;
   const status = {
     owner: `Your photo · ${votes} so far`,
-    early: `${votes} so far · verdict pending`,
+    early: isTied(photo) ? `${votes} so far · tied at the top` : `${votes} so far · verdict pending`,
     match: 'Verdict: you picked the crowd favorite',
     miss: 'Verdict: the crowd went another way',
     none: `You picked none · ${votes}`,
