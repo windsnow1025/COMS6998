@@ -1,12 +1,67 @@
-import { PhotoResDto } from '../images/dto/photo.res.dto';
 import {
   chooseBatchImages,
+  chooseCover,
   chooseTopUpImages,
+  findVotedBatchDate,
   MaxBatchSize,
   MaxCarriedImages,
   MinBatchSize,
-  orderFeed,
 } from './batches.service';
+
+describe('findVotedBatchDate', () => {
+  const dates = ['2026-10-05', '2026-10-06', '2026-10-08'];
+
+  it('counts a vote for the batch it was cast in, the latest on or before its date', () => {
+    expect(findVotedBatchDate(dates, '2026-10-06')).toBe('2026-10-06');
+    expect(findVotedBatchDate(dates, '2026-10-07')).toBe('2026-10-06');
+    expect(findVotedBatchDate(dates, '2026-10-20')).toBe('2026-10-08');
+  });
+
+  it("counts a vote cast before every batch of the photo for the photo's first batch", () => {
+    expect(findVotedBatchDate(['2026-10-14'], '2026-10-06')).toBe('2026-10-14');
+  });
+
+  it('counts a vote on a photo no batch served for no batch', () => {
+    expect(findVotedBatchDate([], '2026-10-06')).toBeNull();
+  });
+});
+
+describe('chooseCover', () => {
+  const images = [{ id: 'carried' }, { id: 'new-1' }, { id: 'new-2' }];
+  const firstDates = new Map([
+    ['carried', '2026-10-15'],
+    ['new-1', '2026-10-22'],
+    ['new-2', '2026-10-22'],
+  ]);
+  const noVotes = new Map<string, string>();
+
+  it('covers a batch the viewer voted in with a photo the viewer voted on in it', () => {
+    const votedDates = new Map([
+      ['carried', '2026-10-15'],
+      ['new-2', '2026-10-22'],
+    ]);
+    expect(chooseCover(images, firstDates, votedDates, '2026-10-22')?.id).toBe(
+      'new-2',
+    );
+  });
+
+  it('covers a batch with the first photo it brought, past the photos carried over', () => {
+    expect(chooseCover(images, firstDates, noVotes, '2026-10-22')?.id).toBe(
+      'new-1',
+    );
+  });
+
+  it('covers a batch that brought no photo with its first one', () => {
+    const carriedOnly = new Map(images.map(({ id }) => [id, '2026-10-15']));
+    expect(chooseCover(images, carriedOnly, noVotes, '2026-10-22')?.id).toBe(
+      'carried',
+    );
+  });
+
+  it('covers an empty batch with nothing', () => {
+    expect(chooseCover([], new Map(), noVotes, '2026-10-22')).toBeUndefined();
+  });
+});
 
 describe('chooseBatchImages', () => {
   const date = '2026-10-15';
@@ -114,20 +169,5 @@ describe('chooseTopUpImages', () => {
     expect(chooseTopUpImages(waiting(0, 20), '2026-10-16', 5)).not.toEqual(
       drawn,
     );
-  });
-});
-
-describe('orderFeed', () => {
-  const photo = (id: string, revealed: boolean) =>
-    ({ id, revealed }) as PhotoResDto;
-
-  it('puts the photos not yet revealed to the viewer first, each group as served', () => {
-    const feed = orderFeed([
-      photo('a', true),
-      photo('b', false),
-      photo('c', true),
-      photo('d', false),
-    ]);
-    expect(feed.map(({ id }) => id)).toEqual(['b', 'd', 'a', 'c']);
   });
 });

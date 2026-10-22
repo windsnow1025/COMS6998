@@ -49,6 +49,7 @@ export class StatsService {
           });
     const seenFlavorIds = votedImages
       .flatMap(({ captions }) => captions)
+      .filter(({ kept }) => kept)
       .map(({ flavor }) => flavor?.id);
     const pickedFlavorIds = picks.map(({ caption }) => caption.flavor?.id);
     const count = (ids: (string | undefined)[], flavorId: string) =>

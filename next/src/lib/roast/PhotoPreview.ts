@@ -1,6 +1,6 @@
 import {getBaseUrl} from "@/lib/common/Constants";
 import {getServerNestBaseUrl} from "./ServerApi";
-import {getWinners} from "./PhotoResults";
+import {getWinner} from "./PhotoResults";
 import {createRoastPaths} from "./RoastPaths";
 import {PhotoResDto} from "@/client/nest";
 
@@ -26,7 +26,7 @@ export async function fetchPhotoPreview(base: string, id: string): Promise<Photo
   }
 
   const photo: PhotoResDto = await response.json();
-  const winner = photo.revealed ? getWinners(photo).at(0) : undefined;
+  const winner = photo.revealed ? getWinner(photo) : undefined;
   return {
     id,
     title: winner ? `“${winner.content}”` : "Which roast wins this photo?",

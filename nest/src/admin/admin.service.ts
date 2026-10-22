@@ -106,7 +106,7 @@ export class AdminService {
         .leftJoin('image.captions', 'caption')
         .where('caption.id IS NULL')
         .getCount(),
-      this.captionRepository.count(),
+      this.captionRepository.count({ where: { kept: true } }),
       this.voteRepository.count({ where: { value: VoteValue.Up } }),
       this.voteRepository.count({ where: { value: VoteValue.Down } }),
       this.batchRepository.count(),
@@ -146,6 +146,7 @@ export class AdminService {
       )
       .addSelect('COUNT(*)', 'captions')
       .where(`(caption."createdAt" AT TIME ZONE 'UTC') >= :since`)
+      .andWhere('caption.kept = true')
       .setParameters({ tz: CampusTimeZone, since })
       .groupBy('date')
       .getRawMany<{ date: string; captions: string }>();
@@ -171,7 +172,11 @@ export class AdminService {
 
     const voiceRows = await this.flavorRepository
       .createQueryBuilder('flavor')
-      .leftJoin(Caption, 'caption', 'caption."flavorId" = flavor.id')
+      .leftJoin(
+        Caption,
+        'caption',
+        'caption."flavorId" = flavor.id AND caption.kept = true',
+      )
       .leftJoin(CaptionVote, 'vote', 'vote."captionId" = caption.id')
       .select('flavor.slug', 'slug')
       .addSelect('flavor.name', 'name')
@@ -356,9 +361,13 @@ export class AdminService {
       relations: { batch: true },
     });
 
-    const captions = [...image.captions].sort((a, b) =>
-      a.createdAt < b.createdAt ? -1 : 1,
-    );
+    // The kept captions first, each group oldest first
+    const captions = [...image.captions].sort((a, b) => {
+      if (a.kept !== b.kept) {
+        return a.kept ? -1 : 1;
+      }
+      return a.createdAt < b.createdAt ? -1 : 1;
+    });
     return {
       id: image.id,
       url: image.url,
@@ -372,6 +381,7 @@ export class AdminService {
       captions: captions.map((caption): AdminCaptionResDto => ({
         id: caption.id,
         content: caption.content,
+        kept: caption.kept,
         flavor: caption.flavor
           ? {
               slug: caption.flavor.slug,
@@ -475,6 +485,7 @@ export class AdminService {
     return {
       id: saved.id,
       content: saved.content,
+      kept: saved.kept,
       flavor: saved.flavor
         ? {
             slug: saved.flavor.slug,
@@ -508,6 +519,7 @@ export class AdminService {
       .select('caption."imageId"', 'imageId')
       .addSelect('COUNT(*)', 'captions')
       .where('caption."imageId" IN (:...imageIds)', { imageIds })
+      .andWhere('caption.kept = true')
       .groupBy('caption."imageId"')
       .getRawMany<{ imageId: string; captions: string }>();
     return new Map(rows.map((row) => [row.imageId, Number(row.captions)]));

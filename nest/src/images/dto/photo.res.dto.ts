@@ -15,6 +15,14 @@ export class PhotoCaptionResDto {
   picks?: number;
 }
 
+// A caption in the voice it was written in, among which the uploader keeps the photo's captions
+export class PhotoDraftResDto {
+  id: string;
+  content: string;
+  flavor: FlavorResDto;
+  kept: boolean;
+}
+
 export class PhotoViewerResDto {
   isOwner: boolean;
   hasVoted: boolean;
@@ -40,7 +48,11 @@ export class PhotoResDto {
   // The photo's place in line for a batch; present for the uploader of a waiting photo
   queuePosition?: number;
   createdAt: Date;
+  // The captions the photo's voters see
   captions: PhotoCaptionResDto[];
+  // Every draft of the photo, for its uploader while no batch has served it, so that the kept captions can change;
+  // present for a photo whose captions were written as drafts
+  drafts?: PhotoDraftResDto[];
   // Whether the results are shown: each caption's flavor and picks, the voters, and the none picks
   revealed: boolean;
   voters?: number;

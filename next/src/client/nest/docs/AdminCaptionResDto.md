@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **llmCallId** | **string** |  | [default to undefined]
 **id** | **string** |  | [default to undefined]
 **content** | **string** |  | [default to undefined]
+**kept** | **boolean** |  | [default to undefined]
 **picks** | **number** |  | [default to undefined]
 **downs** | **number** |  | [default to undefined]
 **createdAt** | **string** |  | [default to undefined]
@@ -23,6 +24,7 @@ const instance: AdminCaptionResDto = {
     llmCallId,
     id,
     content,
+    kept,
     picks,
     downs,
     createdAt,

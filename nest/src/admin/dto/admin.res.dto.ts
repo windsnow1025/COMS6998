@@ -7,6 +7,7 @@ export class AdminTotalsResDto {
   photos: number;
   // Photos with no caption: the generation failed or was abandoned after the upload
   photosWithoutCaptions: number;
+  // Captions voters see; an uploader's unkept drafts are left out, here and in every caption count of this file
   captions: number;
   // Up votes: a user picked the caption
   picks: number;
@@ -97,6 +98,8 @@ export class AdminPhotoPageResDto {
 export class AdminCaptionResDto {
   id: string;
   content: string;
+  // Whether voters see the caption; false for a draft its uploader did not keep
+  kept: boolean;
   @ApiProperty({ type: FlavorResDto, nullable: true })
   flavor: FlavorResDto | null;
   picks: number;

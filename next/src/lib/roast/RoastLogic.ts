@@ -89,6 +89,22 @@ export default class RoastLogic {
     }
   }
 
+  async writeDrafts(id: string): Promise<PhotoResDto> {
+    try {
+      return await this.roastClient.writeDrafts(id);
+    } catch (error) {
+      throw toRoastError(error, "The roast failed. Try again.");
+    }
+  }
+
+  async keepCaptions(id: string, captionIds: string[]): Promise<PhotoResDto> {
+    try {
+      return await this.roastClient.keepCaptions(id, captionIds);
+    } catch (error) {
+      throw toRoastError(error, "Your 3 were not saved. Try again.");
+    }
+  }
+
   async vote(id: string, captionId: string | null): Promise<PhotoResDto> {
     try {
       return await this.roastClient.vote(id, captionId);

@@ -23,6 +23,7 @@ class AdminCaptionResDto:
         llm_call_id (None | str):
         id (str):
         content (str):
+        kept (bool):
         picks (float):
         downs (float):
         created_at (datetime.datetime):
@@ -32,6 +33,7 @@ class AdminCaptionResDto:
     llm_call_id: None | str
     id: str
     content: str
+    kept: bool
     picks: float
     downs: float
     created_at: datetime.datetime
@@ -47,6 +49,8 @@ class AdminCaptionResDto:
 
         content = self.content
 
+        kept = self.kept
+
         picks = self.picks
 
         downs = self.downs
@@ -61,6 +65,7 @@ class AdminCaptionResDto:
                 "llmCallId": llm_call_id,
                 "id": id,
                 "content": content,
+                "kept": kept,
                 "picks": picks,
                 "downs": downs,
                 "createdAt": created_at,
@@ -87,6 +92,8 @@ class AdminCaptionResDto:
 
         content = d.pop("content")
 
+        kept = d.pop("kept")
+
         picks = d.pop("picks")
 
         downs = d.pop("downs")
@@ -98,6 +105,7 @@ class AdminCaptionResDto:
             llm_call_id=llm_call_id,
             id=id,
             content=content,
+            kept=kept,
             picks=picks,
             downs=downs,
             created_at=created_at,
