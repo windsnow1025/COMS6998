@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
   Req,
   UploadedFile,
@@ -25,6 +26,7 @@ import { OptionalAuthGuard } from '../common/guards/optional-auth.guard';
 import { addDays, toCampusDate } from '../common/utils/campus-date';
 import { VoteReqDto } from '../votes/dto/vote.req.dto';
 import {
+  KeptCaptionsReqDto,
   MaxPlaceLength,
   PhotoCreateReqDto,
   TopPhotosReqDto,
@@ -114,6 +116,34 @@ export class ImagesController {
       req.user,
       id,
       req.headers.authorization!,
+    );
+    return await this.toPhotoDto(image, req.user.id);
+  }
+
+  // A draft in every voice, of which the uploader keeps 3 as the photo's captions
+  @Post(':id/drafts')
+  async writeDrafts(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<PhotoResDto> {
+    const image = await this.imagesService.writeDrafts(
+      req.user,
+      id,
+      req.headers.authorization!,
+    );
+    return await this.toPhotoDto(image, req.user.id);
+  }
+
+  @Put(':id/kept')
+  async keepCaptions(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() keptCaptionsReqDto: KeptCaptionsReqDto,
+  ): Promise<PhotoResDto> {
+    const image = await this.imagesService.keepCaptions(
+      req.user,
+      id,
+      keptCaptionsReqDto.captionIds,
     );
     return await this.toPhotoDto(image, req.user.id);
   }

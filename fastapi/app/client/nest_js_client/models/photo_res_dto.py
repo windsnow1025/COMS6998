@@ -12,6 +12,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.photo_caption_res_dto import PhotoCaptionResDto
+    from ..models.photo_draft_res_dto import PhotoDraftResDto
     from ..models.photo_uploader_res_dto import PhotoUploaderResDto
     from ..models.photo_viewer_res_dto import PhotoViewerResDto
 
@@ -34,6 +35,7 @@ class PhotoResDto:
         revealed (bool):
         viewer (PhotoViewerResDto):
         queue_position (float | Unset):
+        drafts (list[PhotoDraftResDto] | Unset):
         voters (float | Unset):
         none_picks (float | Unset):
     """
@@ -49,6 +51,7 @@ class PhotoResDto:
     revealed: bool
     viewer: PhotoViewerResDto
     queue_position: float | Unset = UNSET
+    drafts: list[PhotoDraftResDto] | Unset = UNSET
     voters: float | Unset = UNSET
     none_picks: float | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -81,6 +84,13 @@ class PhotoResDto:
 
         queue_position = self.queue_position
 
+        drafts: list[dict[str, Any]] | Unset = UNSET
+        if not isinstance(self.drafts, Unset):
+            drafts = []
+            for drafts_item_data in self.drafts:
+                drafts_item = drafts_item_data.to_dict()
+                drafts.append(drafts_item)
+
         voters = self.voters
 
         none_picks = self.none_picks
@@ -103,6 +113,8 @@ class PhotoResDto:
         )
         if queue_position is not UNSET:
             field_dict["queuePosition"] = queue_position
+        if drafts is not UNSET:
+            field_dict["drafts"] = drafts
         if voters is not UNSET:
             field_dict["voters"] = voters
         if none_picks is not UNSET:
@@ -113,6 +125,7 @@ class PhotoResDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.photo_caption_res_dto import PhotoCaptionResDto
+        from ..models.photo_draft_res_dto import PhotoDraftResDto
         from ..models.photo_uploader_res_dto import PhotoUploaderResDto
         from ..models.photo_viewer_res_dto import PhotoViewerResDto
 
@@ -155,6 +168,15 @@ class PhotoResDto:
 
         queue_position = d.pop("queuePosition", UNSET)
 
+        _drafts = d.pop("drafts", UNSET)
+        drafts: list[PhotoDraftResDto] | Unset = UNSET
+        if _drafts is not UNSET:
+            drafts = []
+            for drafts_item_data in _drafts:
+                drafts_item = PhotoDraftResDto.from_dict(drafts_item_data)
+
+                drafts.append(drafts_item)
+
         voters = d.pop("voters", UNSET)
 
         none_picks = d.pop("nonePicks", UNSET)
@@ -171,6 +193,7 @@ class PhotoResDto:
             revealed=revealed,
             viewer=viewer,
             queue_position=queue_position,
+            drafts=drafts,
             voters=voters,
             none_picks=none_picks,
         )

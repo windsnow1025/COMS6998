@@ -5,6 +5,7 @@ import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {useRoast} from '../RoastContext';
 import {useTodayBatch} from '../useTodayBatch';
 import TodayBatch from '../TodayBatch';
+import BatchFeed from './BatchFeed';
 import styles from '../roast.module.css';
 
 // The home of the product as Week 4 delivered it: a title, today's batch, and the way to the previous batch's verdicts
@@ -29,7 +30,7 @@ export default function TodayView() {
           {load.batch.data && <p className={styles.subtitle}>{formatCampusDate(load.batch.data.date)}</p>}
         </>
       )}
-      <TodayBatch load={load} />
+      <TodayBatch load={load} feed={BatchFeed} />
       {previous && (
         <Link href={paths.batch(previous.date)} className={`${styles.notice} mt-7`}>
           <span className={styles.noticeText}>

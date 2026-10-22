@@ -36,7 +36,9 @@ from .image_res_dto import ImageResDto
 from .images_controller_create_body import ImagesControllerCreateBody
 from .images_controller_create_seed_body import ImagesControllerCreateSeedBody
 from .images_controller_find_top_range import ImagesControllerFindTopRange
+from .kept_captions_req_dto import KeptCaptionsReqDto
 from .photo_caption_res_dto import PhotoCaptionResDto
+from .photo_draft_res_dto import PhotoDraftResDto
 from .photo_res_dto import PhotoResDto
 from .photo_uploader_res_dto import PhotoUploaderResDto
 from .photo_viewer_res_dto import PhotoViewerResDto
@@ -94,7 +96,9 @@ __all__ = (
     "ImagesControllerCreateBody",
     "ImagesControllerCreateSeedBody",
     "ImagesControllerFindTopRange",
+    "KeptCaptionsReqDto",
     "PhotoCaptionResDto",
+    "PhotoDraftResDto",
     "PhotoResDto",
     "PhotoUploaderResDto",
     "PhotoViewerResDto",

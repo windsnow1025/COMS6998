@@ -4,7 +4,6 @@ import Link from 'next/link';
 import {PhotoPreview} from '@/lib/roast/PhotoPreview';
 import {createRoastPaths} from '@/lib/roast/RoastPaths';
 import RoastShell from './RoastShell';
-import PhotoView from './PhotoView';
 import styles from './roast.module.css';
 
 interface PhotoPageProps {
@@ -12,15 +11,19 @@ interface PhotoPageProps {
   base: string;
   // The icon of the product's mark in the header
   brandMark: React.ReactNode;
+  // The viewer's avatar in the header, the week's `AccountLink` or `AccountMenu`
+  account: React.ReactNode;
   // Null when no photo has the route's id, which shows the way back to today's batch
   preview: PhotoPreview | null;
+  // The week's view of the photo, which the page composes; shown while a photo has the route's id
+  children: React.ReactNode;
 }
 
 // A photo's page: the tags a link preview reads, and the photo with its captions
-export default function PhotoPage({ base, brandMark, preview }: PhotoPageProps) {
+export default function PhotoPage({ base, brandMark, account, preview, children }: PhotoPageProps) {
   if (!preview) {
     return (
-      <RoastShell base={base} brandMark={brandMark} active={null}>
+      <RoastShell base={base} brandMark={brandMark} account={account} active={null}>
         <Head>
           <title>Photo not found | Daily Roast</title>
         </Head>
@@ -36,7 +39,7 @@ export default function PhotoPage({ base, brandMark, preview }: PhotoPageProps) 
   }
 
   return (
-    <RoastShell base={base} brandMark={brandMark} active={null}>
+    <RoastShell base={base} brandMark={brandMark} account={account} active={null}>
       <Head>
         <title>{`${preview.title} | Daily Roast`}</title>
         <meta name="description" content={preview.description} />
@@ -48,7 +51,7 @@ export default function PhotoPage({ base, brandMark, preview }: PhotoPageProps) 
         <meta property="og:url" content={preview.pageUrl} />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
-      <PhotoView id={preview.id} />
+      {children}
     </RoastShell>
   );
 }

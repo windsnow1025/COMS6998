@@ -1,17 +1,19 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {useRoast} from './RoastContext';
+import {BatchResDto} from '@/client/nest';
 import {TodayBatchLoad} from './useTodayBatch';
-import BatchFeed from './BatchFeed';
 import {LoadError, Loading} from './Status';
 import styles from './roast.module.css';
 
 interface TodayBatchProps {
   load: TodayBatchLoad;
+  // The feed of the week the page belongs to
+  feed: React.ComponentType<{ batch: BatchResDto }>;
 }
 
 // Today's batch as a feed
-export default function TodayBatch({ load: { key, batch } }: TodayBatchProps) {
+export default function TodayBatch({ load: { key, batch }, feed: Feed }: TodayBatchProps) {
   const { paths } = useRoast();
 
   return (
@@ -31,7 +33,7 @@ export default function TodayBatch({ load: { key, batch } }: TodayBatchProps) {
           </Link>
         </div>
       )}
-      {batch.data && batch.data.photos.length > 0 && <BatchFeed key={key} batch={batch.data} />}
+      {batch.data && batch.data.photos.length > 0 && <Feed key={key} batch={batch.data} />}
     </div>
   );
 }

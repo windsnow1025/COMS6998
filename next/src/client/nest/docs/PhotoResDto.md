@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **queuePosition** | **number** |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [default to undefined]
 **captions** | [**Array&lt;PhotoCaptionResDto&gt;**](PhotoCaptionResDto.md) |  | [default to undefined]
+**drafts** | [**Array&lt;PhotoDraftResDto&gt;**](PhotoDraftResDto.md) |  | [optional] [default to undefined]
 **revealed** | **boolean** |  | [default to undefined]
 **voters** | **number** |  | [optional] [default to undefined]
 **nonePicks** | **number** |  | [optional] [default to undefined]
@@ -34,6 +35,7 @@ const instance: PhotoResDto = {
     queuePosition,
     createdAt,
     captions,
+    drafts,
     revealed,
     voters,
     nonePicks,

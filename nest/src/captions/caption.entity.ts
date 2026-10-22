@@ -36,4 +36,9 @@ export class Caption extends BaseEntity {
   @ManyToOne(() => LlmCall, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn()
   llmCall: LlmCall | null;
+
+  // Whether voters see the caption. A user's upload gets a draft in every voice, and the uploader keeps 3 of them;
+  // every other caption is kept as it is written.
+  @Column({ default: true })
+  kept: boolean;
 }

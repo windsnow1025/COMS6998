@@ -44,7 +44,9 @@ docs/FlavorStatResDto.md
 docs/FlavorsApi.md
 docs/ImageResDto.md
 docs/ImagesApi.md
+docs/KeptCaptionsReqDto.md
 docs/PhotoCaptionResDto.md
+docs/PhotoDraftResDto.md
 docs/PhotoResDto.md
 docs/PhotoUploaderResDto.md
 docs/PhotoViewerResDto.md

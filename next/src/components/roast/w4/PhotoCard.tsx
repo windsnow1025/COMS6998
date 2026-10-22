@@ -1,0 +1,135 @@
+import * as React from 'react';
+import {useRouter} from 'next/router';
+import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
+import RoastLogic from '@/lib/roast/RoastLogic';
+import {RoastError} from '@/lib/roast/RoastError';
+import {formatPercent, getNoneShare, getOutcome, getWinner, isTied} from '@/lib/roast/PhotoResults';
+import {PhotoResDto} from '@/client/nest';
+import {useRoast} from '../RoastContext';
+import RevealedOption from './RevealedOption';
+import styles from '../roast.module.css';
+
+const Unauthorized = 401;
+const Conflict = 409;
+
+interface PhotoCardProps {
+  photo: PhotoResDto;
+  // Receives the photo as it stands after the viewer's vote
+  onVoted: (photo: PhotoResDto) => void;
+}
+
+// A photo with its captions as Week 4 delivered it: options to pick from while its results are hidden, with
+// "None of these" as a link under them, and the results once revealed.
+export default function PhotoCard({ photo, onVoted }: PhotoCardProps) {
+  const { viewer, paths } = useRoast();
+  const router = useRouter();
+  const roastLogic = React.useMemo(() => new RoastLogic(), []);
+
+  const [isVoting, setIsVoting] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const vote = async (captionId: string | null) => {
+    if (!viewer) {
+      await router.push(paths.signIn(router.asPath));
+      return;
+    }
+
+    setIsVoting(true);
+    setError('');
+    try {
+      onVoted(await roastLogic.vote(photo.id, captionId));
+    } catch (err) {
+      const status = err instanceof RoastError ? err.status : undefined;
+      if (status === Unauthorized) {
+        await router.push(paths.signIn(router.asPath));
+      } else if (status === Conflict) {
+        // The vote already stands, cast in another tab or on another device
+        onVoted(await roastLogic.fetchPhoto(photo.id));
+      } else {
+        setError((err as Error).message);
+      }
+    } finally {
+      setIsVoting(false);
+    }
+  };
+
+  const winnerId = getWinner(photo)?.id;
+
+  return (
+    <article>
+      <figure className={styles.photo}>
+        {/* The photo is served from object storage, outside the image optimizer */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={photo.url} alt={photo.description} className={styles.photoImage} />
+        <figcaption className={styles.photoMeta}>
+          {photo.place && (
+            <span className={styles.pill}>
+              <PlaceRoundedIcon sx={{ fontSize: 16 }} />
+              {photo.place}
+            </span>
+          )}
+          {photo.uploader && (
+            <span className={styles.pill}>
+              {photo.viewer.isOwner ? 'Your photo' : `by ${photo.uploader.name}`}
+            </span>
+          )}
+        </figcaption>
+      </figure>
+
+      <ol className={styles.options}>
+        {photo.captions.map((caption) => (
+          <li key={caption.id}>
+            {photo.revealed ? (
+              <RevealedOption photo={photo} caption={caption} isWinner={caption.id === winnerId} />
+            ) : (
+              <button type="button" className={styles.option} disabled={isVoting} onClick={() => vote(caption.id)}>
+                <div className={`${styles.optionBody} ${styles.optionChoice}`}>
+                  <span className={styles.optionMark} aria-hidden="true" />
+                  <div className={styles.optionText}>{caption.content}</div>
+                </div>
+              </button>
+            )}
+          </li>
+        ))}
+      </ol>
+
+      {!photo.revealed && (
+        <div className={styles.noneRow}>
+          <button type="button" className={styles.linkButton} disabled={isVoting} onClick={() => vote(null)}>
+            None of these
+          </button>
+        </div>
+      )}
+      {error && <p className={styles.error}>{error}</p>}
+      {photo.revealed && <Outcome photo={photo} />}
+    </article>
+  );
+}
+
+function Outcome({ photo }: { photo: PhotoResDto }) {
+  const voters = photo.voters ?? 0;
+  const votes = `${voters} ${voters === 1 ? 'vote' : 'votes'}`;
+  const noneShare = getNoneShare(photo);
+  const none = noneShare > 0 ? ` ${formatPercent(noneShare)} picked none.` : '';
+  // A tie at the top is never broken: the photo goes back into a batch until a vote breaks it
+  const tie = isTied(photo) ? ' The top captions are tied.' : '';
+
+  if (!photo.viewer.isOwner && !photo.viewer.hasVoted) {
+    return <p className={styles.outcome}>{votes}.{tie}{none}</p>;
+  }
+
+  const outcome = getOutcome(photo);
+  const text = {
+    owner: `Your photo. ${votes} so far.${tie}${none}`,
+    match: `You picked the crowd favorite. ${votes}.${none}`,
+    miss: `Hot take. The crowd went another way. ${votes}.${none}`,
+    early: isTied(photo)
+      ? `${votes} so far, tied at the top. The photo goes back into a batch until a vote breaks the tie.`
+      : `${votes} so far. Too few for a verdict yet.`,
+    none: voters === 1
+      ? 'None for you. You are the first to vote.'
+      : `None for you. ${formatPercent(noneShare)} of the ${voters} voters said the same.`,
+  }[outcome];
+
+  return <p className={styles.outcome} data-tone={outcome}>{text}</p>;
+}

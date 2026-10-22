@@ -1,12 +1,9 @@
 import * as React from 'react';
-import Link from 'next/link';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {TopRange} from '@/lib/roast/RoastClient';
-import {formatPercent, getPickShare, getWinners} from '@/lib/roast/PhotoResults';
-import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
-import FlavorChip from './FlavorChip';
+import TopTile from './TopTile';
 import {LoadError, Loading} from './Status';
 import styles from './roast.module.css';
 
@@ -82,32 +79,5 @@ export default function TopView() {
         </>
       )}
     </>
-  );
-}
-
-// A photo of the list: its batch has closed, so its results show, and a caption of it has a pick
-function TopTile({ photo, rank }: { photo: PhotoResDto; rank: number }) {
-  const { paths } = useRoast();
-  const winner = getWinners(photo).at(0);
-  if (!winner) {
-    throw new Error('A photo of the top list has no winning caption');
-  }
-
-  return (
-    <Link href={paths.photo(photo.id)} className={styles.tile}>
-      {/* The photo is served from object storage, outside the image optimizer */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photo.url} alt={photo.description} className={styles.photoImage} loading="lazy" />
-      <span className={styles.tileRank}>{rank}</span>
-      <div className={styles.tileShade}>
-        <p className={styles.tileCaption}>{winner.content}</p>
-        <div className={styles.tileMeta}>
-          {winner.flavor && <FlavorChip flavor={winner.flavor} />}
-          <span>
-            {formatPercent(getPickShare(photo, winner))} of {photo.voters} votes
-          </span>
-        </div>
-      </div>
-    </Link>
   );
 }

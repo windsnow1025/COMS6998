@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Link from 'next/link';
-import {getOutcome, getWinners} from '@/lib/roast/PhotoResults';
+import {getWinner} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
+import {describeStanding} from './PickStanding';
 import styles from './roast.module.css';
 
 interface EarlierPicksProps {
@@ -35,16 +36,7 @@ export default function EarlierPicks({ photos }: EarlierPicksProps) {
 function EarlierPick({ photo }: { photo: PhotoResDto }) {
   const { paths } = useRoast();
   const pick = photo.captions.find(({ id }) => id === photo.viewer.captionId);
-  const caption = pick ?? getWinners(photo).at(0) ?? photo.captions.at(0);
-  const voters = photo.voters ?? 0;
-  const votes = `${voters} ${voters === 1 ? 'vote' : 'votes'}`;
-  const status = {
-    owner: `Your photo · ${votes} so far`,
-    early: `${votes} so far · verdict pending`,
-    match: 'Verdict: you picked the crowd favorite',
-    miss: 'Verdict: the crowd went another way',
-    none: `You picked none · ${votes}`,
-  }[getOutcome(photo)];
+  const caption = pick ?? getWinner(photo) ?? photo.captions.at(0);
 
   return (
     <Link href={paths.photo(photo.id)} className={styles.thumbRow}>
@@ -53,7 +45,7 @@ function EarlierPick({ photo }: { photo: PhotoResDto }) {
       <img src={photo.url} alt={photo.description} className={styles.thumb} loading="lazy" />
       <div className={styles.thumbBody}>
         <p className={styles.thumbCaption}>{caption?.content}</p>
-        <div className={`${styles.muted} ${styles.small}`}>{status}</div>
+        <div className={`${styles.muted} ${styles.small}`}>{describeStanding(photo)}</div>
       </div>
     </Link>
   );

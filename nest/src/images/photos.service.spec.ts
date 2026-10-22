@@ -12,7 +12,8 @@ const yesterday = addDays(today, -1);
 const twoDaysAgo = addDays(today, -2);
 const flavor = { slug: 'deadpan', name: 'Deadpan', tagline: 'Dry.' };
 
-function image(id: string, captionIds: string[]): Image {
+// `keptIds` are the captions the photo keeps; all of them unless given
+function image(id: string, captionIds: string[], keptIds = captionIds): Image {
   return {
     id,
     url: `https://example.test/${id}.jpg`,
@@ -24,6 +25,7 @@ function image(id: string, captionIds: string[]): Image {
       id: captionId,
       content: captionId,
       flavor,
+      kept: keptIds.includes(captionId),
     })),
     createdAt: new Date(),
   } as unknown as Image;
@@ -131,27 +133,62 @@ describe('PhotosService', () => {
       expect(dto.batchDate).toBe(today);
       expect(dto.revealed).toBe(false);
     });
+
+    it('shows the kept captions to every viewer and the drafts to the uploader until a batch serves the photo', async () => {
+      const drafted = {
+        ...image('drafted', ['a', 'b', 'c', 'd', 'e'], ['b', 'c', 'e']),
+        uploader: { id: 1 },
+      } as unknown as Image;
+      const waiting = createService({ served: [], tallies, picks: new Map() });
+      jest.spyOn(waiting, 'findWaiting').mockResolvedValue([]);
+
+      const [own] = await waiting.toPhotoDtos([drafted], 1);
+      expect(own.captions.map(({ id }) => id)).toEqual(['b', 'c', 'e']);
+      expect(own.drafts?.map(({ id, kept }) => [id, kept])).toEqual([
+        ['a', false],
+        ['b', true],
+        ['c', true],
+        ['d', false],
+        ['e', true],
+      ]);
+
+      const [other] = await waiting.toPhotoDtos([drafted], 2);
+      expect(other.captions.map(({ id }) => id)).toEqual(['b', 'c', 'e']);
+      expect(other.drafts).toBeUndefined();
+
+      const served = createService({
+        served: [{ image: drafted, date: today }],
+        tallies,
+        picks: new Map(),
+      });
+      const [locked] = await served.toPhotoDtos([drafted], 1);
+      expect(locked.drafts).toBeUndefined();
+    });
   });
 
   describe('findTop', () => {
-    it('lists the photos with a pick, the most picked first', async () => {
+    it('lists the photos with a verdict, the most picked first', async () => {
       const most = image('most', ['a', 'b']);
-      const none = image('none', ['c', 'd']);
-      const one = image('one', ['e', 'f']);
+      const lead = image('lead', ['c', 'd']);
+      const none = image('none', ['e', 'f']);
+      const one = image('one', ['g', 'h']);
+      const tied = image('tied', ['i', 'j']);
       const service = createService({
-        served: [most, none, one].map((value) => ({
+        served: [most, lead, none, one, tied].map((value) => ({
           image: value,
           date: yesterday,
         })),
         tallies: new Map([
           ['most', tally({ a: 3 }, 3)],
+          ['lead', tally({ c: 2, d: 1 }, 3)],
           ['none', tally({}, 2)],
-          ['one', tally({ e: 1 }, 1)],
+          ['one', tally({ g: 1 }, 1)],
+          ['tied', tally({ i: 2, j: 2 }, 4)],
         ]),
         picks: new Map(),
       });
       const top = await service.findTop(null);
-      expect(top.map(({ id }) => id)).toEqual(['most', 'one']);
+      expect(top.map(({ id }) => id)).toEqual(['most', 'lead']);
     });
 
     it('lists a photo once, by its latest batch, and not while a batch of today serves it', async () => {
@@ -187,6 +224,7 @@ describe('PhotosService', () => {
           { image: image('later', ['a']), date: yesterday },
           { image: image('earlier', ['b']), date: twoDaysAgo },
           { image: image('decided', ['c']), date: yesterday },
+          { image: image('tied', ['g', 'h']), date: yesterday },
           { image: image('unvoted', ['d']), date: yesterday },
           { image: image('serving', ['e']), date: today },
           { image: image('carried', ['f']), date: yesterday },
@@ -196,17 +234,19 @@ describe('PhotosService', () => {
           ['later', tally({ a: 1 }, 1)],
           ['earlier', tally({ b: 1 }, 1)],
           ['decided', tally({ c: 2 }, 2)],
+          ['tied', tally({ g: 1, h: 1 }, 2)],
           ['carried', tally({ f: 1 }, 1)],
         ]),
         picks: new Map(),
       });
       const carried = await service.findCarryOver(today);
       expect(carried.map(({ id }) => id)).toEqual([
+        'tied',
         'earlier',
         'later',
         'unvoted',
       ]);
-      expect(carried[0]).toEqual({
+      expect(carried[1]).toEqual({
         id: 'earlier',
         voters: 1,
         firstDate: twoDaysAgo,

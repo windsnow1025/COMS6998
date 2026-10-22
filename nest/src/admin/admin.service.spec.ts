@@ -1,24 +1,27 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { addDays, toCampusDate } from '../common/utils/campus-date';
 import { Caption } from '../captions/caption.entity';
+import { Image } from '../images/image.entity';
 import { AdminService, buildDays, escapeLike } from './admin.service';
 import { AdminDayResDto } from './dto/admin.res.dto';
 
 const today = toCampusDate(new Date());
 
 function createService(stubs: {
+  imageRepository?: object;
   captionRepository?: object;
   voteRepository?: object;
+  itemRepository?: object;
 }): AdminService {
   return new AdminService(
     {} as never,
-    {} as never,
+    (stubs.imageRepository ?? {}) as never,
     (stubs.captionRepository ?? {}) as never,
     (stubs.voteRepository ?? {}) as never,
     {} as never,
     {} as never,
     {} as never,
-    {} as never,
+    (stubs.itemRepository ?? {}) as never,
     {} as never,
     {} as never,
   );
@@ -71,6 +74,7 @@ describe('updateCaption', () => {
   const caption = {
     id: 'c1',
     content: 'Old text',
+    kept: true,
     flavor: { slug: 'deadpan', name: 'Deadpan', tagline: 'Dry.' },
     llmCall: { id: 'call1' },
     createdAt: new Date(),
@@ -89,6 +93,7 @@ describe('updateCaption', () => {
     expect(updated).toMatchObject({
       id: 'c1',
       content: 'New text',
+      kept: true,
       flavor: { slug: 'deadpan' },
       picks: 2,
       downs: 2,
@@ -110,6 +115,47 @@ describe('updateCaption', () => {
     await expect(service.updateCaption('c1', 'New text')).rejects.toThrow(
       NotFoundException,
     );
+  });
+});
+
+describe('findPhoto', () => {
+  it('lists the kept captions first, each with its flag', async () => {
+    const image = {
+      id: 'i1',
+      url: 'https://example.test/i1.jpg',
+      description: 'A photo',
+      place: null,
+      uploader: null,
+      createdAt: new Date(),
+      captions: [
+        {
+          id: 'c1',
+          content: 'Dropped',
+          kept: false,
+          flavor: null,
+          llmCall: null,
+          createdAt: new Date(1),
+        },
+        {
+          id: 'c2',
+          content: 'Kept',
+          kept: true,
+          flavor: null,
+          llmCall: null,
+          createdAt: new Date(2),
+        },
+      ],
+    } as unknown as Image;
+    const service = createService({
+      imageRepository: { findOne: () => Promise.resolve(image) },
+      voteRepository: { find: () => Promise.resolve([]) },
+      itemRepository: { find: () => Promise.resolve([]) },
+    });
+    const photo = await service.findPhoto('i1');
+    expect(photo.captions.map(({ id, kept }) => ({ id, kept }))).toEqual([
+      { id: 'c2', kept: true },
+      { id: 'c1', kept: false },
+    ]);
   });
 });
 

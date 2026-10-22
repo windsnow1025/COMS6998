@@ -1,18 +1,22 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
 import UserLogic from '@/lib/common/user/UserLogic';
 import FileLogic from '@/lib/common/file/FileLogic';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {preparePhoto} from '@/lib/roast/PhotoUpload';
-import {formatPercent, getWinners} from '@/lib/roast/PhotoResults';
+import {formatPercent, getWinner} from '@/lib/roast/PhotoResults';
 import {PhotoResDto, StatsResDto, UserResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
 import {LoadError, Loading} from './Status';
 import ViewerAvatar from './ViewerAvatar';
+import DeletePhotoDialog from './DeletePhotoDialog';
 import styles from './roast.module.css';
 
 interface MeViewProps {
@@ -31,6 +35,7 @@ export default function MeView({ batchesSection }: MeViewProps) {
   const stats = useLoad(key, loadStats);
   const loadPhotos = React.useCallback(() => roastLogic.fetchMyPhotos(), [roastLogic]);
   const photos = useLoad(key, loadPhotos);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
   if (!viewerLoaded) {
     return <Loading />;
@@ -76,16 +81,27 @@ export default function MeView({ batchesSection }: MeViewProps) {
       {photos.data && photos.data.length > 0 && (
         <div className={styles.list}>
           {photos.data.map((photo) => (
-            <MyPhoto key={photo.id} photo={photo} />
+            <MyPhoto key={photo.id} photo={photo} onDelete={() => setDeleteId(photo.id)} />
           ))}
         </div>
       )}
 
-      <div className={`${styles.actions} mt-8`}>
-        <button type="button" className={styles.buttonGhost} onClick={handleSignOut}>
+      <div className={styles.accountFoot}>
+        <button type="button" className={styles.signOut} onClick={handleSignOut}>
+          <LogoutRoundedIcon sx={{ fontSize: 18 }} />
           Sign out
         </button>
       </div>
+
+      <DeletePhotoDialog
+        photoId={deleteId}
+        onClose={() => setDeleteId(null)}
+        onDeleted={() => {
+          setDeleteId(null);
+          photos.reload();
+          stats.reload();
+        }}
+      />
     </>
   );
 }
@@ -139,22 +155,18 @@ function Profile({ user }: { user: UserResDto }) {
   return (
     <section>
       <div className={styles.profile}>
-        <ViewerAvatar user={user} className={styles.profileAvatar} />
-        <div>
-          <h1 className={styles.profileName}>{name}</h1>
-          <div className={`${styles.muted} ${styles.small}`}>{user.email}</div>
-        </div>
-      </div>
-
-      <div className={`${styles.actions} mt-3`}>
-        <button type="button" className={styles.linkButton} disabled={isSaving} onClick={() => fileInputRef.current?.click()}>
-          Change photo
+        <button
+          type="button"
+          className={styles.avatarButton}
+          aria-label="Change your photo"
+          disabled={isSaving}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <ViewerAvatar user={user} className={styles.profileAvatar} />
+          <span className={styles.avatarBadge} aria-hidden="true">
+            <PhotoCameraRoundedIcon sx={{ fontSize: 14 }} />
+          </span>
         </button>
-        {!isEditing && (
-          <button type="button" className={styles.linkButton} onClick={() => setIsEditing(true)}>
-            Edit name
-          </button>
-        )}
         <input
           ref={fileInputRef}
           type="file"
@@ -162,7 +174,19 @@ function Profile({ user }: { user: UserResDto }) {
           hidden
           onChange={(event) => handleAvatar(event.target.files?.[0])}
         />
+        <div>
+          <h1 className={styles.profileName}>{name}</h1>
+          <div className={`${styles.muted} ${styles.small}`}>{user.email}</div>
+        </div>
       </div>
+
+      {!isEditing && (
+        <div className={`${styles.actions} mt-3`}>
+          <button type="button" className={styles.linkButton} onClick={() => setIsEditing(true)}>
+            Edit name
+          </button>
+        </div>
+      )}
 
       {isEditing && (
         <form className={`${styles.card} p-4 mt-3`} onSubmit={handleSaveName}>
@@ -264,24 +288,37 @@ function Standing({ stats }: { stats: StatsResDto }) {
   );
 }
 
-function MyPhoto({ photo }: { photo: PhotoResDto }) {
+// The status of a photo of the viewer's that no batch has served yet
+function getWaitingStatus(photo: PhotoResDto): string {
+  if (photo.queuePosition !== undefined) {
+    return `Published · number ${photo.queuePosition} in line`;
+  }
+  return photo.drafts ? 'Keep 3 captions to get in line' : 'Not roasted yet';
+}
+
+function MyPhoto({ photo, onDelete }: { photo: PhotoResDto; onDelete: () => void }) {
   const { paths } = useRoast();
-  const caption = getWinners(photo).at(0) ?? photo.captions.at(0);
+  const caption = getWinner(photo) ?? photo.captions.at(0);
   const votes = `${photo.voters} ${photo.voters === 1 ? 'vote' : 'votes'}`;
 
   return (
-    <Link href={paths.photo(photo.id)} className={styles.thumbRow}>
-      {/* The photo is served from object storage, outside the image optimizer */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photo.url} alt={photo.description} className={styles.thumb} loading="lazy" />
-      <div className={styles.thumbBody}>
-        <p className={styles.thumbCaption}>{caption ? caption.content : 'The roast stopped halfway.'}</p>
-        <div className={`${styles.muted} ${styles.small}`}>
-          {photo.batchDate
-            ? `Batch of ${formatCampusDate(photo.batchDate)} · ${votes}`
-            : `Number ${photo.queuePosition} in line`}
+    <div className={styles.myPhoto}>
+      <Link href={paths.photo(photo.id)} className={styles.thumbRow}>
+        {/* The photo is served from object storage, outside the image optimizer */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={photo.url} alt={photo.description} className={styles.thumb} loading="lazy" />
+        <div className={styles.thumbBody}>
+          <p className={styles.thumbCaption}>
+            {caption?.content ?? (photo.drafts ? 'Pick your 3 captions.' : 'The roast stopped halfway.')}
+          </p>
+          <div className={`${styles.muted} ${styles.small}`}>
+            {photo.batchDate ? `Batch of ${formatCampusDate(photo.batchDate)} · ${votes}` : getWaitingStatus(photo)}
+          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+      <button type="button" className={styles.myPhotoDelete} aria-label="Delete this photo" onClick={onDelete}>
+        <DeleteOutlineRoundedIcon fontSize="small" />
+      </button>
+    </div>
   );
 }

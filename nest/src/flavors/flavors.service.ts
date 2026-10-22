@@ -57,6 +57,7 @@ export class FlavorsService implements OnModuleInit {
     const rows = await this.captionRepository
       .createQueryBuilder('caption')
       .innerJoin('caption.flavor', 'flavor')
+      .where('caption.kept')
       .select('flavor.id', 'id')
       .addSelect('COUNT(caption.id)', 'count')
       .groupBy('flavor.id')

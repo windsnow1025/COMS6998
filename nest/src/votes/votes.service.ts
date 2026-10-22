@@ -36,19 +36,19 @@ export class VotesService {
     if (image.uploader?.id === userId) {
       throw new ForbiddenException('You cannot vote on your own photo');
     }
-    if (image.captions.length === 0) {
+    // The captions the voters see; the drafts the uploader did not keep take no vote
+    const captions = image.captions.filter(({ kept }) => kept);
+    if (captions.length === 0) {
       throw new BadRequestException('This photo has no captions to vote on');
     }
-    if (captionId && !image.captions.some(({ id }) => id === captionId)) {
+    if (captionId && !captions.some(({ id }) => id === captionId)) {
       throw new BadRequestException('The caption is not one of this photo');
     }
     if (await this.hasVoted(userId, image.id)) {
       throw new ConflictException('You have already voted on this photo');
     }
 
-    const captionIds = captionId
-      ? [captionId]
-      : image.captions.map(({ id }) => id);
+    const captionIds = captionId ? [captionId] : captions.map(({ id }) => id);
     const votes = captionIds.map((id) => ({
       user: { id: userId },
       caption: { id },

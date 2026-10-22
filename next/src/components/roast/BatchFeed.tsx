@@ -6,6 +6,7 @@ import {isDone} from '@/lib/roast/PhotoResults';
 import {BatchResDto, PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import BatchSummary from './BatchSummary';
+import JudgedRow from './JudgedRow';
 import PhotoCard from './PhotoCard';
 import styles from './roast.module.css';
 
@@ -14,7 +15,8 @@ interface BatchFeedProps {
   batch: BatchResDto;
 }
 
-// A batch as a feed: every photo with its captions, a meter of the photos the viewer has judged, and the summary once all are.
+// A batch as a feed: every photo with its captions in the batch's order (a photo judged before the load folded to a row),
+// a meter of the photos the viewer has judged, and the summary once all are.
 // A closed batch is read-only: its results show to everyone, and a viewer who took part gets their summary first.
 export default function BatchFeed({ batch }: BatchFeedProps) {
   const { viewer, paths } = useRoast();
@@ -27,15 +29,35 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
     () => batch.photos.every(isDone) || (batch.closed && batch.photos.some(isDone)),
   );
   const summaryRef = React.useRef<HTMLDivElement>(null);
+  // A photo judged before the page loaded folds to a row, the handle that opens and folds its full card;
+  // one judged on this page keeps its full card, revealed in its place
+  const [judgedAtLoad] = React.useState(() => new Set(batch.photos.filter(isDone).map(({ id }) => id)));
+  const [expanded, setExpanded] = React.useState<ReadonlySet<string>>(() => new Set());
+  const toggle = (id: string) =>
+    setExpanded((ids) => {
+      const next = new Set(ids);
+      if (!next.delete(id)) {
+        next.add(id);
+      }
+      return next;
+    });
+
+  // Whether the viewer has voted since this page loaded
+  const [hasVotedHere, setHasVotedHere] = React.useState(false);
 
   const handleVoted = (voted: PhotoResDto) => {
     setPhotos((photos) => photos.map((photo) => (photo.id === voted.id ? voted : photo)));
+    setHasVotedHere(true);
   };
 
   const doneCount = photos.filter(isDone).length;
   const isAllDone = doneCount === photos.length;
   // Anonymous viewers cannot vote; the photos they have yet to see the verdict of are the ones they can sign in for
   const isOpenToVotes = photos.some((photo) => !photo.revealed);
+  // Hand-holding until the viewer's first vote on this page: a hint on the first open card and the goal under
+  // the meter, both gone with that vote, after which the reveals and the meter show the rest
+  const isGuided = Boolean(viewer) && !batch.closed && !wasDoneAtLoad && !hasVotedHere && !isAllDone;
+  const firstOpenId = photos.find((photo) => !photo.revealed)?.id;
 
   return (
     <>
@@ -62,12 +84,33 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
           )}
         </div>
       )}
+      {isGuided && (
+        <p className={styles.meterHint}>
+          Judge all {photos.length} to see your score and your streak.
+        </p>
+      )}
 
       <div className={styles.stack}>
         {viewer && wasDoneAtLoad && <BatchSummary batch={{ ...batch, photos }} />}
-        {photos.map((photo) => (
-          <PhotoCard key={photo.id} photo={photo} onVoted={handleVoted} />
-        ))}
+        {photos.map((photo) =>
+          judgedAtLoad.has(photo.id) ? (
+            <div key={photo.id} className={styles.judged}>
+              <JudgedRow photo={photo} expanded={expanded.has(photo.id)} onToggle={() => toggle(photo.id)} />
+              {expanded.has(photo.id) && (
+                <div className={styles.unfolded}>
+                  <PhotoCard photo={photo} onVoted={handleVoted} />
+                </div>
+              )}
+            </div>
+          ) : (
+            <PhotoCard
+              key={photo.id}
+              photo={photo}
+              onVoted={handleVoted}
+              showHint={isGuided && photo.id === firstOpenId}
+            />
+          ),
+        )}
         {viewer && !batch.closed && !wasDoneAtLoad && isAllDone && (
           <div ref={summaryRef} className={styles.feedEnd}>
             <BatchSummary batch={{ ...batch, photos }} />
