@@ -16,6 +16,7 @@ function createService(stubs: {
     {} as never,
     (stubs.flavorsService ?? {}) as never,
     {} as never,
+    {} as never,
   );
 }
 

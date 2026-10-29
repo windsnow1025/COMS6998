@@ -6,6 +6,7 @@ base.ts
 common.ts
 configuration.ts
 docs/AdminApi.md
+docs/AdminAvailableModelResDto.md
 docs/AdminCaptionReqDto.md
 docs/AdminCaptionResDto.md
 docs/AdminChainReqDto.md

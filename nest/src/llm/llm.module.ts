@@ -22,6 +22,6 @@ import { RoastService } from './roast.service';
     RoastService,
     RoastQuotaService,
   ],
-  exports: [RoastService, RoastQuotaService, PipelineService],
+  exports: [RoastService, RoastQuotaService, PipelineService, LlmClient],
 })
 export class LlmModule {}

@@ -29,6 +29,12 @@ export class AdminChainResDto {
   steps: AdminStepResDto[];
 }
 
+// A model FastAPI can call; a provider's API type and a model's name are chosen from this list
+export class AdminAvailableModelResDto {
+  apiType: string;
+  model: string;
+}
+
 export class AdminProviderResDto {
   id: string;
   name: string;

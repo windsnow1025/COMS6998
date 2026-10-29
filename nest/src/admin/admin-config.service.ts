@@ -18,6 +18,7 @@ import { FlavorsService } from '../flavors/flavors.service';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
 import { Term } from '../flavors/term.entity';
 import { LlmCall, LlmStep } from '../llm/llm-call.entity';
+import { AvailableModel, LlmClient } from '../llm/llm.client';
 import { LlmModel } from '../llm/llm-model.entity';
 import { LlmProvider } from '../llm/llm-provider.entity';
 import { CaptionsPerPhoto } from '../llm/llm.constants';
@@ -37,6 +38,7 @@ import {
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import {
+  AdminAvailableModelResDto,
   AdminChainResDto,
   AdminDomainResDto,
   AdminEmailResDto,
@@ -82,6 +84,7 @@ export class AdminConfigService {
     private readonly llmCallRepository: Repository<LlmCall>,
     private readonly flavorsService: FlavorsService,
     private readonly accessService: AccessService,
+    private readonly llmClient: LlmClient,
   ) {}
 
   // Chains
@@ -196,6 +199,10 @@ export class AdminConfigService {
 
   // Providers and models
 
+  async findAvailableModels(): Promise<AdminAvailableModelResDto[]> {
+    return await this.llmClient.listModels();
+  }
+
   async findProviders(): Promise<AdminProviderResDto[]> {
     const providers = await this.providerRepository.find({
       relations: { models: true },
@@ -205,9 +212,11 @@ export class AdminConfigService {
   }
 
   async createProvider(dto: AdminProviderReqDto): Promise<AdminProviderResDto> {
+    const apiType = dto.apiType.trim();
+    await this.checkAvailable(apiType);
     const provider = this.providerRepository.create({
       name: dto.name.trim(),
-      apiType: dto.apiType.trim(),
+      apiType,
       enabled: dto.enabled ?? true,
     });
     const saved = await this.saveProvider(provider);
@@ -230,6 +239,7 @@ export class AdminConfigService {
     }
     if (dto.apiType !== undefined) {
       provider.apiType = dto.apiType.trim();
+      await this.checkAvailable(provider.apiType);
     }
     if (dto.enabled !== undefined) {
       provider.enabled = dto.enabled;
@@ -272,9 +282,11 @@ export class AdminConfigService {
     if (!provider) {
       throw new NotFoundException('Provider not found');
     }
+    const name = dto.name.trim();
+    await this.checkAvailable(provider.apiType, name);
     const model = this.modelRepository.create({
       provider,
-      name: dto.name.trim(),
+      name,
       enabled: dto.enabled ?? true,
     });
     return this.toModelDto(await this.saveModel(model), []);
@@ -293,6 +305,7 @@ export class AdminConfigService {
     }
     if (dto.name !== undefined) {
       model.name = dto.name.trim();
+      await this.checkAvailable(model.provider.apiType, model.name);
     }
     if (dto.enabled !== undefined) {
       model.enabled = dto.enabled;
@@ -475,6 +488,24 @@ export class AdminConfigService {
   }
 
   // Helpers
+
+  // Refuses an API type FastAPI's model list lacks, or a model it lacks for the API type
+  private async checkAvailable(apiType: string, model?: string): Promise<void> {
+    const available: AvailableModel[] = await this.llmClient.listModels();
+    if (!available.some((row) => row.apiType === apiType)) {
+      throw new BadRequestException(
+        `No provider of the API type "${apiType}" can be called`,
+      );
+    }
+    if (
+      model !== undefined &&
+      !available.some((row) => row.apiType === apiType && row.model === model)
+    ) {
+      throw new BadRequestException(
+        `No model "${model}" of "${apiType}" can be called`,
+      );
+    }
+  }
 
   private async findStepRows(): Promise<PipelineStep[]> {
     return await this.stepRepository.find({

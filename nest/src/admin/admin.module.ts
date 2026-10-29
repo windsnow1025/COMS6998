@@ -11,6 +11,7 @@ import { Term } from '../flavors/term.entity';
 import { Image } from '../images/image.entity';
 import { ImagesModule } from '../images/images.module';
 import { LlmCall } from '../llm/llm-call.entity';
+import { LlmModule } from '../llm/llm.module';
 import { LlmModel } from '../llm/llm-model.entity';
 import { LlmProvider } from '../llm/llm-provider.entity';
 import { PipelineStep } from '../llm/pipeline-step.entity';
@@ -43,6 +44,7 @@ import { AdminService } from './admin.service';
     VotesModule,
     FlavorsModule,
     AccessModule,
+    LlmModule,
   ],
   providers: [AdminService, AdminConfigService],
   controllers: [AdminController, AdminConfigController],

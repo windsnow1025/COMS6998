@@ -23,6 +23,10 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface AdminAvailableModelResDto {
+    'apiType': string;
+    'model': string;
+}
 export interface AdminCaptionReqDto {
     'content': string;
 }
@@ -1412,6 +1416,39 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        adminConfigControllerFindAvailableModels: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/available-models`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         adminConfigControllerFindChains: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/admin/chains`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2380,6 +2417,17 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async adminConfigControllerFindAvailableModels(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminAvailableModelResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindAvailableModels(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindAvailableModels']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async adminConfigControllerFindChains(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminChainResDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindChains(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -2722,6 +2770,14 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        adminConfigControllerFindAvailableModels(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminAvailableModelResDto>> {
+            return localVarFp.adminConfigControllerFindAvailableModels(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         adminConfigControllerFindChains(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminChainResDto>> {
             return localVarFp.adminConfigControllerFindChains(options).then((request) => request(axios, basePath));
         },
@@ -2992,6 +3048,15 @@ export class AdminConfigApi extends BaseAPI {
      */
     public adminConfigControllerCreateTerm(adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig) {
         return AdminConfigApiFp(this.configuration).adminConfigControllerCreateTerm(adminTermReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindAvailableModels(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindAvailableModels(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

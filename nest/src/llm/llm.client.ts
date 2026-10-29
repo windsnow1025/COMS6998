@@ -54,6 +54,12 @@ interface ChatResponse {
   output_tokens: number | null;
 }
 
+// A model FastAPI can call, as its model list names it
+export interface AvailableModel {
+  apiType: string;
+  model: string;
+}
+
 // The cluster's Nginx answers 504 for a request that Nest has not answered within 60 seconds.
 // The attempts of a request to the LLM therefore share one time limit that ends before that.
 const RequestTimeoutMs = 50 * 1000;
@@ -131,6 +137,16 @@ export class LlmClient {
       outputTokens: chatResponse.output_tokens ?? 0,
       durationMs: Date.now() - startedAt,
     };
+  }
+
+  // The models FastAPI can call; a step's provider and model are chosen from them
+  async listModels(): Promise<AvailableModel[]> {
+    const response = await fetch(`${this.baseUrl}/model`);
+    if (!response.ok) {
+      throw new Error(`FastAPI answered ${response.status} for its model list`);
+    }
+    const rows = (await response.json()) as AvailableModel[];
+    return rows.map(({ apiType, model }) => ({ apiType, model }));
   }
 
   // Posts the request, and posts it again after a pause while the provider answers 503.

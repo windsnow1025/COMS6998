@@ -29,6 +29,7 @@ import {
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import {
+  AdminAvailableModelResDto,
   AdminChainResDto,
   AdminDomainResDto,
   AdminEmailResDto,
@@ -73,6 +74,12 @@ export class AdminConfigController {
     @Body() dto: AdminStepReqDto,
   ): Promise<AdminPipelineStepResDto> {
     return await this.adminConfigService.updateStep(step, dto);
+  }
+
+  @Get('available-models')
+  @Roles([Role.Admin])
+  async findAvailableModels(): Promise<AdminAvailableModelResDto[]> {
+    return await this.adminConfigService.findAvailableModels();
   }
 
   @Get('providers')
