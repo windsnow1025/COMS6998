@@ -23,6 +23,12 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface AdminAccessPolicyReqDto {
+    'restricted': boolean;
+}
+export interface AdminAccessPolicyResDto {
+    'restricted': boolean;
+}
 export interface AdminAvailableModelResDto {
     'apiType': string;
     'model': string;
@@ -1411,6 +1417,39 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        adminConfigControllerFindAccessPolicy: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/access-policy`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         adminConfigControllerFindAvailableModels: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/admin/available-models`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1984,6 +2023,45 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
+         * @param {AdminAccessPolicyReqDto} adminAccessPolicyReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateAccessPolicy: async (adminAccessPolicyReqDto: AdminAccessPolicyReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminAccessPolicyReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateAccessPolicy', 'adminAccessPolicyReqDto', adminAccessPolicyReqDto)
+            const localVarPath = `/admin/access-policy`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminAccessPolicyReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} slug 
          * @param {AdminChainReqDto} adminChainReqDto 
          * @param {*} [options] Override http request option.
@@ -2412,6 +2490,17 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async adminConfigControllerFindAccessPolicy(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminAccessPolicyResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindAccessPolicy(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindAccessPolicy']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async adminConfigControllerFindAvailableModels(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminAvailableModelResDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindAvailableModels(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -2595,6 +2684,18 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {AdminAccessPolicyReqDto} adminAccessPolicyReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto: AdminAccessPolicyReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminAccessPolicyResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateAccessPolicy']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} slug 
          * @param {AdminChainReqDto} adminChainReqDto 
          * @param {*} [options] Override http request option.
@@ -2765,6 +2866,14 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        adminConfigControllerFindAccessPolicy(options?: RawAxiosRequestConfig): AxiosPromise<AdminAccessPolicyResDto> {
+            return localVarFp.adminConfigControllerFindAccessPolicy(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         adminConfigControllerFindAvailableModels(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminAvailableModelResDto>> {
             return localVarFp.adminConfigControllerFindAvailableModels(options).then((request) => request(axios, basePath));
         },
@@ -2897,6 +3006,15 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          */
         adminConfigControllerRemoveTerm(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.adminConfigControllerRemoveTerm(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminAccessPolicyReqDto} adminAccessPolicyReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto: AdminAccessPolicyReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminAccessPolicyResDto> {
+            return localVarFp.adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3043,6 +3161,15 @@ export class AdminConfigApi extends BaseAPI {
      */
     public adminConfigControllerCreateTerm(adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig) {
         return AdminConfigApiFp(this.configuration).adminConfigControllerCreateTerm(adminTermReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindAccessPolicy(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindAccessPolicy(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3197,6 +3324,16 @@ export class AdminConfigApi extends BaseAPI {
      */
     public adminConfigControllerRemoveTerm(id: string, options?: RawAxiosRequestConfig) {
         return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveTerm(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminAccessPolicyReqDto} adminAccessPolicyReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto: AdminAccessPolicyReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

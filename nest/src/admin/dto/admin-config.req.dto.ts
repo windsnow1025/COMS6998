@@ -134,6 +134,11 @@ export class AdminLlmCallsReqDto {
   q?: string;
 }
 
+export class AdminAccessPolicyReqDto {
+  @IsBoolean()
+  restricted: boolean;
+}
+
 export class AdminDomainReqDto {
   @IsString()
   @Length(1, 255)

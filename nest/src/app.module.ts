@@ -34,6 +34,7 @@ import { CaptionExample } from './flavors/caption-example.entity';
 import { LlmProvider } from './llm/llm-provider.entity';
 import { LlmModel } from './llm/llm-model.entity';
 import { PipelineStep } from './llm/pipeline-step.entity';
+import { AccessPolicy } from './access/access-policy.entity';
 import { AllowedDomain } from './access/allowed-domain.entity';
 import { WhitelistedEmail } from './access/whitelisted-email.entity';
 
@@ -73,6 +74,7 @@ import { WhitelistedEmail } from './access/whitelisted-email.entity';
             PipelineStep,
             AllowedDomain,
             WhitelistedEmail,
+            AccessPolicy,
           ],
           synchronize: true,
           logging: ['query', 'error'],

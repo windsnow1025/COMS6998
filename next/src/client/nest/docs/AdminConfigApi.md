@@ -10,6 +10,7 @@ All URIs are relative to *http://localhost*
 |[**adminConfigControllerCreateModel**](#adminconfigcontrollercreatemodel) | **POST** /admin/models | |
 |[**adminConfigControllerCreateProvider**](#adminconfigcontrollercreateprovider) | **POST** /admin/providers | |
 |[**adminConfigControllerCreateTerm**](#adminconfigcontrollercreateterm) | **POST** /admin/terms | |
+|[**adminConfigControllerFindAccessPolicy**](#adminconfigcontrollerfindaccesspolicy) | **GET** /admin/access-policy | |
 |[**adminConfigControllerFindAvailableModels**](#adminconfigcontrollerfindavailablemodels) | **GET** /admin/available-models | |
 |[**adminConfigControllerFindChains**](#adminconfigcontrollerfindchains) | **GET** /admin/chains | |
 |[**adminConfigControllerFindDomains**](#adminconfigcontrollerfinddomains) | **GET** /admin/domains | |
@@ -26,6 +27,7 @@ All URIs are relative to *http://localhost*
 |[**adminConfigControllerRemoveModel**](#adminconfigcontrollerremovemodel) | **DELETE** /admin/models/{id} | |
 |[**adminConfigControllerRemoveProvider**](#adminconfigcontrollerremoveprovider) | **DELETE** /admin/providers/{id} | |
 |[**adminConfigControllerRemoveTerm**](#adminconfigcontrollerremoveterm) | **DELETE** /admin/terms/{id} | |
+|[**adminConfigControllerUpdateAccessPolicy**](#adminconfigcontrollerupdateaccesspolicy) | **PATCH** /admin/access-policy | |
 |[**adminConfigControllerUpdateChain**](#adminconfigcontrollerupdatechain) | **PATCH** /admin/chains/{slug} | |
 |[**adminConfigControllerUpdateDomain**](#adminconfigcontrollerupdatedomain) | **PATCH** /admin/domains/{id} | |
 |[**adminConfigControllerUpdateEmail**](#adminconfigcontrollerupdateemail) | **PATCH** /admin/emails/{id} | |
@@ -338,6 +340,49 @@ const { status, data } = await apiInstance.adminConfigControllerCreateTerm(
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**201** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **adminConfigControllerFindAccessPolicy**
+> AdminAccessPolicyResDto adminConfigControllerFindAccessPolicy()
+
+
+### Example
+
+```typescript
+import {
+    AdminConfigApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminConfigApi(configuration);
+
+const { status, data } = await apiInstance.adminConfigControllerFindAccessPolicy();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**AdminAccessPolicyResDto**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -1078,6 +1123,57 @@ void (empty response body)
 
  - **Content-Type**: Not defined
  - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **adminConfigControllerUpdateAccessPolicy**
+> AdminAccessPolicyResDto adminConfigControllerUpdateAccessPolicy(adminAccessPolicyReqDto)
+
+
+### Example
+
+```typescript
+import {
+    AdminConfigApi,
+    Configuration,
+    AdminAccessPolicyReqDto
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminConfigApi(configuration);
+
+let adminAccessPolicyReqDto: AdminAccessPolicyReqDto; //
+
+const { status, data } = await apiInstance.adminConfigControllerUpdateAccessPolicy(
+    adminAccessPolicyReqDto
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **adminAccessPolicyReqDto** | **AdminAccessPolicyReqDto**|  | |
+
+
+### Return type
+
+**AdminAccessPolicyResDto**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
 
 
 ### HTTP response details

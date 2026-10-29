@@ -3,10 +3,12 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { isUniqueViolation } from '../common/utils/query-error';
+import { AccessPolicy, SignUpPolicyId } from './access-policy.entity';
 import { AllowedDomain } from './allowed-domain.entity';
 import { WhitelistedEmail } from './whitelisted-email.entity';
 
@@ -21,13 +23,15 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-// Whether an address may create an account: with nothing listed, any address; otherwise an address whose domain is listed, or an address listed itself
+// Whether an address may create an account: any address while sign-up is not restricted; otherwise an address whose
+// domain is listed, or an address listed itself, so that restriction with both lists empty admits nobody new
 export function isSignUpAllowed(
   email: string,
+  restricted: boolean,
   domains: string[],
   emails: string[],
 ): boolean {
-  if (domains.length === 0 && emails.length === 0) {
+  if (!restricted) {
     return true;
   }
   const normalized = normalizeEmail(email);
@@ -36,22 +40,53 @@ export function isSignUpAllowed(
 }
 
 @Injectable()
-export class AccessService {
+export class AccessService implements OnModuleInit {
   constructor(
     @InjectRepository(AllowedDomain)
     private readonly domainRepository: Repository<AllowedDomain>,
     @InjectRepository(WhitelistedEmail)
     private readonly emailRepository: Repository<WhitelistedEmail>,
+    @InjectRepository(AccessPolicy)
+    private readonly policyRepository: Repository<AccessPolicy>,
   ) {}
 
-  // Refuses a sign-up that the lists do not allow
+  // Seeds the policy row, unrestricted, while the table lacks it
+  async onModuleInit() {
+    const exists = await this.policyRepository.existsBy({ id: SignUpPolicyId });
+    if (!exists) {
+      await this.policyRepository.save({
+        id: SignUpPolicyId,
+        restricted: false,
+      });
+    }
+  }
+
+  async findPolicy(): Promise<AccessPolicy> {
+    const policy = await this.policyRepository.findOneBy({
+      id: SignUpPolicyId,
+    });
+    if (!policy) {
+      throw new Error('The sign-up policy row is missing');
+    }
+    return policy;
+  }
+
+  async updatePolicy(restricted: boolean): Promise<AccessPolicy> {
+    const policy = await this.findPolicy();
+    policy.restricted = restricted;
+    return await this.policyRepository.save(policy);
+  }
+
+  // Refuses a sign-up that the policy and the lists do not allow
   async checkSignUp(email: string): Promise<void> {
-    const [domains, emails] = await Promise.all([
+    const [policy, domains, emails] = await Promise.all([
+      this.findPolicy(),
       this.findDomains(),
       this.findEmails(),
     ]);
     const allowed = isSignUpAllowed(
       email,
+      policy.restricted,
       domains.map(({ domain }) => domain),
       emails.map((row) => row.email),
     );

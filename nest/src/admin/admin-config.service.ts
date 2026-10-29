@@ -38,6 +38,7 @@ import {
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import {
+  AdminAccessPolicyResDto,
   AdminAvailableModelResDto,
   AdminChainResDto,
   AdminDomainResDto,
@@ -445,6 +446,18 @@ export class AdminConfigService {
   }
 
   // Sign-up access
+
+  async findAccessPolicy(): Promise<AdminAccessPolicyResDto> {
+    const policy = await this.accessService.findPolicy();
+    return { restricted: policy.restricted };
+  }
+
+  async updateAccessPolicy(
+    restricted: boolean,
+  ): Promise<AdminAccessPolicyResDto> {
+    const policy = await this.accessService.updatePolicy(restricted);
+    return { restricted: policy.restricted };
+  }
 
   async findDomains(): Promise<AdminDomainResDto[]> {
     return (await this.accessService.findDomains()).map((row) =>

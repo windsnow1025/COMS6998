@@ -1,5 +1,7 @@
 """Contains all the data models used in inputs/outputs"""
 
+from .admin_access_policy_req_dto import AdminAccessPolicyReqDto
+from .admin_access_policy_res_dto import AdminAccessPolicyResDto
 from .admin_available_model_res_dto import AdminAvailableModelResDto
 from .admin_caption_req_dto import AdminCaptionReqDto
 from .admin_caption_res_dto import AdminCaptionResDto
@@ -84,6 +86,8 @@ from .vote_req_dto import VoteReqDto
 from .web_url_res_dto import WebUrlResDto
 
 __all__ = (
+    "AdminAccessPolicyReqDto",
+    "AdminAccessPolicyResDto",
     "AdminAvailableModelResDto",
     "AdminCaptionReqDto",
     "AdminCaptionResDto",

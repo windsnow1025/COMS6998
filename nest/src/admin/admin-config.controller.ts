@@ -16,6 +16,7 @@ import { Role } from '../common/enums/role.enum';
 import { LlmStep } from '../llm/llm-call.entity';
 import { AdminConfigService } from './admin-config.service';
 import {
+  AdminAccessPolicyReqDto,
   AdminChainReqDto,
   AdminDomainReqDto,
   AdminEmailReqDto,
@@ -29,6 +30,7 @@ import {
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import {
+  AdminAccessPolicyResDto,
   AdminAvailableModelResDto,
   AdminChainResDto,
   AdminDomainResDto,
@@ -215,6 +217,20 @@ export class AdminConfigController {
       dto.step,
       dto.q?.trim() || undefined,
     );
+  }
+
+  @Get('access-policy')
+  @Roles([Role.Admin])
+  async findAccessPolicy(): Promise<AdminAccessPolicyResDto> {
+    return await this.adminConfigService.findAccessPolicy();
+  }
+
+  @Patch('access-policy')
+  @Roles([Role.Admin])
+  async updateAccessPolicy(
+    @Body() dto: AdminAccessPolicyReqDto,
+  ): Promise<AdminAccessPolicyResDto> {
+    return await this.adminConfigService.updateAccessPolicy(dto.restricted);
   }
 
   @Get('domains')

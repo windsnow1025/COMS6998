@@ -5,6 +5,8 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/AdminAccessPolicyReqDto.md
+docs/AdminAccessPolicyResDto.md
 docs/AdminApi.md
 docs/AdminAvailableModelResDto.md
 docs/AdminCaptionReqDto.md

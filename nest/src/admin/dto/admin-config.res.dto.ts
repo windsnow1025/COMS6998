@@ -100,6 +100,11 @@ export class AdminLlmCallPageResDto {
   calls: AdminLlmCallSummaryResDto[];
 }
 
+// Whether sign-up is limited to the listed domains and addresses
+export class AdminAccessPolicyResDto {
+  restricted: boolean;
+}
+
 export class AdminDomainResDto {
   id: string;
   domain: string;
