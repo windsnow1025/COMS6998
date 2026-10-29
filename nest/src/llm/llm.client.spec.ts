@@ -17,6 +17,7 @@ const BaseRequest = {
   authorization: 'Bearer token',
   apiType: 'Google AI Studio Free Tier',
   model: 'gemini-3.7-flash',
+  temperature: 1,
   system: 'You write jokes.',
   user: 'Write one.',
   schema: Schema,
