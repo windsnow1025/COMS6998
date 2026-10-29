@@ -18,6 +18,7 @@ import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UsersCoreService } from './users.core.service';
 import { AppConfig } from '../config/config.interface';
 import { EmailVerificationPurpose } from './enums/email-verification-purpose.enum';
+import { AccessService } from '../access/access.service';
 
 @Injectable()
 export class UsersService {
@@ -41,6 +42,7 @@ export class UsersService {
     private readonly configService: ConfigService,
     private readonly firebaseService: FirebaseService,
     private readonly firebaseAdminService: FirebaseAdminService,
+    private readonly accessService: AccessService,
   ) {
     this.config = this.configService.get<AppConfig>('app')!;
   }
@@ -64,6 +66,7 @@ export class UsersService {
     if (await this.usersCoreService.findOneByEmail(email)) {
       throw new ConflictException('Email already registered');
     }
+    await this.accessService.checkSignUp(email);
 
     const user = new User();
     user.username = username;

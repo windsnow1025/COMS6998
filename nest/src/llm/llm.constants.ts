@@ -1,4 +1,5 @@
-// The API type and model of each step, as FastAPI's model list names them
+// The API type and model of each step at the first start, as FastAPI's model list names them; the pipeline steps
+// table holds them afterwards, with the temperature below as each step's first value (PipelineService)
 export const DescribeApiType = 'OpenAI';
 export const DescribeModel = 'gpt-6.1-sol';
 

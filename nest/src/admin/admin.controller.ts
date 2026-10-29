@@ -12,6 +12,7 @@ import {
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { AdminService } from './admin.service';
+import { AdminPhotoReqDto } from './dto/admin-config.req.dto';
 import {
   AdminCaptionReqDto,
   AdminPhotosReqDto,
@@ -63,6 +64,15 @@ export class AdminController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AdminPhotoDetailResDto> {
     return await this.adminService.findPhoto(id);
+  }
+
+  @Patch('photos/:id')
+  @Roles([Role.Admin])
+  async updatePhoto(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AdminPhotoReqDto,
+  ): Promise<AdminPhotoDetailResDto> {
+    return await this.adminService.updatePhoto(id, dto.description, dto.place);
   }
 
   @Get('votes')

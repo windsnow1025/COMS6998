@@ -2,9 +2,12 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Caption } from '../captions/caption.entity';
+import { PromptMaterial } from '../llm/roast.prompts';
+import { CaptionExample } from './caption-example.entity';
 import { FlavorResDto } from './dto/flavor.res.dto';
 import { FlavorSeeds } from './flavors.constants';
 import { HumorFlavor } from './humor-flavor.entity';
+import { Term } from './term.entity';
 
 @Injectable()
 export class FlavorsService implements OnModuleInit {
@@ -13,6 +16,10 @@ export class FlavorsService implements OnModuleInit {
     private readonly flavorRepository: Repository<HumorFlavor>,
     @InjectRepository(Caption)
     private readonly captionRepository: Repository<Caption>,
+    @InjectRepository(Term)
+    private readonly termRepository: Repository<Term>,
+    @InjectRepository(CaptionExample)
+    private readonly exampleRepository: Repository<CaptionExample>,
   ) {}
 
   async onModuleInit() {
@@ -34,6 +41,34 @@ export class FlavorsService implements OnModuleInit {
 
   async findAll(): Promise<HumorFlavor[]> {
     return await this.flavorRepository.find({ order: { position: 'ASC' } });
+  }
+
+  // The voices new photos get captions in
+  async findInMix(): Promise<HumorFlavor[]> {
+    return await this.flavorRepository.find({
+      where: { inMix: true },
+      order: { position: 'ASC' },
+    });
+  }
+
+  async findTerms(): Promise<Term[]> {
+    return await this.termRepository.find({ order: { term: 'ASC' } });
+  }
+
+  async findExamples(): Promise<CaptionExample[]> {
+    return await this.exampleRepository.find({
+      relations: { flavor: true },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  // What the caption step's system prompt carries beside the voices
+  async findPromptMaterial(): Promise<PromptMaterial> {
+    const [terms, examples] = await Promise.all([
+      this.findTerms(),
+      this.findExamples(),
+    ]);
+    return { terms, examples };
   }
 
   // The voices for a new photo: those with the fewest captions so far, so that every voice is seen equally often.

@@ -7,9 +7,15 @@ import { ConfigModule } from '@nestjs/config';
 import { FirebaseService } from './firebase.service';
 import { FirebaseAdminService } from './firebase-admin.service';
 import { CoreModule } from '../core/core.module';
+import { AccessModule } from '../access/access.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ConfigModule, CoreModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    ConfigModule,
+    CoreModule,
+    AccessModule,
+  ],
   providers: [UsersService, FirebaseService, FirebaseAdminService],
   controllers: [UsersController],
   exports: [],

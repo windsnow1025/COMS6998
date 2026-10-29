@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as z from 'zod/v4';
 import { AppConfig } from '../config/config.interface';
-import { Temperature } from './llm.constants';
 
 export interface LlmRequest<Schema extends z.ZodType> {
   // The Authorization header of the user's request, which FastAPI verifies
   authorization: string;
   apiType: string;
   model: string;
+  temperature: number;
   system: string;
   user: string;
   // The public URL of an image for the model to look at
@@ -52,6 +52,12 @@ interface ChatResponse {
   text: string | null;
   input_tokens: number | null;
   output_tokens: number | null;
+}
+
+// A model FastAPI can call, as its model list names it
+export interface AvailableModel {
+  apiType: string;
+  model: string;
 }
 
 // The cluster's Nginx answers 504 for a request that Nest has not answered within 60 seconds.
@@ -99,7 +105,7 @@ export class LlmClient {
       ],
       api_type: request.apiType,
       model: request.model,
-      temperature: Temperature,
+      temperature: request.temperature,
       stream: false,
       thought: false,
       web_search: false,
@@ -131,6 +137,16 @@ export class LlmClient {
       outputTokens: chatResponse.output_tokens ?? 0,
       durationMs: Date.now() - startedAt,
     };
+  }
+
+  // The models FastAPI can call; a step's provider and model are chosen from them
+  async listModels(): Promise<AvailableModel[]> {
+    const response = await fetch(`${this.baseUrl}/model`);
+    if (!response.ok) {
+      throw new Error(`FastAPI answered ${response.status} for its model list`);
+    }
+    const rows = (await response.json()) as AvailableModel[];
+    return rows.map(({ apiType, model }) => ({ apiType, model }));
   }
 
   // Posts the request, and posts it again after a pause while the provider answers 503.

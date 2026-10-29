@@ -508,6 +508,30 @@ export class AdminService {
     }
   }
 
+  // Changes a photo's description or its place; the captions already written stay as they are
+  async updatePhoto(
+    id: string,
+    description: string | undefined,
+    place: string | undefined,
+  ): Promise<AdminPhotoDetailResDto> {
+    const image = await this.imageRepository.findOneBy({ id });
+    if (!image) {
+      throw new NotFoundException('Photo not found');
+    }
+    if (description !== undefined) {
+      const trimmed = description.trim();
+      if (!trimmed) {
+        throw new BadRequestException('A description cannot be empty');
+      }
+      image.description = trimmed;
+    }
+    if (place !== undefined) {
+      image.place = place.trim() || null;
+    }
+    await this.imageRepository.save(image);
+    return await this.findPhoto(id);
+  }
+
   private async countCaptions(
     imageIds: string[],
   ): Promise<Map<string, number>> {
