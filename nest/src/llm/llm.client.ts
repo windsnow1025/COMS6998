@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as z from 'zod/v4';
 import { AppConfig } from '../config/config.interface';
-import { Temperature } from './llm.constants';
 
 export interface LlmRequest<Schema extends z.ZodType> {
   // The Authorization header of the user's request, which FastAPI verifies
   authorization: string;
   apiType: string;
   model: string;
+  temperature: number;
   system: string;
   user: string;
   // The public URL of an image for the model to look at
@@ -99,7 +99,7 @@ export class LlmClient {
       ],
       api_type: request.apiType,
       model: request.model,
-      temperature: Temperature,
+      temperature: request.temperature,
       stream: false,
       thought: false,
       web_search: false,

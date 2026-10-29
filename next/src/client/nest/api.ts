@@ -36,12 +36,57 @@ export interface AdminCaptionResDto {
     'downs': number;
     'createdAt': string;
 }
+export interface AdminChainReqDto {
+    'inMix': boolean;
+}
+export interface AdminChainResDto {
+    'slug': string;
+    'name': string;
+    'tagline': string;
+    'position': number;
+    'inMix': boolean;
+    'prompt': string;
+    'captions': number;
+    'steps': Array<AdminStepResDto>;
+}
 export interface AdminDayResDto {
     'date': string;
     'voters': number;
     'picks': number;
     'uploads': number;
     'captions': number;
+}
+export interface AdminDomainReqDto {
+    'domain': string;
+}
+export interface AdminDomainResDto {
+    'id': string;
+    'domain': string;
+    'createdAt': string;
+}
+export interface AdminEmailReqDto {
+    'email': string;
+}
+export interface AdminEmailResDto {
+    'id': string;
+    'email': string;
+    'createdAt': string;
+}
+export interface AdminExampleReqDto {
+    'flavorSlug': string;
+    'description': string;
+    'caption': string;
+}
+export interface AdminExampleResDto {
+    'id': string;
+    'flavor': FlavorResDto;
+    'description': string;
+    'caption': string;
+    'createdAt': string;
+}
+export interface AdminLlmCallPageResDto {
+    'total': number;
+    'calls': Array<AdminLlmCallSummaryResDto>;
 }
 export interface AdminLlmCallResDto {
     'userId': number | null;
@@ -57,12 +102,44 @@ export interface AdminLlmCallResDto {
     'durationMs': number;
     'createdAt': string;
 }
+export interface AdminLlmCallSummaryResDto {
+    'userId': number | null;
+    'username': string | null;
+    'id': string;
+    'imageId': string;
+    'imageUrl': string;
+    'step': string;
+    'model': string;
+    'inputTokens': number;
+    'outputTokens': number;
+    'durationMs': number;
+    'createdAt': string;
+    'responseExcerpt': string;
+}
 export interface AdminLlmStepResDto {
     'step': string;
     'calls': number;
     'inputTokens': number;
     'outputTokens': number;
     'averageDurationMs': number;
+}
+export interface AdminModelReqDto {
+    'providerId': string;
+    'name': string;
+    'enabled'?: boolean;
+}
+export interface AdminModelResDto {
+    'id': string;
+    'providerId': string;
+    'provider': string;
+    'apiType': string;
+    'name': string;
+    'enabled': boolean;
+    'steps': Array<string>;
+}
+export interface AdminModelUpdateReqDto {
+    'name'?: string;
+    'enabled'?: boolean;
 }
 export interface AdminOverviewResDto {
     'totals': AdminTotalsResDto;
@@ -85,6 +162,10 @@ export interface AdminPhotoPageResDto {
     'total': number;
     'photos': Array<AdminPhotoResDto>;
 }
+export interface AdminPhotoReqDto {
+    'description'?: string;
+    'place'?: string;
+}
 export interface AdminPhotoResDto {
     'place': string | null;
     'uploader': AdminPhotoUploaderResDto | null;
@@ -106,6 +187,56 @@ export interface AdminPhotoVoteResDto {
     'user': AdminVoteUserResDto;
     'captionId': string;
     'value': number;
+    'createdAt': string;
+}
+export interface AdminPipelineStepResDto {
+    'step': string;
+    'modelId': string;
+    'model': string;
+    'provider': string;
+    'temperature': number;
+}
+export interface AdminProviderReqDto {
+    'name': string;
+    'apiType': string;
+    'enabled'?: boolean;
+}
+export interface AdminProviderResDto {
+    'id': string;
+    'name': string;
+    'apiType': string;
+    'enabled': boolean;
+    'models': number;
+}
+export interface AdminProviderUpdateReqDto {
+    'name'?: string;
+    'apiType'?: string;
+    'enabled'?: boolean;
+}
+export interface AdminStepReqDto {
+    'modelId'?: string;
+    'temperature'?: number;
+}
+export interface AdminStepResDto {
+    'step': string;
+    'provider': string;
+    'apiType': string;
+    'modelId': string;
+    'model': string;
+    'temperature': number;
+    'systemPrompt': string;
+    'userPrompt': string;
+}
+export interface AdminTermReqDto {
+    'term': string;
+    'meaning': string;
+    'example'?: string;
+}
+export interface AdminTermResDto {
+    'example': string | null;
+    'id': string;
+    'term': string;
+    'meaning': string;
     'createdAt': string;
 }
 export interface AdminTotalsResDto {
@@ -678,6 +809,49 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminPhotoReqDto} adminPhotoReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerUpdatePhoto: async (id: string, adminPhotoReqDto: AdminPhotoReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminControllerUpdatePhoto', 'id', id)
+            // verify required parameter 'adminPhotoReqDto' is not null or undefined
+            assertParamExists('adminControllerUpdatePhoto', 'adminPhotoReqDto', adminPhotoReqDto)
+            const localVarPath = `/admin/photos/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminPhotoReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -785,6 +959,19 @@ export const AdminApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerUpdateCaption']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminPhotoReqDto} adminPhotoReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminControllerUpdatePhoto(id: string, adminPhotoReqDto: AdminPhotoReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPhotoDetailResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminControllerUpdatePhoto(id, adminPhotoReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.adminControllerUpdatePhoto']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -867,6 +1054,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         adminControllerUpdateCaption(id: string, adminCaptionReqDto: AdminCaptionReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminCaptionResDto> {
             return localVarFp.adminControllerUpdateCaption(id, adminCaptionReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminPhotoReqDto} adminPhotoReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminControllerUpdatePhoto(id: string, adminPhotoReqDto: AdminPhotoReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminPhotoDetailResDto> {
+            return localVarFp.adminControllerUpdatePhoto(id, adminPhotoReqDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -956,8 +1153,2086 @@ export class AdminApi extends BaseAPI {
     public adminControllerUpdateCaption(id: string, adminCaptionReqDto: AdminCaptionReqDto, options?: RawAxiosRequestConfig) {
         return AdminApiFp(this.configuration).adminControllerUpdateCaption(id, adminCaptionReqDto, options).then((request) => request(this.axios, this.basePath));
     }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminPhotoReqDto} adminPhotoReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminControllerUpdatePhoto(id: string, adminPhotoReqDto: AdminPhotoReqDto, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).adminControllerUpdatePhoto(id, adminPhotoReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
 }
 
+
+
+/**
+ * AdminConfigApi - axios parameter creator
+ */
+export const AdminConfigApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateDomain: async (adminDomainReqDto: AdminDomainReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminDomainReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateDomain', 'adminDomainReqDto', adminDomainReqDto)
+            const localVarPath = `/admin/domains`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminDomainReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateEmail: async (adminEmailReqDto: AdminEmailReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminEmailReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateEmail', 'adminEmailReqDto', adminEmailReqDto)
+            const localVarPath = `/admin/emails`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminEmailReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateExample: async (adminExampleReqDto: AdminExampleReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminExampleReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateExample', 'adminExampleReqDto', adminExampleReqDto)
+            const localVarPath = `/admin/examples`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminExampleReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AdminModelReqDto} adminModelReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateModel: async (adminModelReqDto: AdminModelReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminModelReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateModel', 'adminModelReqDto', adminModelReqDto)
+            const localVarPath = `/admin/models`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminModelReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AdminProviderReqDto} adminProviderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateProvider: async (adminProviderReqDto: AdminProviderReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminProviderReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateProvider', 'adminProviderReqDto', adminProviderReqDto)
+            const localVarPath = `/admin/providers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminProviderReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateTerm: async (adminTermReqDto: AdminTermReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminTermReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerCreateTerm', 'adminTermReqDto', adminTermReqDto)
+            const localVarPath = `/admin/terms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminTermReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindChains: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/chains`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindDomains: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/domains`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindEmails: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/emails`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindExamples: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/examples`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindLlmCalls: async (limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('adminConfigControllerFindLlmCalls', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('adminConfigControllerFindLlmCalls', 'offset', offset)
+            const localVarPath = `/admin/llm-calls`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (step !== undefined) {
+                localVarQueryParameter['step'] = step;
+            }
+
+            if (q !== undefined) {
+                localVarQueryParameter['q'] = q;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindModels: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/models`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindProviders: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/providers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindSteps: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/steps`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindTerms: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/terms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveDomain: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveDomain', 'id', id)
+            const localVarPath = `/admin/domains/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveEmail: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveEmail', 'id', id)
+            const localVarPath = `/admin/emails/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveExample: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveExample', 'id', id)
+            const localVarPath = `/admin/examples/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveModel: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveModel', 'id', id)
+            const localVarPath = `/admin/models/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveProvider: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveProvider', 'id', id)
+            const localVarPath = `/admin/providers/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveTerm: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerRemoveTerm', 'id', id)
+            const localVarPath = `/admin/terms/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} slug 
+         * @param {AdminChainReqDto} adminChainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateChain: async (slug: string, adminChainReqDto: AdminChainReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'slug' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateChain', 'slug', slug)
+            // verify required parameter 'adminChainReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateChain', 'adminChainReqDto', adminChainReqDto)
+            const localVarPath = `/admin/chains/{slug}`
+                .replace(`{${"slug"}}`, encodeURIComponent(String(slug)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminChainReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateDomain: async (id: string, adminDomainReqDto: AdminDomainReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateDomain', 'id', id)
+            // verify required parameter 'adminDomainReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateDomain', 'adminDomainReqDto', adminDomainReqDto)
+            const localVarPath = `/admin/domains/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminDomainReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateEmail: async (id: string, adminEmailReqDto: AdminEmailReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateEmail', 'id', id)
+            // verify required parameter 'adminEmailReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateEmail', 'adminEmailReqDto', adminEmailReqDto)
+            const localVarPath = `/admin/emails/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminEmailReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateExample: async (id: string, adminExampleReqDto: AdminExampleReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateExample', 'id', id)
+            // verify required parameter 'adminExampleReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateExample', 'adminExampleReqDto', adminExampleReqDto)
+            const localVarPath = `/admin/examples/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminExampleReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminModelUpdateReqDto} adminModelUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateModel: async (id: string, adminModelUpdateReqDto: AdminModelUpdateReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateModel', 'id', id)
+            // verify required parameter 'adminModelUpdateReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateModel', 'adminModelUpdateReqDto', adminModelUpdateReqDto)
+            const localVarPath = `/admin/models/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminModelUpdateReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminProviderUpdateReqDto} adminProviderUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateProvider: async (id: string, adminProviderUpdateReqDto: AdminProviderUpdateReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateProvider', 'id', id)
+            // verify required parameter 'adminProviderUpdateReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateProvider', 'adminProviderUpdateReqDto', adminProviderUpdateReqDto)
+            const localVarPath = `/admin/providers/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminProviderUpdateReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} step 
+         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateStep: async (step: string, adminStepReqDto: AdminStepReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'step' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateStep', 'step', step)
+            // verify required parameter 'adminStepReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateStep', 'adminStepReqDto', adminStepReqDto)
+            const localVarPath = `/admin/steps/{step}`
+                .replace(`{${"step"}}`, encodeURIComponent(String(step)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminStepReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateTerm: async (id: string, adminTermReqDto: AdminTermReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateTerm', 'id', id)
+            // verify required parameter 'adminTermReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateTerm', 'adminTermReqDto', adminTermReqDto)
+            const localVarPath = `/admin/terms/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminTermReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AdminConfigApi - functional programming interface
+ */
+export const AdminConfigApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminConfigApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateDomain(adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminDomainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateDomain(adminDomainReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateDomain']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateEmail(adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminEmailResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateEmail(adminEmailReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateEmail']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateExample(adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminExampleResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateExample(adminExampleReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateExample']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {AdminModelReqDto} adminModelReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateModel(adminModelReqDto: AdminModelReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminModelResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateModel(adminModelReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateModel']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {AdminProviderReqDto} adminProviderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateProvider(adminProviderReqDto: AdminProviderReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminProviderResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateProvider(adminProviderReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateProvider']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerCreateTerm(adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminTermResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerCreateTerm(adminTermReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerCreateTerm']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindChains(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminChainResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindChains(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindChains']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindDomains(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminDomainResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindDomains(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindDomains']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindEmails(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminEmailResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindEmails(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindEmails']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindExamples(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminExampleResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindExamples(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindExamples']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminLlmCallPageResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindLlmCalls(limit, offset, step, q, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindLlmCalls']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindModels(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminModelResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindModels(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindModels']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindProviders(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminProviderResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindProviders(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindProviders']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindSteps(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminPipelineStepResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindSteps(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindSteps']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindTerms(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminTermResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindTerms(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindTerms']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveDomain(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveDomain(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveDomain']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveEmail(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveEmail(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveEmail']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveExample(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveExample(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveExample']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveModel(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveModel(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveModel']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveProvider(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveProvider(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveProvider']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerRemoveTerm(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerRemoveTerm(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerRemoveTerm']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} slug 
+         * @param {AdminChainReqDto} adminChainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateChain(slug, adminChainReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateChain']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateDomain(id: string, adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminDomainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateDomain(id, adminDomainReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateDomain']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateEmail(id: string, adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminEmailResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateEmail(id, adminEmailReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateEmail']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateExample(id: string, adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminExampleResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateExample(id, adminExampleReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateExample']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminModelUpdateReqDto} adminModelUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateModel(id: string, adminModelUpdateReqDto: AdminModelUpdateReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminModelResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateModel(id, adminModelUpdateReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateModel']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminProviderUpdateReqDto} adminProviderUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateProvider(id: string, adminProviderUpdateReqDto: AdminProviderUpdateReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminProviderResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateProvider(id, adminProviderUpdateReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateProvider']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} step 
+         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPipelineStepResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateStep(step, adminStepReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateStep']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerUpdateTerm(id: string, adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminTermResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateTerm(id, adminTermReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateTerm']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AdminConfigApi - factory interface
+ */
+export const AdminConfigApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminConfigApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateDomain(adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminDomainResDto> {
+            return localVarFp.adminConfigControllerCreateDomain(adminDomainReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateEmail(adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminEmailResDto> {
+            return localVarFp.adminConfigControllerCreateEmail(adminEmailReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateExample(adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminExampleResDto> {
+            return localVarFp.adminConfigControllerCreateExample(adminExampleReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminModelReqDto} adminModelReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateModel(adminModelReqDto: AdminModelReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminModelResDto> {
+            return localVarFp.adminConfigControllerCreateModel(adminModelReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminProviderReqDto} adminProviderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateProvider(adminProviderReqDto: AdminProviderReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminProviderResDto> {
+            return localVarFp.adminConfigControllerCreateProvider(adminProviderReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerCreateTerm(adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminTermResDto> {
+            return localVarFp.adminConfigControllerCreateTerm(adminTermReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindChains(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminChainResDto>> {
+            return localVarFp.adminConfigControllerFindChains(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindDomains(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminDomainResDto>> {
+            return localVarFp.adminConfigControllerFindDomains(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindEmails(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminEmailResDto>> {
+            return localVarFp.adminConfigControllerFindEmails(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindExamples(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminExampleResDto>> {
+            return localVarFp.adminConfigControllerFindExamples(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [q] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminLlmCallPageResDto> {
+            return localVarFp.adminConfigControllerFindLlmCalls(limit, offset, step, q, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindModels(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminModelResDto>> {
+            return localVarFp.adminConfigControllerFindModels(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindProviders(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminProviderResDto>> {
+            return localVarFp.adminConfigControllerFindProviders(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindSteps(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminPipelineStepResDto>> {
+            return localVarFp.adminConfigControllerFindSteps(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindTerms(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminTermResDto>> {
+            return localVarFp.adminConfigControllerFindTerms(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveDomain(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveDomain(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveEmail(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveEmail(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveExample(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveExample(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveModel(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveModel(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveProvider(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveProvider(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerRemoveTerm(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.adminConfigControllerRemoveTerm(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} slug 
+         * @param {AdminChainReqDto} adminChainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminChainResDto> {
+            return localVarFp.adminConfigControllerUpdateChain(slug, adminChainReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminDomainReqDto} adminDomainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateDomain(id: string, adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminDomainResDto> {
+            return localVarFp.adminConfigControllerUpdateDomain(id, adminDomainReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminEmailReqDto} adminEmailReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateEmail(id: string, adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminEmailResDto> {
+            return localVarFp.adminConfigControllerUpdateEmail(id, adminEmailReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminExampleReqDto} adminExampleReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateExample(id: string, adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminExampleResDto> {
+            return localVarFp.adminConfigControllerUpdateExample(id, adminExampleReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminModelUpdateReqDto} adminModelUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateModel(id: string, adminModelUpdateReqDto: AdminModelUpdateReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminModelResDto> {
+            return localVarFp.adminConfigControllerUpdateModel(id, adminModelUpdateReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminProviderUpdateReqDto} adminProviderUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateProvider(id: string, adminProviderUpdateReqDto: AdminProviderUpdateReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminProviderResDto> {
+            return localVarFp.adminConfigControllerUpdateProvider(id, adminProviderUpdateReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} step 
+         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminPipelineStepResDto> {
+            return localVarFp.adminConfigControllerUpdateStep(step, adminStepReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {AdminTermReqDto} adminTermReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerUpdateTerm(id: string, adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminTermResDto> {
+            return localVarFp.adminConfigControllerUpdateTerm(id, adminTermReqDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AdminConfigApi - object-oriented interface
+ */
+export class AdminConfigApi extends BaseAPI {
+    /**
+     * 
+     * @param {AdminDomainReqDto} adminDomainReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateDomain(adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateDomain(adminDomainReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminEmailReqDto} adminEmailReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateEmail(adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateEmail(adminEmailReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminExampleReqDto} adminExampleReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateExample(adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateExample(adminExampleReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminModelReqDto} adminModelReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateModel(adminModelReqDto: AdminModelReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateModel(adminModelReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminProviderReqDto} adminProviderReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateProvider(adminProviderReqDto: AdminProviderReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateProvider(adminProviderReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminTermReqDto} adminTermReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerCreateTerm(adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerCreateTerm(adminTermReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindChains(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindChains(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindDomains(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindDomains(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindEmails(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindEmails(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindExamples(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindExamples(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+     * @param {string} [q] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindLlmCalls(limit, offset, step, q, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindModels(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindModels(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindProviders(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindProviders(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindSteps(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindSteps(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindTerms(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindTerms(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveDomain(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveDomain(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveEmail(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveEmail(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveExample(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveExample(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveModel(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveModel(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveProvider(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveProvider(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerRemoveTerm(id: string, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerRemoveTerm(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} slug 
+     * @param {AdminChainReqDto} adminChainReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateChain(slug, adminChainReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminDomainReqDto} adminDomainReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateDomain(id: string, adminDomainReqDto: AdminDomainReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateDomain(id, adminDomainReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminEmailReqDto} adminEmailReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateEmail(id: string, adminEmailReqDto: AdminEmailReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateEmail(id, adminEmailReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminExampleReqDto} adminExampleReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateExample(id: string, adminExampleReqDto: AdminExampleReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateExample(id, adminExampleReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminModelUpdateReqDto} adminModelUpdateReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateModel(id: string, adminModelUpdateReqDto: AdminModelUpdateReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateModel(id, adminModelUpdateReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminProviderUpdateReqDto} adminProviderUpdateReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateProvider(id: string, adminProviderUpdateReqDto: AdminProviderUpdateReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateProvider(id, adminProviderUpdateReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} step 
+     * @param {AdminStepReqDto} adminStepReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateStep(step, adminStepReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {AdminTermReqDto} adminTermReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerUpdateTerm(id: string, adminTermReqDto: AdminTermReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateTerm(id, adminTermReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+export const AdminConfigControllerFindLlmCallsStepEnum = {
+    Describe: 'describe',
+    Caption: 'caption'
+} as const;
+export type AdminConfigControllerFindLlmCallsStepEnum = typeof AdminConfigControllerFindLlmCallsStepEnum[keyof typeof AdminConfigControllerFindLlmCallsStepEnum];
 
 
 /**

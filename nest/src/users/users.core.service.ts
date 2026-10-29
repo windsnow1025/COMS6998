@@ -11,6 +11,7 @@ import { User } from './user.entity';
 import { UserResDto } from './dto/user.res.dto';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Role } from '../common/enums/role.enum';
+import { AccessService } from '../access/access.service';
 
 @Injectable()
 export class UsersCoreService {
@@ -21,6 +22,7 @@ export class UsersCoreService {
     private usersRepository: Repository<User>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
+    private accessService: AccessService,
   ) {}
 
   public toUserDto(user: User) {
@@ -101,7 +103,8 @@ export class UsersCoreService {
       return await this.usersRepository.save(emailUser);
     }
 
-    // New user: create the account
+    // New user: create the account, where the sign-up lists allow it
+    await this.accessService.checkSignUp(email);
     const user = new User();
     user.username = await this.generateUsername(email);
     user.email = email;

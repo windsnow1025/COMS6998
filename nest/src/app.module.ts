@@ -29,6 +29,13 @@ import { DailyBatchItem } from './batches/daily-batch-item.entity';
 import { BatchesModule } from './batches/batches.module';
 import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
+import { Term } from './flavors/term.entity';
+import { CaptionExample } from './flavors/caption-example.entity';
+import { LlmProvider } from './llm/llm-provider.entity';
+import { LlmModel } from './llm/llm-model.entity';
+import { PipelineStep } from './llm/pipeline-step.entity';
+import { AllowedDomain } from './access/allowed-domain.entity';
+import { WhitelistedEmail } from './access/whitelisted-email.entity';
 
 @Module({
   imports: [
@@ -59,6 +66,13 @@ import { AdminModule } from './admin/admin.module';
             CaptionVote,
             DailyBatch,
             DailyBatchItem,
+            Term,
+            CaptionExample,
+            LlmProvider,
+            LlmModel,
+            PipelineStep,
+            AllowedDomain,
+            WhitelistedEmail,
           ],
           synchronize: true,
           logging: ['query', 'error'],

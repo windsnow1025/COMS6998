@@ -22,4 +22,8 @@ export class HumorFlavor extends BaseEntity {
 
   @Column({ type: 'int' })
   position: number;
+
+  // Whether new photos get a caption in the voice; the mix keeps at least CaptionsPerPhoto voices (AdminConfigService)
+  @Column({ default: true })
+  inMix: boolean;
 }

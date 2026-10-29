@@ -7,10 +7,11 @@ import { FlavorsService } from './flavors.service';
 export class FlavorsController {
   constructor(private readonly flavorsService: FlavorsService) {}
 
+  // The voices in the mix, which new photos get captions in
   @Public()
   @Get()
   async findAll(): Promise<FlavorResDto[]> {
-    const flavors = await this.flavorsService.findAll();
+    const flavors = await this.flavorsService.findInMix();
     return flavors.map((flavor) => this.flavorsService.toFlavorDto(flavor));
   }
 }

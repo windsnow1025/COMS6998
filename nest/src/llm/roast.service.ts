@@ -3,18 +3,14 @@ import * as z from 'zod/v4';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
 import { LlmBusyException, LlmClient, LlmResponse } from './llm.client';
 import { LlmStep } from './llm-call.entity';
-import {
-  CaptionApiType,
-  CaptionModel,
-  DescribeApiType,
-  DescribeModel,
-  MaxCaptionLength,
-} from './llm.constants';
+import { MaxCaptionLength } from './llm.constants';
+import { PipelineService } from './pipeline.service';
 import {
   buildCaptionSystemPrompt,
   buildCaptionUserPrompt,
   buildDescribeUserPrompt,
   DescribeSystemPrompt,
+  PromptMaterial,
 } from './roast.prompts';
 
 const DescriptionSchema = z.object({
@@ -59,10 +55,14 @@ export interface WrittenCaptions {
 
 const DeclinedReason = 'This photo cannot be roasted. Try another one.';
 
-// The prompt chain: a photo is described, and the description is captioned.
+// The prompt chain: a photo is described, and the description is captioned. Each step runs on the model and the
+// temperature the admin set for it (PipelineService).
 @Injectable()
 export class RoastService {
-  constructor(private readonly llmClient: LlmClient) {}
+  constructor(
+    private readonly llmClient: LlmClient,
+    private readonly pipelineService: PipelineService,
+  ) {}
 
   // `imageUrl` is the photo's public URL; `authorization` is the Authorization header of the uploader's request.
   async screen(
@@ -70,11 +70,13 @@ export class RoastService {
     place: string | null,
     authorization: string,
   ): Promise<PhotoScreening> {
+    const setting = await this.pipelineService.findStep(LlmStep.Describe);
     const userPrompt = buildDescribeUserPrompt(place);
     const response = await this.llmClient.generate({
       authorization,
-      apiType: DescribeApiType,
-      model: DescribeModel,
+      apiType: setting.apiType,
+      model: setting.model,
+      temperature: setting.temperature,
       system: DescribeSystemPrompt,
       user: userPrompt,
       imageUrl,
@@ -82,7 +84,7 @@ export class RoastService {
     });
     const record = this.toRecord(
       LlmStep.Describe,
-      DescribeModel,
+      setting.model,
       DescribeSystemPrompt,
       userPrompt,
       response,
@@ -112,21 +114,25 @@ export class RoastService {
     return { suitable, reason: '', description: description.trim(), record };
   }
 
-  // `flavors` are all the voices, which the system prompt defines; `voices` are those to write in.
-  // `authorization` is the Authorization header of the uploader's request.
+  // `flavors` are the voices of the mix, which the system prompt defines; `voices` are those to write in;
+  // `material` is what the system prompt carries beside the voices. `authorization` is the Authorization header
+  // of the uploader's request.
   async writeCaptions(
     description: string,
     place: string | null,
     flavors: HumorFlavor[],
     voices: HumorFlavor[],
+    material: PromptMaterial,
     authorization: string,
   ): Promise<WrittenCaptions> {
-    const systemPrompt = buildCaptionSystemPrompt(flavors);
+    const setting = await this.pipelineService.findStep(LlmStep.Caption);
+    const systemPrompt = buildCaptionSystemPrompt(flavors, material);
     const userPrompt = buildCaptionUserPrompt(description, place, voices);
     const response = await this.llmClient.generate({
       authorization,
-      apiType: CaptionApiType,
-      model: CaptionModel,
+      apiType: setting.apiType,
+      model: setting.model,
+      temperature: setting.temperature,
       system: systemPrompt,
       user: userPrompt,
       schema: CaptionsSchema,
@@ -152,7 +158,7 @@ export class RoastService {
     });
     const record = this.toRecord(
       LlmStep.Caption,
-      CaptionModel,
+      setting.model,
       systemPrompt,
       userPrompt,
       response,

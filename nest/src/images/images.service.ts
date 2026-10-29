@@ -144,7 +144,10 @@ export class ImagesService {
     }
 
     await this.roastQuotaService.takeLlmCall(user);
-    const flavors = await this.flavorsService.findAll();
+    const [flavors, material] = await Promise.all([
+      this.flavorsService.findInMix(),
+      this.flavorsService.findPromptMaterial(),
+    ]);
     const voices = this.flavorsService.pickLeastUsed(
       flavors,
       await this.flavorsService.countCaptions(),
@@ -155,13 +158,14 @@ export class ImagesService {
       image.place,
       flavors,
       voices,
+      material,
       authorization,
     );
     await this.saveCaptions(user, id, written, true);
     return await this.findOne(id);
   }
 
-  // Writes the photo's drafts once, one in every voice, of which the uploader keeps 3 as its captions:
+  // Writes the photo's drafts once, one in every voice of the mix, of which the uploader keeps 3 as its captions:
   // a photo that has captions keeps them. `authorization` is the Authorization header of the user's request.
   async writeDrafts(
     user: UserResDto,
@@ -175,12 +179,16 @@ export class ImagesService {
     }
 
     await this.roastQuotaService.takeLlmCall(user);
-    const flavors = await this.flavorsService.findAll();
+    const [flavors, material] = await Promise.all([
+      this.flavorsService.findInMix(),
+      this.flavorsService.findPromptMaterial(),
+    ]);
     const written = await this.roastService.writeCaptions(
       image.description,
       image.place,
       flavors,
       flavors,
+      material,
       authorization,
     );
     await this.saveCaptions(user, id, written, false);
