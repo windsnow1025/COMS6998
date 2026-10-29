@@ -65,7 +65,7 @@ export class PipelineService implements OnModuleInit {
   private async ensureModel(apiType: string, name: string): Promise<LlmModel> {
     const provider =
       (await this.providerRepository.findOneBy({ apiType })) ??
-      (await this.providerRepository.save({ name: apiType, apiType }));
+      (await this.providerRepository.save({ apiType }));
     return (
       (await this.modelRepository.findOne({
         where: { provider: { id: provider.id }, name },

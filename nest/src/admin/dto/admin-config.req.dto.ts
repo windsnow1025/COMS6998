@@ -27,10 +27,6 @@ export class AdminChainReqDto {
 export class AdminProviderReqDto {
   @IsString()
   @Length(1, 64)
-  name: string;
-
-  @IsString()
-  @Length(1, 64)
   apiType: string;
 
   @IsOptional()
@@ -39,11 +35,6 @@ export class AdminProviderReqDto {
 }
 
 export class AdminProviderUpdateReqDto {
-  @IsOptional()
-  @IsString()
-  @Length(1, 64)
-  name?: string;
-
   @IsOptional()
   @IsString()
   @Length(1, 64)

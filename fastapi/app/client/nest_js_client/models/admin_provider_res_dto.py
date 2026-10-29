@@ -14,14 +14,12 @@ class AdminProviderResDto:
     """
     Attributes:
         id (str):
-        name (str):
         api_type (str):
         enabled (bool):
         models (float):
     """
 
     id: str
-    name: str
     api_type: str
     enabled: bool
     models: float
@@ -29,8 +27,6 @@ class AdminProviderResDto:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
-
-        name = self.name
 
         api_type = self.api_type
 
@@ -43,7 +39,6 @@ class AdminProviderResDto:
         field_dict.update(
             {
                 "id": id,
-                "name": name,
                 "apiType": api_type,
                 "enabled": enabled,
                 "models": models,
@@ -57,8 +52,6 @@ class AdminProviderResDto:
         d = dict(src_dict)
         id = d.pop("id")
 
-        name = d.pop("name")
-
         api_type = d.pop("apiType")
 
         enabled = d.pop("enabled")
@@ -67,7 +60,6 @@ class AdminProviderResDto:
 
         admin_provider_res_dto = cls(
             id=id,
-            name=name,
             api_type=api_type,
             enabled=enabled,
             models=models,

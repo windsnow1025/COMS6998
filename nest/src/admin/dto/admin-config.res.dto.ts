@@ -4,7 +4,6 @@ import { FlavorResDto } from '../../flavors/dto/flavor.res.dto';
 // A step of the prompt chain as it runs now: its model and the prompts it is sent
 export class AdminStepResDto {
   step: string;
-  provider: string;
   apiType: string;
   modelId: string;
   model: string;
@@ -37,7 +36,6 @@ export class AdminAvailableModelResDto {
 
 export class AdminProviderResDto {
   id: string;
-  name: string;
   apiType: string;
   enabled: boolean;
   models: number;
@@ -46,7 +44,6 @@ export class AdminProviderResDto {
 export class AdminModelResDto {
   id: string;
   providerId: string;
-  provider: string;
   apiType: string;
   name: string;
   enabled: boolean;
@@ -58,7 +55,7 @@ export class AdminPipelineStepResDto {
   step: string;
   modelId: string;
   model: string;
-  provider: string;
+  apiType: string;
   temperature: number;
 }
 

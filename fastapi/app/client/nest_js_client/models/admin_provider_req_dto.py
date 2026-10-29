@@ -15,19 +15,15 @@ T = TypeVar("T", bound="AdminProviderReqDto")
 class AdminProviderReqDto:
     """
     Attributes:
-        name (str):
         api_type (str):
         enabled (bool | Unset):
     """
 
-    name: str
     api_type: str
     enabled: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        name = self.name
-
         api_type = self.api_type
 
         enabled = self.enabled
@@ -36,7 +32,6 @@ class AdminProviderReqDto:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "name": name,
                 "apiType": api_type,
             }
         )
@@ -48,14 +43,11 @@ class AdminProviderReqDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        name = d.pop("name")
-
         api_type = d.pop("apiType")
 
         enabled = d.pop("enabled", UNSET)
 
         admin_provider_req_dto = cls(
-            name=name,
             api_type=api_type,
             enabled=enabled,
         )

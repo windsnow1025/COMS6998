@@ -5,7 +5,6 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
 **apiType** | **string** |  | [default to undefined]
 **enabled** | **boolean** |  | [optional] [default to undefined]
 
@@ -15,7 +14,6 @@ Name | Type | Description | Notes
 import { AdminProviderReqDto } from './api';
 
 const instance: AdminProviderReqDto = {
-    name,
     apiType,
     enabled,
 };

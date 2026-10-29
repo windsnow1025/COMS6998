@@ -149,7 +149,6 @@ export class AdminConfigService {
     };
     return rows.map((row) => ({
       step: row.step,
-      provider: row.model.provider.name,
       apiType: row.model.provider.apiType,
       modelId: row.model.id,
       model: row.model.name,
@@ -206,7 +205,7 @@ export class AdminConfigService {
   async findProviders(): Promise<AdminProviderResDto[]> {
     const providers = await this.providerRepository.find({
       relations: { models: true },
-      order: { name: 'ASC' },
+      order: { apiType: 'ASC' },
     });
     return providers.map((provider) => this.toProviderDto(provider));
   }
@@ -215,7 +214,6 @@ export class AdminConfigService {
     const apiType = dto.apiType.trim();
     await this.checkAvailable(apiType);
     const provider = this.providerRepository.create({
-      name: dto.name.trim(),
       apiType,
       enabled: dto.enabled ?? true,
     });
@@ -233,9 +231,6 @@ export class AdminConfigService {
     });
     if (!provider) {
       throw new NotFoundException('Provider not found');
-    }
-    if (dto.name !== undefined) {
-      provider.name = dto.name.trim();
     }
     if (dto.apiType !== undefined) {
       provider.apiType = dto.apiType.trim();
@@ -268,7 +263,7 @@ export class AdminConfigService {
     const [models, steps] = await Promise.all([
       this.modelRepository.find({
         relations: { provider: true },
-        order: { provider: { name: 'ASC' }, name: 'ASC' },
+        order: { provider: { apiType: 'ASC' }, name: 'ASC' },
       }),
       this.findStepRows(),
     ]);
@@ -527,9 +522,7 @@ export class AdminConfigService {
       return await this.providerRepository.save(provider);
     } catch (error) {
       if (isUniqueViolation(error)) {
-        throw new ConflictException(
-          'A provider with this name or API type exists',
-        );
+        throw new ConflictException('A provider of this API type exists');
       }
       throw error;
     }
@@ -565,7 +558,7 @@ export class AdminConfigService {
       step: row.step,
       modelId: row.model.id,
       model: row.model.name,
-      provider: row.model.provider.name,
+      apiType: row.model.provider.apiType,
       temperature: row.temperature,
     };
   }
@@ -573,7 +566,6 @@ export class AdminConfigService {
   private toProviderDto(provider: LlmProvider): AdminProviderResDto {
     return {
       id: provider.id,
-      name: provider.name,
       apiType: provider.apiType,
       enabled: provider.enabled,
       models: provider.models.length,
@@ -584,7 +576,6 @@ export class AdminConfigService {
     return {
       id: model.id,
       providerId: model.provider.id,
-      provider: model.provider.name,
       apiType: model.provider.apiType,
       name: model.name,
       enabled: model.enabled,

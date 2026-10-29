@@ -135,7 +135,6 @@ export interface AdminModelReqDto {
 export interface AdminModelResDto {
     'id': string;
     'providerId': string;
-    'provider': string;
     'apiType': string;
     'name': string;
     'enabled': boolean;
@@ -197,23 +196,20 @@ export interface AdminPipelineStepResDto {
     'step': string;
     'modelId': string;
     'model': string;
-    'provider': string;
+    'apiType': string;
     'temperature': number;
 }
 export interface AdminProviderReqDto {
-    'name': string;
     'apiType': string;
     'enabled'?: boolean;
 }
 export interface AdminProviderResDto {
     'id': string;
-    'name': string;
     'apiType': string;
     'enabled': boolean;
     'models': number;
 }
 export interface AdminProviderUpdateReqDto {
-    'name'?: string;
     'apiType'?: string;
     'enabled'?: boolean;
 }
@@ -223,7 +219,6 @@ export interface AdminStepReqDto {
 }
 export interface AdminStepResDto {
     'step': string;
-    'provider': string;
     'apiType': string;
     'modelId': string;
     'model': string;

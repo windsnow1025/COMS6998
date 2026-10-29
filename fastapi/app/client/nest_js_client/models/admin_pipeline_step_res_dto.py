@@ -16,14 +16,14 @@ class AdminPipelineStepResDto:
         step (str):
         model_id (str):
         model (str):
-        provider (str):
+        api_type (str):
         temperature (float):
     """
 
     step: str
     model_id: str
     model: str
-    provider: str
+    api_type: str
     temperature: float
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -34,7 +34,7 @@ class AdminPipelineStepResDto:
 
         model = self.model
 
-        provider = self.provider
+        api_type = self.api_type
 
         temperature = self.temperature
 
@@ -45,7 +45,7 @@ class AdminPipelineStepResDto:
                 "step": step,
                 "modelId": model_id,
                 "model": model,
-                "provider": provider,
+                "apiType": api_type,
                 "temperature": temperature,
             }
         )
@@ -61,7 +61,7 @@ class AdminPipelineStepResDto:
 
         model = d.pop("model")
 
-        provider = d.pop("provider")
+        api_type = d.pop("apiType")
 
         temperature = d.pop("temperature")
 
@@ -69,7 +69,7 @@ class AdminPipelineStepResDto:
             step=step,
             model_id=model_id,
             model=model,
-            provider=provider,
+            api_type=api_type,
             temperature=temperature,
         )
 

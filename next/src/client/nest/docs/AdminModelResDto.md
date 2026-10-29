@@ -7,7 +7,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **string** |  | [default to undefined]
 **providerId** | **string** |  | [default to undefined]
-**provider** | **string** |  | [default to undefined]
 **apiType** | **string** |  | [default to undefined]
 **name** | **string** |  | [default to undefined]
 **enabled** | **boolean** |  | [default to undefined]
@@ -21,7 +20,6 @@ import { AdminModelResDto } from './api';
 const instance: AdminModelResDto = {
     id,
     providerId,
-    provider,
     apiType,
     name,
     enabled,

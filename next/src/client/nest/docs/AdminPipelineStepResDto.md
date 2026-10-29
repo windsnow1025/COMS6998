@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **step** | **string** |  | [default to undefined]
 **modelId** | **string** |  | [default to undefined]
 **model** | **string** |  | [default to undefined]
-**provider** | **string** |  | [default to undefined]
+**apiType** | **string** |  | [default to undefined]
 **temperature** | **number** |  | [default to undefined]
 
 ## Example
@@ -20,7 +20,7 @@ const instance: AdminPipelineStepResDto = {
     step,
     modelId,
     model,
-    provider,
+    apiType,
     temperature,
 };
 ```

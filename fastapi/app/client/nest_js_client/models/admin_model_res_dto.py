@@ -15,7 +15,6 @@ class AdminModelResDto:
     Attributes:
         id (str):
         provider_id (str):
-        provider (str):
         api_type (str):
         name (str):
         enabled (bool):
@@ -24,7 +23,6 @@ class AdminModelResDto:
 
     id: str
     provider_id: str
-    provider: str
     api_type: str
     name: str
     enabled: bool
@@ -35,8 +33,6 @@ class AdminModelResDto:
         id = self.id
 
         provider_id = self.provider_id
-
-        provider = self.provider
 
         api_type = self.api_type
 
@@ -52,7 +48,6 @@ class AdminModelResDto:
             {
                 "id": id,
                 "providerId": provider_id,
-                "provider": provider,
                 "apiType": api_type,
                 "name": name,
                 "enabled": enabled,
@@ -69,8 +64,6 @@ class AdminModelResDto:
 
         provider_id = d.pop("providerId")
 
-        provider = d.pop("provider")
-
         api_type = d.pop("apiType")
 
         name = d.pop("name")
@@ -82,7 +75,6 @@ class AdminModelResDto:
         admin_model_res_dto = cls(
             id=id,
             provider_id=provider_id,
-            provider=provider,
             api_type=api_type,
             name=name,
             enabled=enabled,

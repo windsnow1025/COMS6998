@@ -14,7 +14,6 @@ class AdminStepResDto:
     """
     Attributes:
         step (str):
-        provider (str):
         api_type (str):
         model_id (str):
         model (str):
@@ -24,7 +23,6 @@ class AdminStepResDto:
     """
 
     step: str
-    provider: str
     api_type: str
     model_id: str
     model: str
@@ -35,8 +33,6 @@ class AdminStepResDto:
 
     def to_dict(self) -> dict[str, Any]:
         step = self.step
-
-        provider = self.provider
 
         api_type = self.api_type
 
@@ -55,7 +51,6 @@ class AdminStepResDto:
         field_dict.update(
             {
                 "step": step,
-                "provider": provider,
                 "apiType": api_type,
                 "modelId": model_id,
                 "model": model,
@@ -72,8 +67,6 @@ class AdminStepResDto:
         d = dict(src_dict)
         step = d.pop("step")
 
-        provider = d.pop("provider")
-
         api_type = d.pop("apiType")
 
         model_id = d.pop("modelId")
@@ -88,7 +81,6 @@ class AdminStepResDto:
 
         admin_step_res_dto = cls(
             step=step,
-            provider=provider,
             api_type=api_type,
             model_id=model_id,
             model=model,
