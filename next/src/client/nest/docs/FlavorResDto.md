@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **slug** | **string** |  | [default to undefined]
 **name** | **string** |  | [default to undefined]
 **tagline** | **string** |  | [default to undefined]
+**color** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -18,6 +19,7 @@ const instance: FlavorResDto = {
     slug,
     name,
     tagline,
+    color,
 };
 ```
 

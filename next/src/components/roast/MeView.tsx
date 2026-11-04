@@ -11,6 +11,7 @@ import RoastLogic from '@/lib/roast/RoastLogic';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {preparePhoto} from '@/lib/roast/PhotoUpload';
 import {formatPercent, getWinner} from '@/lib/roast/PhotoResults';
+import {voiceStyle} from '@/lib/roast/VoiceStyle';
 import {PhotoResDto, StatsResDto, UserResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import {useLoad} from './useLoad';
@@ -268,7 +269,7 @@ function Standing({ stats }: { stats: StatsResDto }) {
       ) : (
         <div className={styles.voices}>
           {flavors.map(({ flavor, picks }) => (
-            <div key={flavor.slug} className={styles.voice} data-flavor={flavor.slug}>
+            <div key={flavor.slug} className={styles.voice} style={voiceStyle(flavor)}>
               <div className={styles.voiceHead}>
                 <span>{flavor.name}</span>
                 <span>{formatPercent(picks / totalPicks)}</span>

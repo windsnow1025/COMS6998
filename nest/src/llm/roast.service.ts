@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as z from 'zod/v4';
-import { HumorFlavor } from '../flavors/humor-flavor.entity';
-import { LlmBusyException, LlmClient, LlmResponse } from './llm.client';
+import { LlmClient, LlmResponse } from './llm.client';
 import { LlmStep } from './llm-call.entity';
-import { MaxCaptionLength } from './llm.constants';
-import { PipelineService } from './pipeline.service';
-import {
-  buildCaptionSystemPrompt,
-  buildCaptionUserPrompt,
-  buildDescribeUserPrompt,
-  DescribeSystemPrompt,
-  PromptMaterial,
-} from './roast.prompts';
+import { PipelineService, StepSetting } from './pipeline.service';
+import { buildDescribeUserPrompt, DescribeSystemPrompt } from './roast.prompts';
 
 const DescriptionSchema = z.object({
   suitable: z.boolean(),
@@ -19,14 +11,11 @@ const DescriptionSchema = z.object({
   description: z.string(),
 });
 
-const CaptionsSchema = z.object({
-  captions: z.array(z.object({ voice: z.string(), text: z.string() })),
-});
-
 // The fields of an LlmCall that one request to the LLM determines
 export interface LlmCallRecord {
-  step: LlmStep;
+  step: string;
   model: string;
+  temperature: number;
   systemPrompt: string;
   userPrompt: string;
   response: string;
@@ -43,20 +32,11 @@ export interface PhotoScreening {
   record: LlmCallRecord;
 }
 
-export interface WrittenCaption {
-  flavor: HumorFlavor;
-  text: string;
-}
-
-export interface WrittenCaptions {
-  captions: WrittenCaption[];
-  record: LlmCallRecord;
-}
-
 const DeclinedReason = 'This photo cannot be roasted. Try another one.';
 
-// The prompt chain: a photo is described, and the description is captioned. Each step runs on the model and the
-// temperature the admin set for it (PipelineService).
+// The product's own step before any voice's chain: a photo is screened and described, on the model and the
+// temperature the admin set for the screening (PipelineService); the voices' chains then write from the description
+// (ChainRunnerService)
 @Injectable()
 export class RoastService {
   constructor(
@@ -84,7 +64,7 @@ export class RoastService {
     });
     const record = this.toRecord(
       LlmStep.Describe,
-      setting.model,
+      setting,
       DescribeSystemPrompt,
       userPrompt,
       response,
@@ -114,68 +94,17 @@ export class RoastService {
     return { suitable, reason: '', description: description.trim(), record };
   }
 
-  // `flavors` are the voices of the mix, which the system prompt defines; `voices` are those to write in;
-  // `material` is what the system prompt carries beside the voices. `authorization` is the Authorization header
-  // of the uploader's request.
-  async writeCaptions(
-    description: string,
-    place: string | null,
-    flavors: HumorFlavor[],
-    voices: HumorFlavor[],
-    material: PromptMaterial,
-    authorization: string,
-  ): Promise<WrittenCaptions> {
-    const setting = await this.pipelineService.findStep(LlmStep.Caption);
-    const systemPrompt = buildCaptionSystemPrompt(flavors, material);
-    const userPrompt = buildCaptionUserPrompt(description, place, voices);
-    const response = await this.llmClient.generate({
-      authorization,
-      apiType: setting.apiType,
-      model: setting.model,
-      temperature: setting.temperature,
-      system: systemPrompt,
-      user: userPrompt,
-      schema: CaptionsSchema,
-    });
-
-    const output = response.output;
-    // The photo has passed the screening, so an answer without text is the provider failing, not a refusal
-    if (!output) {
-      throw new LlmBusyException();
-    }
-
-    const captions = voices.map((flavor) => {
-      const written = output.captions.filter(
-        (caption) => caption.voice === flavor.slug,
-      );
-      const text = written[0]?.text.trim();
-      if (written.length !== 1 || !text || text.length > MaxCaptionLength) {
-        throw new Error(
-          `LLM captions do not cover the voice "${flavor.slug}" with one caption of at most ${MaxCaptionLength} characters`,
-        );
-      }
-      return { flavor, text };
-    });
-    const record = this.toRecord(
-      LlmStep.Caption,
-      setting.model,
-      systemPrompt,
-      userPrompt,
-      response,
-    );
-    return { captions, record };
-  }
-
   private toRecord(
-    step: LlmStep,
-    model: string,
+    step: string,
+    setting: StepSetting,
     systemPrompt: string,
     userPrompt: string,
     response: LlmResponse<unknown>,
   ): LlmCallRecord {
     return {
       step,
-      model,
+      model: setting.model,
+      temperature: setting.temperature,
       systemPrompt,
       userPrompt,
       response: response.text,

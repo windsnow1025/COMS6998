@@ -7,6 +7,7 @@ import { Caption } from '../captions/caption.entity';
 import { CaptionExample } from '../flavors/caption-example.entity';
 import { FlavorsModule } from '../flavors/flavors.module';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
+import { PromptStep } from '../flavors/prompt-step.entity';
 import { Term } from '../flavors/term.entity';
 import { Image } from '../images/image.entity';
 import { ImagesModule } from '../images/images.module';
@@ -39,6 +40,7 @@ import { AdminService } from './admin.service';
       LlmProvider,
       LlmModel,
       PipelineStep,
+      PromptStep,
     ]),
     ImagesModule,
     VotesModule,
@@ -47,6 +49,7 @@ import { AdminService } from './admin.service';
     LlmModule,
   ],
   providers: [AdminService, AdminConfigService],
-  controllers: [AdminController, AdminConfigController],
+  // AdminConfigController first: its llm-calls/steps must match before AdminController's llm-calls/:id
+  controllers: [AdminConfigController, AdminController],
 })
 export class AdminModule {}

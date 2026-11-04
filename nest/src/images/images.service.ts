@@ -14,20 +14,31 @@ import { Caption } from '../captions/caption.entity';
 import { Role } from '../common/enums/role.enum';
 import { isUniqueViolation } from '../common/utils/query-error';
 import { S3Service } from '../files/s3.service';
-import { FlavorsService } from '../flavors/flavors.service';
-import { LlmCall } from '../llm/llm-call.entity';
-import { CaptionsPerPhoto } from '../llm/llm.constants';
-import { RoastQuotaService } from '../llm/roast-quota.service';
 import {
-  PhotoScreening,
-  RoastService,
-  WrittenCaptions,
-} from '../llm/roast.service';
+  ChainOutcome,
+  ChainRunnerService,
+} from '../flavors/chain-runner.service';
+import { FlavorsService } from '../flavors/flavors.service';
+import { HumorFlavor } from '../flavors/humor-flavor.entity';
+import { LlmBusyException } from '../llm/llm.client';
+import { LlmCall } from '../llm/llm-call.entity';
+import { CaptionsPerPhoto, MaxCaptionLength } from '../llm/llm.constants';
+import { RoastQuotaService } from '../llm/roast-quota.service';
+import { PhotoScreening, RoastService } from '../llm/roast.service';
 import { UserResDto } from '../users/dto/user.res.dto';
 import { VotesService } from '../votes/votes.service';
 import { detectImageType } from './image-type';
 import { Image } from './image.entity';
+import { findRepeats } from '../flavors/caption-repeats';
 import { PhotosService } from './photos.service';
+
+// A caption a voice's chain wrote for a photo, with the request that wrote it
+interface WrittenCaption {
+  flavor: HumorFlavor;
+  text: string;
+  // The requests of the chain's run, the last of which wrote the caption
+  calls: LlmCall[];
+}
 
 @Injectable()
 export class ImagesService {
@@ -40,6 +51,7 @@ export class ImagesService {
     private readonly roastService: RoastService,
     private readonly roastQuotaService: RoastQuotaService,
     private readonly flavorsService: FlavorsService,
+    private readonly chainRunner: ChainRunnerService,
     private readonly votesService: VotesService,
     private readonly photosService: PhotosService,
   ) {}
@@ -143,25 +155,19 @@ export class ImagesService {
       return image;
     }
 
-    await this.roastQuotaService.takeLlmCall(user);
-    const [flavors, material] = await Promise.all([
-      this.flavorsService.findInMix(),
-      this.flavorsService.findPromptMaterial(),
-    ]);
+    const flavors = await this.flavorsService.findWriters();
     const voices = this.flavorsService.pickLeastUsed(
       flavors,
-      await this.flavorsService.countCaptions(),
+      await this.flavorsService.countKeptCaptions(),
       CaptionsPerPhoto,
     );
-    const written = await this.roastService.writeCaptions(
-      image.description,
-      image.place,
-      flavors,
+    const written = await this.writeInVoices(
+      image,
       voices,
-      material,
+      user,
       authorization,
     );
-    await this.saveCaptions(user, id, written, true);
+    await this.saveCaptions(id, written, true);
     return await this.findOne(id);
   }
 
@@ -178,20 +184,14 @@ export class ImagesService {
       return image;
     }
 
-    await this.roastQuotaService.takeLlmCall(user);
-    const [flavors, material] = await Promise.all([
-      this.flavorsService.findInMix(),
-      this.flavorsService.findPromptMaterial(),
-    ]);
-    const written = await this.roastService.writeCaptions(
-      image.description,
-      image.place,
+    const flavors = await this.flavorsService.findWriters();
+    const written = await this.writeInVoices(
+      image,
       flavors,
-      flavors,
-      material,
+      user,
       authorization,
     );
-    await this.saveCaptions(user, id, written, false);
+    await this.saveCaptions(id, written, false);
     return await this.findOne(id);
   }
 
@@ -254,26 +254,86 @@ export class ImagesService {
     }
   }
 
-  private async saveCaptions(
+  // One caption per voice, the first its chain writes; every chain runs at once, and its requests are recorded as they
+  // complete (ChainRunnerService). A voice whose caption tells the joke of an earlier voice's then writes again,
+  // knowing the others' captions (ChainRunnerService.runApart).
+  private async writeInVoices(
+    image: Image,
+    voices: HumorFlavor[],
     user: UserResDto,
+    authorization: string,
+  ): Promise<WrittenCaption[]> {
+    const photo = {
+      id: image.id,
+      url: image.url,
+      description: image.description,
+      place: image.place,
+    };
+    const outcomes = await Promise.allSettled(
+      voices.map((voice) =>
+        this.chainRunner.run(voice, photo, user, authorization, null),
+      ),
+    );
+    const failures = outcomes.filter(
+      (outcome): outcome is PromiseRejectedResult =>
+        outcome.status === 'rejected',
+    );
+    if (failures.length > 0) {
+      // A provider that cannot answer now is reported over any other failure, since the user can try again
+      const busy = failures.find(
+        (failure) => failure.reason instanceof LlmBusyException,
+      );
+      throw busy ? busy.reason : failures[0].reason;
+    }
+    const written = voices.map((flavor, index) => {
+      const { value } = outcomes[index] as PromiseFulfilledResult<ChainOutcome>;
+      return this.toWritten(flavor, value);
+    });
+
+    // One after another, so that each rewrite knows the captions the others have by then
+    for (const index of findRepeats(written.map(({ text }) => text))) {
+      const { flavor, text, calls } = written[index];
+      const outcome = await this.chainRunner.runApart(
+        flavor,
+        photo,
+        user,
+        authorization,
+        null,
+        written.filter((_, other) => other !== index).map((own) => own.text),
+        { calls, text, captions: [text] },
+      );
+      written[index] = this.toWritten(flavor, outcome);
+    }
+    return written;
+  }
+
+  private toWritten(
+    flavor: HumorFlavor,
+    outcome: ChainOutcome,
+  ): WrittenCaption {
+    const text = outcome.captions?.[0];
+    if (!text || text.length > MaxCaptionLength) {
+      throw new Error(
+        `The chain of the voice "${flavor.slug}" wrote no caption of at most ${MaxCaptionLength} characters`,
+      );
+    }
+    return { flavor, text, calls: outcome.calls };
+  }
+
+  private async saveCaptions(
     id: string,
-    written: WrittenCaptions,
+    written: WrittenCaption[],
     kept: boolean,
   ): Promise<void> {
     try {
       await this.dataSource.transaction(async (manager) => {
-        const llmCall = await manager.save(LlmCall, {
-          ...written.record,
-          image: { id },
-          user: { id: user.id },
-        });
         await manager.save(
           Caption,
-          written.captions.map(({ flavor, text }) => ({
+          written.map(({ flavor, text, calls }) => ({
             content: text,
             image: { id },
             flavor: { id: flavor.id },
-            llmCall: { id: llmCall.id },
+            llmCall: { id: calls[calls.length - 1].id },
             kept,
           })),
         );

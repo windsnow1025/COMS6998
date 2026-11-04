@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chain-next-deployment
+  labels:
+    app: chain-next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chain-next
+  template:
+    metadata:
+      labels:
+        app: chain-next
+    spec:
+      containers:
+        - name: chain-next
+          image: windsnow1025/coms6998-chain-next
+          ports:
+            - containerPort: 3000
+  revisionHistoryLimit: 0

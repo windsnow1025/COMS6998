@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import {FlavorResDto} from '@/client/nest';
+import {voiceStyle} from '@/lib/roast/VoiceStyle';
 import {FontVariables} from './Fonts';
 import styles from './roast.module.css';
 
@@ -40,7 +41,7 @@ export default function FlavorChip({ flavor, suffix }: FlavorChipProps) {
   return (
     <Tooltip
       title={
-        <span className={styles.voiceNote} data-flavor={flavor.slug}>
+        <span className={styles.voiceNote} style={voiceStyle(flavor)}>
           <span className={styles.voiceNoteKind}>AI voice</span>
           <strong className={styles.voiceNoteName}>{flavor.name}</strong>
           <span>{flavor.tagline}</span>
@@ -52,7 +53,7 @@ export default function FlavorChip({ flavor, suffix }: FlavorChipProps) {
       leaveTouchDelay={TouchLeaveDelayMs}
       slotProps={{ tooltip: { className: `${FontVariables} ${styles.tokens}`, sx: TipSx }, arrow: { sx: ArrowSx } }}
     >
-      <span className={styles.chipExplained} data-flavor={flavor.slug}>
+      <span className={styles.chipExplained} style={voiceStyle(flavor)}>
         {flavor.name}
         {suffix && ` ${suffix}`}
       </span>

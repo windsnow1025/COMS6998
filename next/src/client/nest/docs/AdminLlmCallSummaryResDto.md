@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **userId** | **number** |  | [default to undefined]
 **username** | **string** |  | [default to undefined]
+**flavor** | [**FlavorResDto**](FlavorResDto.md) |  | [default to undefined]
 **id** | **string** |  | [default to undefined]
 **imageId** | **string** |  | [default to undefined]
 **imageUrl** | **string** |  | [default to undefined]
@@ -26,6 +27,7 @@ import { AdminLlmCallSummaryResDto } from './api';
 const instance: AdminLlmCallSummaryResDto = {
     userId,
     username,
+    flavor,
     id,
     imageId,
     imageUrl,

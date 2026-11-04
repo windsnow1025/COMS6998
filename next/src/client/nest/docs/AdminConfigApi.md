@@ -16,10 +16,11 @@ All URIs are relative to *http://localhost*
 |[**adminConfigControllerFindDomains**](#adminconfigcontrollerfinddomains) | **GET** /admin/domains | |
 |[**adminConfigControllerFindEmails**](#adminconfigcontrollerfindemails) | **GET** /admin/emails | |
 |[**adminConfigControllerFindExamples**](#adminconfigcontrollerfindexamples) | **GET** /admin/examples | |
+|[**adminConfigControllerFindLlmCallSteps**](#adminconfigcontrollerfindllmcallsteps) | **GET** /admin/llm-calls/steps | |
 |[**adminConfigControllerFindLlmCalls**](#adminconfigcontrollerfindllmcalls) | **GET** /admin/llm-calls | |
 |[**adminConfigControllerFindModels**](#adminconfigcontrollerfindmodels) | **GET** /admin/models | |
 |[**adminConfigControllerFindProviders**](#adminconfigcontrollerfindproviders) | **GET** /admin/providers | |
-|[**adminConfigControllerFindSteps**](#adminconfigcontrollerfindsteps) | **GET** /admin/steps | |
+|[**adminConfigControllerFindScreening**](#adminconfigcontrollerfindscreening) | **GET** /admin/screening | |
 |[**adminConfigControllerFindTerms**](#adminconfigcontrollerfindterms) | **GET** /admin/terms | |
 |[**adminConfigControllerRemoveDomain**](#adminconfigcontrollerremovedomain) | **DELETE** /admin/domains/{id} | |
 |[**adminConfigControllerRemoveEmail**](#adminconfigcontrollerremoveemail) | **DELETE** /admin/emails/{id} | |
@@ -34,7 +35,7 @@ All URIs are relative to *http://localhost*
 |[**adminConfigControllerUpdateExample**](#adminconfigcontrollerupdateexample) | **PATCH** /admin/examples/{id} | |
 |[**adminConfigControllerUpdateModel**](#adminconfigcontrollerupdatemodel) | **PATCH** /admin/models/{id} | |
 |[**adminConfigControllerUpdateProvider**](#adminconfigcontrollerupdateprovider) | **PATCH** /admin/providers/{id} | |
-|[**adminConfigControllerUpdateStep**](#adminconfigcontrollerupdatestep) | **PATCH** /admin/steps/{step} | |
+|[**adminConfigControllerUpdateScreening**](#adminconfigcontrollerupdatescreening) | **PATCH** /admin/screening | |
 |[**adminConfigControllerUpdateTerm**](#adminconfigcontrollerupdateterm) | **PATCH** /admin/terms/{id} | |
 
 # **adminConfigControllerCreateDomain**
@@ -430,7 +431,7 @@ This endpoint does not have any parameters.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **adminConfigControllerFindChains**
-> Array<AdminChainResDto> adminConfigControllerFindChains()
+> Array<ChainResDto> adminConfigControllerFindChains()
 
 
 ### Example
@@ -453,7 +454,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**Array<AdminChainResDto>**
+**Array<ChainResDto>**
 
 ### Authorization
 
@@ -601,6 +602,49 @@ This endpoint does not have any parameters.
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **adminConfigControllerFindLlmCallSteps**
+> Array<string> adminConfigControllerFindLlmCallSteps()
+
+
+### Example
+
+```typescript
+import {
+    AdminConfigApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminConfigApi(configuration);
+
+const { status, data } = await apiInstance.adminConfigControllerFindLlmCallSteps();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**Array<string>**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **adminConfigControllerFindLlmCalls**
 > AdminLlmCallPageResDto adminConfigControllerFindLlmCalls()
 
@@ -618,7 +662,7 @@ const apiInstance = new AdminConfigApi(configuration);
 
 let limit: number; // (default to undefined)
 let offset: number; // (default to undefined)
-let step: 'describe' | 'caption'; // (optional) (default to undefined)
+let step: string; // (optional) (default to undefined)
 let q: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.adminConfigControllerFindLlmCalls(
@@ -635,7 +679,7 @@ const { status, data } = await apiInstance.adminConfigControllerFindLlmCalls(
 |------------- | ------------- | ------------- | -------------|
 | **limit** | [**number**] |  | defaults to undefined|
 | **offset** | [**number**] |  | defaults to undefined|
-| **step** | [**&#39;describe&#39; | &#39;caption&#39;**]**Array<&#39;describe&#39; &#124; &#39;caption&#39;>** |  | (optional) defaults to undefined|
+| **step** | [**string**] |  | (optional) defaults to undefined|
 | **q** | [**string**] |  | (optional) defaults to undefined|
 
 
@@ -746,8 +790,8 @@ This endpoint does not have any parameters.
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **adminConfigControllerFindSteps**
-> Array<AdminPipelineStepResDto> adminConfigControllerFindSteps()
+# **adminConfigControllerFindScreening**
+> AdminScreeningResDto adminConfigControllerFindScreening()
 
 
 ### Example
@@ -761,7 +805,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminConfigApi(configuration);
 
-const { status, data } = await apiInstance.adminConfigControllerFindSteps();
+const { status, data } = await apiInstance.adminConfigControllerFindScreening();
 ```
 
 ### Parameters
@@ -770,7 +814,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**Array<AdminPipelineStepResDto>**
+**AdminScreeningResDto**
 
 ### Authorization
 
@@ -1184,7 +1228,7 @@ const { status, data } = await apiInstance.adminConfigControllerUpdateAccessPoli
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **adminConfigControllerUpdateChain**
-> AdminChainResDto adminConfigControllerUpdateChain(adminChainReqDto)
+> ChainResDto adminConfigControllerUpdateChain(adminChainReqDto)
 
 
 ### Example
@@ -1218,7 +1262,7 @@ const { status, data } = await apiInstance.adminConfigControllerUpdateChain(
 
 ### Return type
 
-**AdminChainResDto**
+**ChainResDto**
 
 ### Authorization
 
@@ -1507,8 +1551,8 @@ const { status, data } = await apiInstance.adminConfigControllerUpdateProvider(
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **adminConfigControllerUpdateStep**
-> AdminPipelineStepResDto adminConfigControllerUpdateStep(adminStepReqDto)
+# **adminConfigControllerUpdateScreening**
+> AdminScreeningResDto adminConfigControllerUpdateScreening(adminScreeningReqDto)
 
 
 ### Example
@@ -1517,18 +1561,16 @@ const { status, data } = await apiInstance.adminConfigControllerUpdateProvider(
 import {
     AdminConfigApi,
     Configuration,
-    AdminStepReqDto
+    AdminScreeningReqDto
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AdminConfigApi(configuration);
 
-let step: string; // (default to undefined)
-let adminStepReqDto: AdminStepReqDto; //
+let adminScreeningReqDto: AdminScreeningReqDto; //
 
-const { status, data } = await apiInstance.adminConfigControllerUpdateStep(
-    step,
-    adminStepReqDto
+const { status, data } = await apiInstance.adminConfigControllerUpdateScreening(
+    adminScreeningReqDto
 );
 ```
 
@@ -1536,13 +1578,12 @@ const { status, data } = await apiInstance.adminConfigControllerUpdateStep(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **adminStepReqDto** | **AdminStepReqDto**|  | |
-| **step** | [**string**] |  | defaults to undefined|
+| **adminScreeningReqDto** | **AdminScreeningReqDto**|  | |
 
 
 ### Return type
 
-**AdminPipelineStepResDto**
+**AdminScreeningResDto**
 
 ### Authorization
 

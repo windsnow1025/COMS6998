@@ -1,33 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FlavorResDto } from '../../flavors/dto/flavor.res.dto';
 
-// A step of the prompt chain as it runs now: its model and the prompts it is sent
-export class AdminStepResDto {
-  step: string;
-  apiType: string;
-  modelId: string;
-  model: string;
-  temperature: number;
-  systemPrompt: string;
-  // The user prompt with the photo's parts as placeholders
-  userPrompt: string;
-}
-
-// A voice as a prompt chain: the photo is described, and the description is captioned in the voice
-export class AdminChainResDto {
-  slug: string;
-  name: string;
-  tagline: string;
-  position: number;
-  // Whether new photos get a caption in the voice
-  inMix: boolean;
-  // The voice's instruction inside the caption step's system prompt
-  prompt: string;
-  // Kept captions written in the voice
-  captions: number;
-  steps: AdminStepResDto[];
-}
-
 // A model FastAPI can call; a provider's API type and a model's name are chosen from this list
 export class AdminAvailableModelResDto {
   apiType: string;
@@ -41,22 +14,34 @@ export class AdminProviderResDto {
   models: number;
 }
 
+// A step that runs on a model: the screening, which has no voice, or a chain's step with its voice
+export class AdminModelStepResDto {
+  @ApiProperty({ type: FlavorResDto, nullable: true })
+  flavor: FlavorResDto | null;
+  step: string;
+}
+
 export class AdminModelResDto {
   id: string;
   providerId: string;
   apiType: string;
   name: string;
   enabled: boolean;
-  // The pipeline steps that run on the model
-  steps: string[];
+  // A step runs on an enabled model of an enabled provider, so a choice of model needs both flags
+  providerEnabled: boolean;
+  steps: AdminModelStepResDto[];
 }
 
-export class AdminPipelineStepResDto {
+// The product's own step before any chain, with the prompts it runs; the user prompt carries the uploader's note as a
+// placeholder
+export class AdminScreeningResDto {
   step: string;
   modelId: string;
   model: string;
   apiType: string;
   temperature: number;
+  systemPrompt: string;
+  userPrompt: string;
 }
 
 export class AdminTermResDto {
@@ -85,6 +70,9 @@ export class AdminLlmCallSummaryResDto {
   userId: number | null;
   @ApiProperty({ type: String, nullable: true })
   username: string | null;
+  // The voice whose chain step made the request; null for the screening
+  @ApiProperty({ type: FlavorResDto, nullable: true })
+  flavor: FlavorResDto | null;
   step: string;
   model: string;
   inputTokens: number;

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chain-next-service
+  labels:
+    app: chain-next
+spec:
+  type: ClusterIP
+  selector:
+    app: chain-next
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

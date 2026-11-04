@@ -4,13 +4,7 @@ import { Repository } from 'typeorm';
 import { LlmStep } from './llm-call.entity';
 import { LlmModel } from './llm-model.entity';
 import { LlmProvider } from './llm-provider.entity';
-import {
-  CaptionApiType,
-  CaptionModel,
-  DescribeApiType,
-  DescribeModel,
-  Temperature,
-} from './llm.constants';
+import { DescribeApiType, DescribeModel, Temperature } from './llm.constants';
 import { PipelineStep } from './pipeline-step.entity';
 
 // What one call to a step is made with
@@ -31,19 +25,17 @@ export class PipelineService implements OnModuleInit {
     private readonly stepRepository: Repository<PipelineStep>,
   ) {}
 
-  // Seeds the steps from the code's constants while the table is empty; the admin owns them afterwards
+  // Seeds the screening from the code's constants while the table lacks it; the admin owns it afterwards
   async onModuleInit() {
-    if ((await this.stepRepository.count()) > 0) {
+    if (await this.stepRepository.existsBy({ step: LlmStep.Describe })) {
       return;
     }
-    const seeds: [LlmStep, string, string][] = [
-      [LlmStep.Describe, DescribeApiType, DescribeModel],
-      [LlmStep.Caption, CaptionApiType, CaptionModel],
-    ];
-    for (const [step, apiType, name] of seeds) {
-      const model = await this.ensureModel(apiType, name);
-      await this.stepRepository.save({ step, model, temperature: Temperature });
-    }
+    const model = await this.ensureModel(DescribeApiType, DescribeModel);
+    await this.stepRepository.save({
+      step: LlmStep.Describe,
+      model,
+      temperature: Temperature,
+    });
   }
 
   // The provider, the model, and the temperature of a step, read at each call so that the admin's changes apply at once
@@ -62,13 +54,15 @@ export class PipelineService implements OnModuleInit {
     };
   }
 
-  private async ensureModel(apiType: string, name: string): Promise<LlmModel> {
+  // The model of the name under the provider of the API type, each created when missing
+  async ensureModel(apiType: string, name: string): Promise<LlmModel> {
     const provider =
       (await this.providerRepository.findOneBy({ apiType })) ??
       (await this.providerRepository.save({ apiType }));
     return (
       (await this.modelRepository.findOne({
         where: { provider: { id: provider.id }, name },
+        relations: { provider: true },
       })) ?? (await this.modelRepository.save({ provider, name }))
     );
   }

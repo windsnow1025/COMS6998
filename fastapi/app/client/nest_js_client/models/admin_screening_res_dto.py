@@ -6,26 +6,26 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="AdminStepResDto")
+T = TypeVar("T", bound="AdminScreeningResDto")
 
 
 @_attrs_define
-class AdminStepResDto:
+class AdminScreeningResDto:
     """
     Attributes:
         step (str):
-        api_type (str):
         model_id (str):
         model (str):
+        api_type (str):
         temperature (float):
         system_prompt (str):
         user_prompt (str):
     """
 
     step: str
-    api_type: str
     model_id: str
     model: str
+    api_type: str
     temperature: float
     system_prompt: str
     user_prompt: str
@@ -34,11 +34,11 @@ class AdminStepResDto:
     def to_dict(self) -> dict[str, Any]:
         step = self.step
 
-        api_type = self.api_type
-
         model_id = self.model_id
 
         model = self.model
+
+        api_type = self.api_type
 
         temperature = self.temperature
 
@@ -51,9 +51,9 @@ class AdminStepResDto:
         field_dict.update(
             {
                 "step": step,
-                "apiType": api_type,
                 "modelId": model_id,
                 "model": model,
+                "apiType": api_type,
                 "temperature": temperature,
                 "systemPrompt": system_prompt,
                 "userPrompt": user_prompt,
@@ -67,11 +67,11 @@ class AdminStepResDto:
         d = dict(src_dict)
         step = d.pop("step")
 
-        api_type = d.pop("apiType")
-
         model_id = d.pop("modelId")
 
         model = d.pop("model")
+
+        api_type = d.pop("apiType")
 
         temperature = d.pop("temperature")
 
@@ -79,18 +79,18 @@ class AdminStepResDto:
 
         user_prompt = d.pop("userPrompt")
 
-        admin_step_res_dto = cls(
+        admin_screening_res_dto = cls(
             step=step,
-            api_type=api_type,
             model_id=model_id,
             model=model,
+            api_type=api_type,
             temperature=temperature,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
         )
 
-        admin_step_res_dto.additional_properties = d
-        return admin_step_res_dto
+        admin_screening_res_dto.additional_properties = d
+        return admin_screening_res_dto
 
     @property
     def additional_keys(self) -> list[str]:

@@ -7,7 +7,7 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.admin_chain_req_dto import AdminChainReqDto
-from ...models.admin_chain_res_dto import AdminChainResDto
+from ...models.chain_res_dto import ChainResDto
 from ...types import Response
 
 
@@ -33,9 +33,9 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> AdminChainResDto | None:
+def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ChainResDto | None:
     if response.status_code == 200:
-        response_200 = AdminChainResDto.from_dict(response.json())
+        response_200 = ChainResDto.from_dict(response.json())
 
         return response_200
 
@@ -45,7 +45,7 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
         return None
 
 
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[AdminChainResDto]:
+def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ChainResDto]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -59,7 +59,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: AdminChainReqDto,
-) -> Response[AdminChainResDto]:
+) -> Response[ChainResDto]:
     """
     Args:
         slug (str):
@@ -70,7 +70,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdminChainResDto]
+        Response[ChainResDto]
     """
 
     kwargs = _get_kwargs(
@@ -90,7 +90,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: AdminChainReqDto,
-) -> AdminChainResDto | None:
+) -> ChainResDto | None:
     """
     Args:
         slug (str):
@@ -101,7 +101,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdminChainResDto
+        ChainResDto
     """
 
     return sync_detailed(
@@ -116,7 +116,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: AdminChainReqDto,
-) -> Response[AdminChainResDto]:
+) -> Response[ChainResDto]:
     """
     Args:
         slug (str):
@@ -127,7 +127,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdminChainResDto]
+        Response[ChainResDto]
     """
 
     kwargs = _get_kwargs(
@@ -145,7 +145,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: AdminChainReqDto,
-) -> AdminChainResDto | None:
+) -> ChainResDto | None:
     """
     Args:
         slug (str):
@@ -156,7 +156,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdminChainResDto
+        ChainResDto
     """
 
     return (

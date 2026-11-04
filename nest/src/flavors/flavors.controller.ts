@@ -11,7 +11,7 @@ export class FlavorsController {
   @Public()
   @Get()
   async findAll(): Promise<FlavorResDto[]> {
-    const flavors = await this.flavorsService.findInMix();
+    const flavors = await this.flavorsService.findWriters();
     return flavors.map((flavor) => this.flavorsService.toFlavorDto(flavor));
   }
 }

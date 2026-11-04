@@ -14,6 +14,7 @@ import {
   startOfCampusDate,
   toCampusDate,
 } from '../common/utils/campus-date';
+import { FlavorsService } from '../flavors/flavors.service';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
 import { Image } from '../images/image.entity';
 import { PhotosService } from '../images/photos.service';
@@ -83,6 +84,7 @@ export class AdminService {
     private readonly itemRepository: Repository<DailyBatchItem>,
     private readonly photosService: PhotosService,
     private readonly votesService: VotesService,
+    private readonly flavorsService: FlavorsService,
   ) {}
 
   async findOverview(): Promise<AdminOverviewResDto> {
@@ -383,11 +385,7 @@ export class AdminService {
         content: caption.content,
         kept: caption.kept,
         flavor: caption.flavor
-          ? {
-              slug: caption.flavor.slug,
-              name: caption.flavor.name,
-              tagline: caption.flavor.tagline,
-            }
+          ? this.flavorsService.toFlavorDto(caption.flavor)
           : null,
         picks: votes.filter(
           (vote) =>
@@ -435,7 +433,7 @@ export class AdminService {
   async findLlmCall(id: string): Promise<AdminLlmCallResDto> {
     const call = await this.llmCallRepository.findOne({
       where: { id },
-      relations: { image: true, user: true },
+      relations: { image: true, user: true, flavor: true },
     });
     if (!call) {
       throw new NotFoundException('LLM call not found');
@@ -444,8 +442,10 @@ export class AdminService {
       id: call.id,
       imageId: call.image.id,
       userId: call.user?.id ?? null,
+      flavor: call.flavor ? this.flavorsService.toFlavorDto(call.flavor) : null,
       step: call.step,
       model: call.model,
+      temperature: call.temperature,
       systemPrompt: call.systemPrompt,
       userPrompt: call.userPrompt,
       response: call.response,
@@ -487,11 +487,7 @@ export class AdminService {
       content: saved.content,
       kept: saved.kept,
       flavor: saved.flavor
-        ? {
-            slug: saved.flavor.slug,
-            name: saved.flavor.name,
-            tagline: saved.flavor.tagline,
-          }
+        ? this.flavorsService.toFlavorDto(saved.flavor)
         : null,
       picks,
       downs,

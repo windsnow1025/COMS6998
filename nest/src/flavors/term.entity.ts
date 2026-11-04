@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../common/entities/base.entity';
 
-// A word of the audience's vernacular, given to the caption step to use where a photo calls for it
+// A word of the audience's vernacular, given to a chain's step whose prompt carries {terms} to use where a photo calls for it
 @Entity()
 export class Term extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
