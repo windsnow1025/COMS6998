@@ -5,7 +5,6 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.admin_config_controller_find_llm_calls_step import AdminConfigControllerFindLlmCallsStep
 from ...models.admin_llm_call_page_res_dto import AdminLlmCallPageResDto
 from ...types import UNSET, Response, Unset
 
@@ -14,7 +13,7 @@ def _get_kwargs(
     *,
     limit: float,
     offset: float,
-    step: AdminConfigControllerFindLlmCallsStep | Unset = UNSET,
+    step: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
@@ -23,11 +22,7 @@ def _get_kwargs(
 
     params["offset"] = offset
 
-    json_step: str | Unset = UNSET
-    if not isinstance(step, Unset):
-        json_step = step.value
-
-    params["step"] = json_step
+    params["step"] = step
 
     params["q"] = q
 
@@ -70,14 +65,14 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     limit: float,
     offset: float,
-    step: AdminConfigControllerFindLlmCallsStep | Unset = UNSET,
+    step: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> Response[AdminLlmCallPageResDto]:
     """
     Args:
         limit (float):
         offset (float):
-        step (AdminConfigControllerFindLlmCallsStep | Unset):
+        step (str | Unset):
         q (str | Unset):
 
     Raises:
@@ -107,14 +102,14 @@ def sync(
     client: AuthenticatedClient | Client,
     limit: float,
     offset: float,
-    step: AdminConfigControllerFindLlmCallsStep | Unset = UNSET,
+    step: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> AdminLlmCallPageResDto | None:
     """
     Args:
         limit (float):
         offset (float):
-        step (AdminConfigControllerFindLlmCallsStep | Unset):
+        step (str | Unset):
         q (str | Unset):
 
     Raises:
@@ -139,14 +134,14 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     limit: float,
     offset: float,
-    step: AdminConfigControllerFindLlmCallsStep | Unset = UNSET,
+    step: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> Response[AdminLlmCallPageResDto]:
     """
     Args:
         limit (float):
         offset (float):
-        step (AdminConfigControllerFindLlmCallsStep | Unset):
+        step (str | Unset):
         q (str | Unset):
 
     Raises:
@@ -174,14 +169,14 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     limit: float,
     offset: float,
-    step: AdminConfigControllerFindLlmCallsStep | Unset = UNSET,
+    step: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> AdminLlmCallPageResDto | None:
     """
     Args:
         limit (float):
         offset (float):
-        step (AdminConfigControllerFindLlmCallsStep | Unset):
+        step (str | Unset):
         q (str | Unset):
 
     Raises:

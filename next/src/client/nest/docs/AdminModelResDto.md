@@ -10,7 +10,8 @@ Name | Type | Description | Notes
 **apiType** | **string** |  | [default to undefined]
 **name** | **string** |  | [default to undefined]
 **enabled** | **boolean** |  | [default to undefined]
-**steps** | **Array&lt;string&gt;** |  | [default to undefined]
+**providerEnabled** | **boolean** |  | [default to undefined]
+**steps** | [**Array&lt;AdminModelStepResDto&gt;**](AdminModelStepResDto.md) |  | [default to undefined]
 
 ## Example
 
@@ -23,6 +24,7 @@ const instance: AdminModelResDto = {
     apiType,
     name,
     enabled,
+    providerEnabled,
     steps,
 };
 ```

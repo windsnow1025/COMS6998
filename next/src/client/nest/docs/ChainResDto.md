@@ -1,33 +1,41 @@
-# AdminChainResDto
+# ChainResDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**id** | **string** |  | [default to undefined]
 **slug** | **string** |  | [default to undefined]
 **name** | **string** |  | [default to undefined]
 **tagline** | **string** |  | [default to undefined]
+**color** | **string** |  | [default to undefined]
 **position** | **number** |  | [default to undefined]
 **inMix** | **boolean** |  | [default to undefined]
-**prompt** | **string** |  | [default to undefined]
+**writesCaptions** | **boolean** |  | [default to undefined]
 **captions** | **number** |  | [default to undefined]
-**steps** | [**Array&lt;AdminStepResDto&gt;**](AdminStepResDto.md) |  | [default to undefined]
+**runs** | **number** |  | [default to undefined]
+**steps** | [**Array&lt;StepResDto&gt;**](StepResDto.md) |  | [default to undefined]
+**createdAt** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { AdminChainResDto } from './api';
+import { ChainResDto } from './api';
 
-const instance: AdminChainResDto = {
+const instance: ChainResDto = {
+    id,
     slug,
     name,
     tagline,
+    color,
     position,
     inMix,
-    prompt,
+    writesCaptions,
     captions,
+    runs,
     steps,
+    createdAt,
 };
 ```
 

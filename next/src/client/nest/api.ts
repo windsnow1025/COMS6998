@@ -49,16 +49,6 @@ export interface AdminCaptionResDto {
 export interface AdminChainReqDto {
     'inMix': boolean;
 }
-export interface AdminChainResDto {
-    'slug': string;
-    'name': string;
-    'tagline': string;
-    'position': number;
-    'inMix': boolean;
-    'prompt': string;
-    'captions': number;
-    'steps': Array<AdminStepResDto>;
-}
 export interface AdminDayResDto {
     'date': string;
     'voters': number;
@@ -100,6 +90,8 @@ export interface AdminLlmCallPageResDto {
 }
 export interface AdminLlmCallResDto {
     'userId': number | null;
+    'flavor': FlavorResDto | null;
+    'temperature': number | null;
     'id': string;
     'imageId': string;
     'step': string;
@@ -115,6 +107,7 @@ export interface AdminLlmCallResDto {
 export interface AdminLlmCallSummaryResDto {
     'userId': number | null;
     'username': string | null;
+    'flavor': FlavorResDto | null;
     'id': string;
     'imageId': string;
     'imageUrl': string;
@@ -144,7 +137,12 @@ export interface AdminModelResDto {
     'apiType': string;
     'name': string;
     'enabled': boolean;
-    'steps': Array<string>;
+    'providerEnabled': boolean;
+    'steps': Array<AdminModelStepResDto>;
+}
+export interface AdminModelStepResDto {
+    'flavor': FlavorResDto | null;
+    'step': string;
 }
 export interface AdminModelUpdateReqDto {
     'name'?: string;
@@ -198,13 +196,6 @@ export interface AdminPhotoVoteResDto {
     'value': number;
     'createdAt': string;
 }
-export interface AdminPipelineStepResDto {
-    'step': string;
-    'modelId': string;
-    'model': string;
-    'apiType': string;
-    'temperature': number;
-}
 export interface AdminProviderReqDto {
     'apiType': string;
     'enabled'?: boolean;
@@ -219,15 +210,15 @@ export interface AdminProviderUpdateReqDto {
     'apiType'?: string;
     'enabled'?: boolean;
 }
-export interface AdminStepReqDto {
+export interface AdminScreeningReqDto {
     'modelId'?: string;
     'temperature'?: number;
 }
-export interface AdminStepResDto {
+export interface AdminScreeningResDto {
     'step': string;
-    'apiType': string;
     'modelId': string;
     'model': string;
+    'apiType': string;
     'temperature': number;
     'systemPrompt': string;
     'userPrompt': string;
@@ -333,6 +324,44 @@ export interface CaptionResDto {
     'image': ImageResDto;
     'createdAt': string;
 }
+export interface ChainCaptionPageResDto {
+    'total': number;
+    'captions': Array<ChainCaptionResDto>;
+}
+export interface ChainCaptionResDto {
+    'id': string;
+    'content': string;
+    'kept': boolean;
+    'picks': number;
+    'photo': RunPhotoResDto;
+    'createdAt': string;
+}
+export interface ChainReqDto {
+    'slug': string;
+    'name': string;
+    'tagline': string;
+    'color': string;
+}
+export interface ChainResDto {
+    'id': string;
+    'slug': string;
+    'name': string;
+    'tagline': string;
+    'color': string;
+    'position': number;
+    'inMix': boolean;
+    'writesCaptions': boolean;
+    'captions': number;
+    'runs': number;
+    'steps': Array<StepResDto>;
+    'createdAt': string;
+}
+export interface ChainUpdateReqDto {
+    'name'?: string;
+    'tagline'?: string;
+    'color'?: string;
+    'inMix'?: boolean;
+}
 export interface EmailVerificationReqDto {
     'email': string;
     'purpose': EmailVerificationReqDtoPurposeEnum;
@@ -355,6 +384,7 @@ export interface FlavorResDto {
     'slug': string;
     'name': string;
     'tagline': string;
+    'color': string;
 }
 export interface FlavorStatResDto {
     'flavor': FlavorResDto;
@@ -407,8 +437,99 @@ export interface PhotoViewerResDto {
     'hasVoted': boolean;
     'matched'?: boolean;
 }
+export interface PlaceholderResDto {
+    'placeholder': string;
+    'meaning': string;
+}
 export interface ReduceCreditReqDto {
     'amount': number;
+}
+export interface RunCallResDto {
+    'temperature': number | null;
+    'id': string;
+    'step': string;
+    'model': string;
+    'systemPrompt': string;
+    'userPrompt': string;
+    'response': string;
+    'inputTokens': number;
+    'outputTokens': number;
+    'durationMs': number;
+    'createdAt': string;
+}
+export interface RunPageResDto {
+    'total': number;
+    'runs': Array<RunSummaryResDto>;
+}
+export interface RunPhotoResDto {
+    'place': string | null;
+    'id': string;
+    'url': string;
+    'description': string;
+}
+export interface RunReqDto {
+    'imageId': string;
+}
+export interface RunResDto {
+    'status': RunResDtoStatusEnum;
+    'user': RunUserResDto | null;
+    'outputType': RunResDtoOutputTypeEnum;
+    'captions': Array<string> | null;
+    'text': string | null;
+    'error': string | null;
+    'finishedAt': string | null;
+    'calls': Array<RunCallResDto>;
+    'id': string;
+    'photo': RunPhotoResDto;
+    'stepCount': number;
+    'createdAt': string;
+}
+
+export const RunResDtoStatusEnum = {
+    Running: 'running',
+    Succeeded: 'succeeded',
+    Failed: 'failed'
+} as const;
+
+export type RunResDtoStatusEnum = typeof RunResDtoStatusEnum[keyof typeof RunResDtoStatusEnum];
+export const RunResDtoOutputTypeEnum = {
+    Text: 'text',
+    Captions: 'captions'
+} as const;
+
+export type RunResDtoOutputTypeEnum = typeof RunResDtoOutputTypeEnum[keyof typeof RunResDtoOutputTypeEnum];
+
+export interface RunSummaryResDto {
+    'status': RunSummaryResDtoStatusEnum;
+    'user': RunUserResDto | null;
+    'outputType': RunSummaryResDtoOutputTypeEnum;
+    'captions': Array<string> | null;
+    'text': string | null;
+    'error': string | null;
+    'finishedAt': string | null;
+    'id': string;
+    'photo': RunPhotoResDto;
+    'stepCount': number;
+    'createdAt': string;
+}
+
+export const RunSummaryResDtoStatusEnum = {
+    Running: 'running',
+    Succeeded: 'succeeded',
+    Failed: 'failed'
+} as const;
+
+export type RunSummaryResDtoStatusEnum = typeof RunSummaryResDtoStatusEnum[keyof typeof RunSummaryResDtoStatusEnum];
+export const RunSummaryResDtoOutputTypeEnum = {
+    Text: 'text',
+    Captions: 'captions'
+} as const;
+
+export type RunSummaryResDtoOutputTypeEnum = typeof RunSummaryResDtoOutputTypeEnum[keyof typeof RunSummaryResDtoOutputTypeEnum];
+
+export interface RunUserResDto {
+    'id': number;
+    'username': string;
 }
 export interface StatsResDto {
     'streak': number;
@@ -420,6 +541,59 @@ export interface StatsResDto {
     'picksReceived': number;
     'roastsLeft': number;
 }
+export interface StepOrderReqDto {
+    'stepIds': Array<string>;
+}
+export interface StepReqDto {
+    'name': string;
+    'input': StepReqDtoInputEnum;
+    'output': StepReqDtoOutputEnum;
+    'systemPrompt': string;
+    'userPrompt': string;
+    'modelId': string;
+    'temperature': number;
+}
+
+export const StepReqDtoInputEnum = {
+    Image: 'image',
+    Text: 'text'
+} as const;
+
+export type StepReqDtoInputEnum = typeof StepReqDtoInputEnum[keyof typeof StepReqDtoInputEnum];
+export const StepReqDtoOutputEnum = {
+    Text: 'text',
+    Captions: 'captions'
+} as const;
+
+export type StepReqDtoOutputEnum = typeof StepReqDtoOutputEnum[keyof typeof StepReqDtoOutputEnum];
+
+export interface StepResDto {
+    'input': StepResDtoInputEnum;
+    'output': StepResDtoOutputEnum;
+    'id': string;
+    'position': number;
+    'name': string;
+    'systemPrompt': string;
+    'userPrompt': string;
+    'modelId': string;
+    'model': string;
+    'apiType': string;
+    'temperature': number;
+}
+
+export const StepResDtoInputEnum = {
+    Image: 'image',
+    Text: 'text'
+} as const;
+
+export type StepResDtoInputEnum = typeof StepResDtoInputEnum[keyof typeof StepResDtoInputEnum];
+export const StepResDtoOutputEnum = {
+    Text: 'text',
+    Captions: 'captions'
+} as const;
+
+export type StepResDtoOutputEnum = typeof StepResDtoOutputEnum[keyof typeof StepResDtoOutputEnum];
+
 export interface UserAvatarReqDto {
     'avatar': string;
 }
@@ -1612,14 +1786,47 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindLlmCallSteps: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/llm-calls/steps`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {number} limit 
          * @param {number} offset 
-         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [step] 
          * @param {string} [q] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerFindLlmCalls: async (limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        adminConfigControllerFindLlmCalls: async (limit: number, offset: number, step?: string, q?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'limit' is not null or undefined
             assertParamExists('adminConfigControllerFindLlmCalls', 'limit', limit)
             // verify required parameter 'offset' is not null or undefined
@@ -1738,8 +1945,8 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerFindSteps: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/admin/steps`;
+        adminConfigControllerFindScreening: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/admin/screening`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2320,18 +2527,14 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
-         * @param {string} step 
-         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {AdminScreeningReqDto} adminScreeningReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerUpdateStep: async (step: string, adminStepReqDto: AdminStepReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'step' is not null or undefined
-            assertParamExists('adminConfigControllerUpdateStep', 'step', step)
-            // verify required parameter 'adminStepReqDto' is not null or undefined
-            assertParamExists('adminConfigControllerUpdateStep', 'adminStepReqDto', adminStepReqDto)
-            const localVarPath = `/admin/steps/{step}`
-                .replace(`{${"step"}}`, encodeURIComponent(String(step)));
+        adminConfigControllerUpdateScreening: async (adminScreeningReqDto: AdminScreeningReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminScreeningReqDto' is not null or undefined
+            assertParamExists('adminConfigControllerUpdateScreening', 'adminScreeningReqDto', adminScreeningReqDto)
+            const localVarPath = `/admin/screening`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2354,7 +2557,7 @@ export const AdminConfigApiAxiosParamCreator = function (configuration?: Configu
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(adminStepReqDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(adminScreeningReqDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2512,7 +2715,7 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminConfigControllerFindChains(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminChainResDto>>> {
+        async adminConfigControllerFindChains(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ChainResDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindChains(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindChains']?.[localVarOperationServerIndex]?.url;
@@ -2553,14 +2756,25 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminConfigControllerFindLlmCallSteps(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindLlmCallSteps(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindLlmCallSteps']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {number} limit 
          * @param {number} offset 
-         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [step] 
          * @param {string} [q] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminLlmCallPageResDto>> {
+        async adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: string, q?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminLlmCallPageResDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindLlmCalls(limit, offset, step, q, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindLlmCalls']?.[localVarOperationServerIndex]?.url;
@@ -2593,10 +2807,10 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminConfigControllerFindSteps(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminPipelineStepResDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindSteps(options);
+        async adminConfigControllerFindScreening(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminScreeningResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerFindScreening(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindSteps']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerFindScreening']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2701,7 +2915,7 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminChainResDto>> {
+        async adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateChain(slug, adminChainReqDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateChain']?.[localVarOperationServerIndex]?.url;
@@ -2774,15 +2988,14 @@ export const AdminConfigApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} step 
-         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {AdminScreeningReqDto} adminScreeningReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminPipelineStepResDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateStep(step, adminStepReqDto, options);
+        async adminConfigControllerUpdateScreening(adminScreeningReqDto: AdminScreeningReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminScreeningResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminConfigControllerUpdateScreening(adminScreeningReqDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateStep']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminConfigApi.adminConfigControllerUpdateScreening']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2882,7 +3095,7 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerFindChains(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminChainResDto>> {
+        adminConfigControllerFindChains(options?: RawAxiosRequestConfig): AxiosPromise<Array<ChainResDto>> {
             return localVarFp.adminConfigControllerFindChains(options).then((request) => request(axios, basePath));
         },
         /**
@@ -2911,14 +3124,22 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminConfigControllerFindLlmCallSteps(options?: RawAxiosRequestConfig): AxiosPromise<Array<string>> {
+            return localVarFp.adminConfigControllerFindLlmCallSteps(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {number} limit 
          * @param {number} offset 
-         * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+         * @param {string} [step] 
          * @param {string} [q] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminLlmCallPageResDto> {
+        adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: string, q?: string, options?: RawAxiosRequestConfig): AxiosPromise<AdminLlmCallPageResDto> {
             return localVarFp.adminConfigControllerFindLlmCalls(limit, offset, step, q, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2942,8 +3163,8 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerFindSteps(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminPipelineStepResDto>> {
-            return localVarFp.adminConfigControllerFindSteps(options).then((request) => request(axios, basePath));
+        adminConfigControllerFindScreening(options?: RawAxiosRequestConfig): AxiosPromise<AdminScreeningResDto> {
+            return localVarFp.adminConfigControllerFindScreening(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3023,7 +3244,7 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminChainResDto> {
+        adminConfigControllerUpdateChain(slug: string, adminChainReqDto: AdminChainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
             return localVarFp.adminConfigControllerUpdateChain(slug, adminChainReqDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3078,13 +3299,12 @@ export const AdminConfigApiFactory = function (configuration?: Configuration, ba
         },
         /**
          * 
-         * @param {string} step 
-         * @param {AdminStepReqDto} adminStepReqDto 
+         * @param {AdminScreeningReqDto} adminScreeningReqDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminPipelineStepResDto> {
-            return localVarFp.adminConfigControllerUpdateStep(step, adminStepReqDto, options).then((request) => request(axios, basePath));
+        adminConfigControllerUpdateScreening(adminScreeningReqDto: AdminScreeningReqDto, options?: RawAxiosRequestConfig): AxiosPromise<AdminScreeningResDto> {
+            return localVarFp.adminConfigControllerUpdateScreening(adminScreeningReqDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3219,14 +3439,23 @@ export class AdminConfigApi extends BaseAPI {
 
     /**
      * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminConfigControllerFindLlmCallSteps(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindLlmCallSteps(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {number} limit 
      * @param {number} offset 
-     * @param {AdminConfigControllerFindLlmCallsStepEnum} [step] 
+     * @param {string} [step] 
      * @param {string} [q] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: AdminConfigControllerFindLlmCallsStepEnum, q?: string, options?: RawAxiosRequestConfig) {
+    public adminConfigControllerFindLlmCalls(limit: number, offset: number, step?: string, q?: string, options?: RawAxiosRequestConfig) {
         return AdminConfigApiFp(this.configuration).adminConfigControllerFindLlmCalls(limit, offset, step, q, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3253,8 +3482,8 @@ export class AdminConfigApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public adminConfigControllerFindSteps(options?: RawAxiosRequestConfig) {
-        return AdminConfigApiFp(this.configuration).adminConfigControllerFindSteps(options).then((request) => request(this.axios, this.basePath));
+    public adminConfigControllerFindScreening(options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerFindScreening(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3404,13 +3633,12 @@ export class AdminConfigApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} step 
-     * @param {AdminStepReqDto} adminStepReqDto 
+     * @param {AdminScreeningReqDto} adminScreeningReqDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public adminConfigControllerUpdateStep(step: string, adminStepReqDto: AdminStepReqDto, options?: RawAxiosRequestConfig) {
-        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateStep(step, adminStepReqDto, options).then((request) => request(this.axios, this.basePath));
+    public adminConfigControllerUpdateScreening(adminScreeningReqDto: AdminScreeningReqDto, options?: RawAxiosRequestConfig) {
+        return AdminConfigApiFp(this.configuration).adminConfigControllerUpdateScreening(adminScreeningReqDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3425,11 +3653,6 @@ export class AdminConfigApi extends BaseAPI {
     }
 }
 
-export const AdminConfigControllerFindLlmCallsStepEnum = {
-    Describe: 'describe',
-    Caption: 'caption'
-} as const;
-export type AdminConfigControllerFindLlmCallsStepEnum = typeof AdminConfigControllerFindLlmCallsStepEnum[keyof typeof AdminConfigControllerFindLlmCallsStepEnum];
 
 
 /**
@@ -4203,6 +4426,1085 @@ export class CaptionsApi extends BaseAPI {
      */
     public captionsControllerFindAll(options?: RawAxiosRequestConfig) {
         return CaptionsApiFp(this.configuration).captionsControllerFindAll(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * ChainsApi - axios parameter creator
+ */
+export const ChainsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerAddStep: async (id: string, stepReqDto: StepReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerAddStep', 'id', id)
+            // verify required parameter 'stepReqDto' is not null or undefined
+            assertParamExists('chainsControllerAddStep', 'stepReqDto', stepReqDto)
+            const localVarPath = `/chains/{id}/steps`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(stepReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ChainReqDto} chainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerCreate: async (chainReqDto: ChainReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'chainReqDto' is not null or undefined
+            assertParamExists('chainsControllerCreate', 'chainReqDto', chainReqDto)
+            const localVarPath = `/chains`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(chainReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {RunReqDto} runReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerCreateRun: async (id: string, runReqDto: RunReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerCreateRun', 'id', id)
+            // verify required parameter 'runReqDto' is not null or undefined
+            assertParamExists('chainsControllerCreateRun', 'runReqDto', runReqDto)
+            const localVarPath = `/chains/{id}/runs`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(runReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/chains`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindCaptions: async (id: string, limit: number, offset: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerFindCaptions', 'id', id)
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('chainsControllerFindCaptions', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('chainsControllerFindCaptions', 'offset', offset)
+            const localVarPath = `/chains/{id}/captions`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerFindOne', 'id', id)
+            const localVarPath = `/chains/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindPlaceholders: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/chains/placeholders`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} runId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindRun: async (id: string, runId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerFindRun', 'id', id)
+            // verify required parameter 'runId' is not null or undefined
+            assertParamExists('chainsControllerFindRun', 'runId', runId)
+            const localVarPath = `/chains/{id}/runs/{runId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"runId"}}`, encodeURIComponent(String(runId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindRuns: async (id: string, limit: number, offset: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerFindRuns', 'id', id)
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('chainsControllerFindRuns', 'limit', limit)
+            // verify required parameter 'offset' is not null or undefined
+            assertParamExists('chainsControllerFindRuns', 'offset', offset)
+            const localVarPath = `/chains/{id}/runs`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerRemove', 'id', id)
+            const localVarPath = `/chains/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerRemoveStep: async (id: string, stepId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerRemoveStep', 'id', id)
+            // verify required parameter 'stepId' is not null or undefined
+            assertParamExists('chainsControllerRemoveStep', 'stepId', stepId)
+            const localVarPath = `/chains/{id}/steps/{stepId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"stepId"}}`, encodeURIComponent(String(stepId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepOrderReqDto} stepOrderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerReorderSteps: async (id: string, stepOrderReqDto: StepOrderReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerReorderSteps', 'id', id)
+            // verify required parameter 'stepOrderReqDto' is not null or undefined
+            assertParamExists('chainsControllerReorderSteps', 'stepOrderReqDto', stepOrderReqDto)
+            const localVarPath = `/chains/{id}/steps/order`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(stepOrderReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ChainUpdateReqDto} chainUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerUpdate: async (id: string, chainUpdateReqDto: ChainUpdateReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerUpdate', 'id', id)
+            // verify required parameter 'chainUpdateReqDto' is not null or undefined
+            assertParamExists('chainsControllerUpdate', 'chainUpdateReqDto', chainUpdateReqDto)
+            const localVarPath = `/chains/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(chainUpdateReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerUpdateStep: async (id: string, stepId: string, stepReqDto: StepReqDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('chainsControllerUpdateStep', 'id', id)
+            // verify required parameter 'stepId' is not null or undefined
+            assertParamExists('chainsControllerUpdateStep', 'stepId', stepId)
+            // verify required parameter 'stepReqDto' is not null or undefined
+            assertParamExists('chainsControllerUpdateStep', 'stepReqDto', stepReqDto)
+            const localVarPath = `/chains/{id}/steps/{stepId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"stepId"}}`, encodeURIComponent(String(stepId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(stepReqDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ChainsApi - functional programming interface
+ */
+export const ChainsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ChainsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerAddStep(id: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerAddStep(id, stepReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerAddStep']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {ChainReqDto} chainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerCreate(chainReqDto: ChainReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerCreate(chainReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {RunReqDto} runReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerCreateRun(id: string, runReqDto: RunReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RunResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerCreateRun(id, runReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerCreateRun']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ChainResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindAll(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindAll']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindCaptions(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainCaptionPageResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindCaptions(id, limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindCaptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindOne(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindPlaceholders(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PlaceholderResDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindPlaceholders(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindPlaceholders']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} runId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindRun(id: string, runId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RunResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindRun(id, runId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindRun']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerFindRuns(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RunPageResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerFindRuns(id, limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerFindRuns']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerRemove(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerRemoveStep(id: string, stepId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerRemoveStep(id, stepId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerRemoveStep']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepOrderReqDto} stepOrderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerReorderSteps(id: string, stepOrderReqDto: StepOrderReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerReorderSteps(id, stepOrderReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerReorderSteps']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ChainUpdateReqDto} chainUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerUpdate(id: string, chainUpdateReqDto: ChainUpdateReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerUpdate(id, chainUpdateReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chainsControllerUpdateStep(id: string, stepId: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChainResDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chainsControllerUpdateStep(id, stepId, stepReqDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ChainsApi.chainsControllerUpdateStep']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * ChainsApi - factory interface
+ */
+export const ChainsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ChainsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerAddStep(id: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerAddStep(id, stepReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ChainReqDto} chainReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerCreate(chainReqDto: ChainReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerCreate(chainReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {RunReqDto} runReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerCreateRun(id: string, runReqDto: RunReqDto, options?: RawAxiosRequestConfig): AxiosPromise<RunResDto> {
+            return localVarFp.chainsControllerCreateRun(id, runReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<ChainResDto>> {
+            return localVarFp.chainsControllerFindAll(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindCaptions(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig): AxiosPromise<ChainCaptionPageResDto> {
+            return localVarFp.chainsControllerFindCaptions(id, limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerFindOne(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindPlaceholders(options?: RawAxiosRequestConfig): AxiosPromise<Array<PlaceholderResDto>> {
+            return localVarFp.chainsControllerFindPlaceholders(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} runId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindRun(id: string, runId: string, options?: RawAxiosRequestConfig): AxiosPromise<RunResDto> {
+            return localVarFp.chainsControllerFindRun(id, runId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {number} limit 
+         * @param {number} offset 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerFindRuns(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig): AxiosPromise<RunPageResDto> {
+            return localVarFp.chainsControllerFindRuns(id, limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.chainsControllerRemove(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerRemoveStep(id: string, stepId: string, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerRemoveStep(id, stepId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {StepOrderReqDto} stepOrderReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerReorderSteps(id: string, stepOrderReqDto: StepOrderReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerReorderSteps(id, stepOrderReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {ChainUpdateReqDto} chainUpdateReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerUpdate(id: string, chainUpdateReqDto: ChainUpdateReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerUpdate(id, chainUpdateReqDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {string} stepId 
+         * @param {StepReqDto} stepReqDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chainsControllerUpdateStep(id: string, stepId: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig): AxiosPromise<ChainResDto> {
+            return localVarFp.chainsControllerUpdateStep(id, stepId, stepReqDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ChainsApi - object-oriented interface
+ */
+export class ChainsApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} id 
+     * @param {StepReqDto} stepReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerAddStep(id: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerAddStep(id, stepReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ChainReqDto} chainReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerCreate(chainReqDto: ChainReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerCreate(chainReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {RunReqDto} runReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerCreateRun(id: string, runReqDto: RunReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerCreateRun(id, runReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindAll(options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindAll(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindCaptions(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindCaptions(id, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindOne(id: string, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindOne(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindPlaceholders(options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindPlaceholders(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {string} runId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindRun(id: string, runId: string, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindRun(id, runId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {number} limit 
+     * @param {number} offset 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerFindRuns(id: string, limit: number, offset: number, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerFindRuns(id, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerRemove(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {string} stepId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerRemoveStep(id: string, stepId: string, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerRemoveStep(id, stepId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {StepOrderReqDto} stepOrderReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerReorderSteps(id: string, stepOrderReqDto: StepOrderReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerReorderSteps(id, stepOrderReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {ChainUpdateReqDto} chainUpdateReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerUpdate(id: string, chainUpdateReqDto: ChainUpdateReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerUpdate(id, chainUpdateReqDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {string} stepId 
+     * @param {StepReqDto} stepReqDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public chainsControllerUpdateStep(id: string, stepId: string, stepReqDto: StepReqDto, options?: RawAxiosRequestConfig) {
+        return ChainsApiFp(this.configuration).chainsControllerUpdateStep(id, stepId, stepReqDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

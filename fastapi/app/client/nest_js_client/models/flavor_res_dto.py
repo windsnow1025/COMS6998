@@ -16,11 +16,13 @@ class FlavorResDto:
         slug (str):
         name (str):
         tagline (str):
+        color (str):
     """
 
     slug: str
     name: str
     tagline: str
+    color: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -30,6 +32,8 @@ class FlavorResDto:
 
         tagline = self.tagline
 
+        color = self.color
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -37,6 +41,7 @@ class FlavorResDto:
                 "slug": slug,
                 "name": name,
                 "tagline": tagline,
+                "color": color,
             }
         )
 
@@ -51,10 +56,13 @@ class FlavorResDto:
 
         tagline = d.pop("tagline")
 
+        color = d.pop("color")
+
         flavor_res_dto = cls(
             slug=slug,
             name=name,
             tagline=tagline,
+            color=color,
         )
 
         flavor_res_dto.additional_properties = d

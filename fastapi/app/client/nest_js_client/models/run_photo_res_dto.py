@@ -1,52 +1,48 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="AdminPipelineStepResDto")
+T = TypeVar("T", bound="RunPhotoResDto")
 
 
 @_attrs_define
-class AdminPipelineStepResDto:
+class RunPhotoResDto:
     """
     Attributes:
-        step (str):
-        model_id (str):
-        model (str):
-        api_type (str):
-        temperature (float):
+        place (None | str):
+        id (str):
+        url (str):
+        description (str):
     """
 
-    step: str
-    model_id: str
-    model: str
-    api_type: str
-    temperature: float
+    place: None | str
+    id: str
+    url: str
+    description: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        step = self.step
+        place: None | str
+        place = self.place
 
-        model_id = self.model_id
+        id = self.id
 
-        model = self.model
+        url = self.url
 
-        api_type = self.api_type
-
-        temperature = self.temperature
+        description = self.description
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "step": step,
-                "modelId": model_id,
-                "model": model,
-                "apiType": api_type,
-                "temperature": temperature,
+                "place": place,
+                "id": id,
+                "url": url,
+                "description": description,
             }
         )
 
@@ -55,26 +51,29 @@ class AdminPipelineStepResDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        step = d.pop("step")
 
-        model_id = d.pop("modelId")
+        def _parse_place(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
 
-        model = d.pop("model")
+        place = _parse_place(d.pop("place"))
 
-        api_type = d.pop("apiType")
+        id = d.pop("id")
 
-        temperature = d.pop("temperature")
+        url = d.pop("url")
 
-        admin_pipeline_step_res_dto = cls(
-            step=step,
-            model_id=model_id,
-            model=model,
-            api_type=api_type,
-            temperature=temperature,
+        description = d.pop("description")
+
+        run_photo_res_dto = cls(
+            place=place,
+            id=id,
+            url=url,
+            description=description,
         )
 
-        admin_pipeline_step_res_dto.additional_properties = d
-        return admin_pipeline_step_res_dto
+        run_photo_res_dto.additional_properties = d
+        return run_photo_res_dto
 
     @property
     def additional_keys(self) -> list[str]:

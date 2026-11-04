@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from dateutil.parser import isoparse
+
+if TYPE_CHECKING:
+    from ..models.flavor_res_dto import FlavorResDto
+
 
 T = TypeVar("T", bound="AdminLlmCallSummaryResDto")
 
@@ -17,6 +21,7 @@ class AdminLlmCallSummaryResDto:
     Attributes:
         user_id (float | None):
         username (None | str):
+        flavor (FlavorResDto):
         id (str):
         image_id (str):
         image_url (str):
@@ -31,6 +36,7 @@ class AdminLlmCallSummaryResDto:
 
     user_id: float | None
     username: None | str
+    flavor: FlavorResDto
     id: str
     image_id: str
     image_url: str
@@ -49,6 +55,8 @@ class AdminLlmCallSummaryResDto:
 
         username: None | str
         username = self.username
+
+        flavor = self.flavor.to_dict()
 
         id = self.id
 
@@ -76,6 +84,7 @@ class AdminLlmCallSummaryResDto:
             {
                 "userId": user_id,
                 "username": username,
+                "flavor": flavor,
                 "id": id,
                 "imageId": image_id,
                 "imageUrl": image_url,
@@ -93,6 +102,8 @@ class AdminLlmCallSummaryResDto:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.flavor_res_dto import FlavorResDto
+
         d = dict(src_dict)
 
         def _parse_user_id(data: object) -> float | None:
@@ -108,6 +119,8 @@ class AdminLlmCallSummaryResDto:
             return cast(None | str, data)
 
         username = _parse_username(d.pop("username"))
+
+        flavor = FlavorResDto.from_dict(d.pop("flavor"))
 
         id = d.pop("id")
 
@@ -132,6 +145,7 @@ class AdminLlmCallSummaryResDto:
         admin_llm_call_summary_res_dto = cls(
             user_id=user_id,
             username=username,
+            flavor=flavor,
             id=id,
             image_id=image_id,
             image_url=image_url,

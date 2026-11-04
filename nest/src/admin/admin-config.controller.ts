@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseEnumPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -13,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
-import { LlmStep } from '../llm/llm-call.entity';
 import { AdminConfigService } from './admin-config.service';
 import {
   AdminAccessPolicyReqDto,
@@ -26,20 +24,20 @@ import {
   AdminModelUpdateReqDto,
   AdminProviderReqDto,
   AdminProviderUpdateReqDto,
-  AdminStepReqDto,
+  AdminScreeningReqDto,
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
+import { ChainResDto } from '../flavors/dto/chain.res.dto';
 import {
   AdminAccessPolicyResDto,
   AdminAvailableModelResDto,
-  AdminChainResDto,
   AdminDomainResDto,
   AdminEmailResDto,
   AdminExampleResDto,
   AdminLlmCallPageResDto,
   AdminModelResDto,
-  AdminPipelineStepResDto,
   AdminProviderResDto,
+  AdminScreeningResDto,
   AdminTermResDto,
 } from './dto/admin-config.res.dto';
 
@@ -50,7 +48,7 @@ export class AdminConfigController {
 
   @Get('chains')
   @Roles([Role.Admin])
-  async findChains(): Promise<AdminChainResDto[]> {
+  async findChains(): Promise<ChainResDto[]> {
     return await this.adminConfigService.findChains();
   }
 
@@ -59,23 +57,22 @@ export class AdminConfigController {
   async updateChain(
     @Param('slug') slug: string,
     @Body() dto: AdminChainReqDto,
-  ): Promise<AdminChainResDto> {
+  ): Promise<ChainResDto> {
     return await this.adminConfigService.updateChain(slug, dto.inMix);
   }
 
-  @Get('steps')
+  @Get('screening')
   @Roles([Role.Admin])
-  async findSteps(): Promise<AdminPipelineStepResDto[]> {
-    return await this.adminConfigService.findSteps();
+  async findScreening(): Promise<AdminScreeningResDto> {
+    return await this.adminConfigService.findScreening();
   }
 
-  @Patch('steps/:step')
+  @Patch('screening')
   @Roles([Role.Admin])
-  async updateStep(
-    @Param('step', new ParseEnumPipe(LlmStep)) step: LlmStep,
-    @Body() dto: AdminStepReqDto,
-  ): Promise<AdminPipelineStepResDto> {
-    return await this.adminConfigService.updateStep(step, dto);
+  async updateScreening(
+    @Body() dto: AdminScreeningReqDto,
+  ): Promise<AdminScreeningResDto> {
+    return await this.adminConfigService.updateScreening(dto);
   }
 
   @Get('available-models')
@@ -203,6 +200,12 @@ export class AdminConfigController {
   @Roles([Role.Admin])
   async removeExample(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminConfigService.removeExample(id);
+  }
+
+  @Get('llm-calls/steps')
+  @Roles([Role.Admin])
+  async findLlmCallSteps(): Promise<string[]> {
+    return await this.adminConfigService.findLlmCallSteps();
   }
 
   @Get('llm-calls')

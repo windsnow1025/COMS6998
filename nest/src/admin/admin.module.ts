@@ -7,6 +7,7 @@ import { Caption } from '../captions/caption.entity';
 import { CaptionExample } from '../flavors/caption-example.entity';
 import { FlavorsModule } from '../flavors/flavors.module';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
+import { PromptStep } from '../flavors/prompt-step.entity';
 import { Term } from '../flavors/term.entity';
 import { Image } from '../images/image.entity';
 import { ImagesModule } from '../images/images.module';
@@ -39,6 +40,7 @@ import { AdminService } from './admin.service';
       LlmProvider,
       LlmModel,
       PipelineStep,
+      PromptStep,
     ]),
     ImagesModule,
     VotesModule,

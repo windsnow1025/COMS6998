@@ -11,6 +11,7 @@ import TouchAppRoundedIcon from '@mui/icons-material/TouchAppRounded';
 import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {getWinner} from '@/lib/roast/PhotoResults';
+import {voiceStyle} from '@/lib/roast/VoiceStyle';
 import {FlavorResDto, PhotoCaptionResDto, PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import LandingHero from './LandingHero';
@@ -270,7 +271,7 @@ function Voices({ flavors, photos }: { flavors: FlavorResDto[]; photos: PhotoRes
         {flavors.map((flavor) => {
           const best = findBestCaption(photos, flavor.slug);
           return (
-            <li key={flavor.slug} className={styles.voiceCard} data-flavor={flavor.slug}>
+            <li key={flavor.slug} className={styles.voiceCard} style={voiceStyle(flavor)}>
               <h3 className={styles.voiceName}>{flavor.name}</h3>
               <p className={styles.voiceTagline}>{flavor.tagline}</p>
               {best && <p className={styles.voiceQuote}>&ldquo;{best.content}&rdquo;</p>}

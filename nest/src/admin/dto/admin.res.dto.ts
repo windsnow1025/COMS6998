@@ -160,8 +160,13 @@ export class AdminLlmCallResDto {
   imageId: string;
   @ApiProperty({ type: Number, nullable: true })
   userId: number | null;
+  // The voice whose chain step made the request; null for the screening
+  @ApiProperty({ type: FlavorResDto, nullable: true })
+  flavor: FlavorResDto | null;
   step: string;
   model: string;
+  @ApiProperty({ type: Number, nullable: true })
+  temperature: number | null;
   systemPrompt: string;
   userPrompt: string;
   response: string;

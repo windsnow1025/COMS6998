@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+if TYPE_CHECKING:
+    from ..models.admin_model_step_res_dto import AdminModelStepResDto
+
 
 T = TypeVar("T", bound="AdminModelResDto")
 
@@ -18,7 +22,8 @@ class AdminModelResDto:
         api_type (str):
         name (str):
         enabled (bool):
-        steps (list[str]):
+        provider_enabled (bool):
+        steps (list[AdminModelStepResDto]):
     """
 
     id: str
@@ -26,7 +31,8 @@ class AdminModelResDto:
     api_type: str
     name: str
     enabled: bool
-    steps: list[str]
+    provider_enabled: bool
+    steps: list[AdminModelStepResDto]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -40,7 +46,12 @@ class AdminModelResDto:
 
         enabled = self.enabled
 
-        steps = self.steps
+        provider_enabled = self.provider_enabled
+
+        steps = []
+        for steps_item_data in self.steps:
+            steps_item = steps_item_data.to_dict()
+            steps.append(steps_item)
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -51,6 +62,7 @@ class AdminModelResDto:
                 "apiType": api_type,
                 "name": name,
                 "enabled": enabled,
+                "providerEnabled": provider_enabled,
                 "steps": steps,
             }
         )
@@ -59,6 +71,8 @@ class AdminModelResDto:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.admin_model_step_res_dto import AdminModelStepResDto
+
         d = dict(src_dict)
         id = d.pop("id")
 
@@ -70,7 +84,14 @@ class AdminModelResDto:
 
         enabled = d.pop("enabled")
 
-        steps = cast(list[str], d.pop("steps"))
+        provider_enabled = d.pop("providerEnabled")
+
+        steps = []
+        _steps = d.pop("steps")
+        for steps_item_data in _steps:
+            steps_item = AdminModelStepResDto.from_dict(steps_item_data)
+
+            steps.append(steps_item)
 
         admin_model_res_dto = cls(
             id=id,
@@ -78,6 +99,7 @@ class AdminModelResDto:
             api_type=api_type,
             name=name,
             enabled=enabled,
+            provider_enabled=provider_enabled,
             steps=steps,
         )
 

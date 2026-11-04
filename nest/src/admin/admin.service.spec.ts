@@ -24,6 +24,19 @@ function createService(stubs: {
     (stubs.itemRepository ?? {}) as never,
     {} as never,
     {} as never,
+    {
+      toFlavorDto: (flavor: {
+        slug: string;
+        name: string;
+        tagline: string;
+        color: string;
+      }) => ({
+        slug: flavor.slug,
+        name: flavor.name,
+        tagline: flavor.tagline,
+        color: flavor.color,
+      }),
+    } as never,
   );
 }
 

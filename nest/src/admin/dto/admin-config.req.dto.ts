@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
-  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -13,7 +12,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { LlmStep } from '../../llm/llm-call.entity';
+import { MaxStepNameLength } from '../../flavors/prompt-step.entity';
 import { MaxCaptionLength } from '../../llm/llm.constants';
 import { MaxSearchLength } from './admin.req.dto';
 
@@ -69,7 +68,7 @@ export class AdminModelUpdateReqDto {
   enabled?: boolean;
 }
 
-export class AdminStepReqDto {
+export class AdminScreeningReqDto {
   @IsOptional()
   @IsUUID()
   modelId?: string;
@@ -123,9 +122,11 @@ export class AdminLlmCallsReqDto {
   @Min(0)
   offset: number;
 
+  // The screening's name or a chain step's name
   @IsOptional()
-  @IsIn(Object.values(LlmStep))
-  step?: LlmStep;
+  @IsString()
+  @MaxLength(MaxStepNameLength)
+  step?: string;
 
   // Matches the response's text
   @IsOptional()

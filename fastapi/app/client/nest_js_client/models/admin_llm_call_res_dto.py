@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from dateutil.parser import isoparse
+
+if TYPE_CHECKING:
+    from ..models.flavor_res_dto import FlavorResDto
+
 
 T = TypeVar("T", bound="AdminLlmCallResDto")
 
@@ -16,6 +20,8 @@ class AdminLlmCallResDto:
     """
     Attributes:
         user_id (float | None):
+        flavor (FlavorResDto):
+        temperature (float | None):
         id (str):
         image_id (str):
         step (str):
@@ -30,6 +36,8 @@ class AdminLlmCallResDto:
     """
 
     user_id: float | None
+    flavor: FlavorResDto
+    temperature: float | None
     id: str
     image_id: str
     step: str
@@ -46,6 +54,11 @@ class AdminLlmCallResDto:
     def to_dict(self) -> dict[str, Any]:
         user_id: float | None
         user_id = self.user_id
+
+        flavor = self.flavor.to_dict()
+
+        temperature: float | None
+        temperature = self.temperature
 
         id = self.id
 
@@ -74,6 +87,8 @@ class AdminLlmCallResDto:
         field_dict.update(
             {
                 "userId": user_id,
+                "flavor": flavor,
+                "temperature": temperature,
                 "id": id,
                 "imageId": image_id,
                 "step": step,
@@ -92,6 +107,8 @@ class AdminLlmCallResDto:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.flavor_res_dto import FlavorResDto
+
         d = dict(src_dict)
 
         def _parse_user_id(data: object) -> float | None:
@@ -100,6 +117,15 @@ class AdminLlmCallResDto:
             return cast(float | None, data)
 
         user_id = _parse_user_id(d.pop("userId"))
+
+        flavor = FlavorResDto.from_dict(d.pop("flavor"))
+
+        def _parse_temperature(data: object) -> float | None:
+            if data is None:
+                return data
+            return cast(float | None, data)
+
+        temperature = _parse_temperature(d.pop("temperature"))
 
         id = d.pop("id")
 
@@ -125,6 +151,8 @@ class AdminLlmCallResDto:
 
         admin_llm_call_res_dto = cls(
             user_id=user_id,
+            flavor=flavor,
+            temperature=temperature,
             id=id,
             image_id=image_id,
             step=step,

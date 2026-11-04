@@ -15,6 +15,7 @@
   --dr-gold: #c98a00;
   --dr-shadow: 0 1px 2px rgba(33, 22, 15, 0.06), 0 10px 30px rgba(33, 22, 15, 0.08);
   --dr-radius: 20px;
+  /* The color of a voice, which an element that shows one sets on itself from the voice's own color */
   --dr-flavor: var(--dr-accent);
 }
 
@@ -31,26 +32,6 @@
   --dr-on-accent: #1a0d06;
   --dr-gold: #f2b83a;
   --dr-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-
-.tokens [data-flavor='deadpan'] {
-  --dr-flavor: #64748b;
-}
-
-.tokens [data-flavor='online'] {
-  --dr-flavor: #8b5cf6;
-}
-
-.tokens [data-flavor='midwest'] {
-  --dr-flavor: #2e9e6b;
-}
-
-.tokens [data-flavor='newyorker'] {
-  --dr-flavor: #d99a00;
-}
-
-.tokens [data-flavor='columbia'] {
-  --dr-flavor: #3f8fd6;
 }
 
 .root {

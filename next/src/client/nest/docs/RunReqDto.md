@@ -1,21 +1,19 @@
-# AdminStepReqDto
+# RunReqDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**modelId** | **string** |  | [optional] [default to undefined]
-**temperature** | **number** |  | [optional] [default to undefined]
+**imageId** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { AdminStepReqDto } from './api';
+import { RunReqDto } from './api';
 
-const instance: AdminStepReqDto = {
-    modelId,
-    temperature,
+const instance: RunReqDto = {
+    imageId,
 };
 ```
 

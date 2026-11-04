@@ -5,7 +5,7 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.admin_chain_res_dto import AdminChainResDto
+from ...models.chain_res_dto import ChainResDto
 from ...types import Response
 
 
@@ -18,12 +18,12 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> list[AdminChainResDto] | None:
+def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> list[ChainResDto] | None:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in _response_200:
-            response_200_item = AdminChainResDto.from_dict(response_200_item_data)
+            response_200_item = ChainResDto.from_dict(response_200_item_data)
 
             response_200.append(response_200_item)
 
@@ -35,9 +35,7 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
         return None
 
 
-def _build_response(
-    *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[list[AdminChainResDto]]:
+def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[list[ChainResDto]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -49,14 +47,14 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-) -> Response[list[AdminChainResDto]]:
+) -> Response[list[ChainResDto]]:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list[AdminChainResDto]]
+        Response[list[ChainResDto]]
     """
 
     kwargs = _get_kwargs()
@@ -71,14 +69,14 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-) -> list[AdminChainResDto] | None:
+) -> list[ChainResDto] | None:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list[AdminChainResDto]
+        list[ChainResDto]
     """
 
     return sync_detailed(
@@ -89,14 +87,14 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-) -> Response[list[AdminChainResDto]]:
+) -> Response[list[ChainResDto]]:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list[AdminChainResDto]]
+        Response[list[ChainResDto]]
     """
 
     kwargs = _get_kwargs()
@@ -109,14 +107,14 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-) -> list[AdminChainResDto] | None:
+) -> list[ChainResDto] | None:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list[AdminChainResDto]
+        list[ChainResDto]
     """
 
     return (

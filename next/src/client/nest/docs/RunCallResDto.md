@@ -1,31 +1,39 @@
-# AdminStepResDto
+# RunCallResDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**step** | **string** |  | [default to undefined]
-**apiType** | **string** |  | [default to undefined]
-**modelId** | **string** |  | [default to undefined]
-**model** | **string** |  | [default to undefined]
 **temperature** | **number** |  | [default to undefined]
+**id** | **string** |  | [default to undefined]
+**step** | **string** |  | [default to undefined]
+**model** | **string** |  | [default to undefined]
 **systemPrompt** | **string** |  | [default to undefined]
 **userPrompt** | **string** |  | [default to undefined]
+**response** | **string** |  | [default to undefined]
+**inputTokens** | **number** |  | [default to undefined]
+**outputTokens** | **number** |  | [default to undefined]
+**durationMs** | **number** |  | [default to undefined]
+**createdAt** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { AdminStepResDto } from './api';
+import { RunCallResDto } from './api';
 
-const instance: AdminStepResDto = {
-    step,
-    apiType,
-    modelId,
-    model,
+const instance: RunCallResDto = {
     temperature,
+    id,
+    step,
+    model,
     systemPrompt,
     userPrompt,
+    response,
+    inputTokens,
+    outputTokens,
+    durationMs,
+    createdAt,
 };
 ```
 

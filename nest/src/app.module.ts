@@ -37,6 +37,8 @@ import { PipelineStep } from './llm/pipeline-step.entity';
 import { AccessPolicy } from './access/access-policy.entity';
 import { AllowedDomain } from './access/allowed-domain.entity';
 import { WhitelistedEmail } from './access/whitelisted-email.entity';
+import { PromptStep } from './flavors/prompt-step.entity';
+import { ChainRun } from './flavors/chain-run.entity';
 
 @Module({
   imports: [
@@ -75,6 +77,8 @@ import { WhitelistedEmail } from './access/whitelisted-email.entity';
             AllowedDomain,
             WhitelistedEmail,
             AccessPolicy,
+            PromptStep,
+            ChainRun,
           ],
           synchronize: true,
           logging: ['query', 'error'],
