@@ -35,6 +35,10 @@ kubectl apply -f ./admin-next/admin-next-service.yaml
 # Chain Next.js
 kubectl apply -f ./chain-next/chain-next-service.yaml
 
+# Project Next.js
+kubectl apply -f ./project-next/project-next-service.yaml
+kubectl apply -f ./project-baseline-next/project-baseline-next-service.yaml
+
 # Nginx
 kubectl apply -f ./nginx/nginx-configmap.yaml
 kubectl apply -f ./nginx/nginx-deployment.yaml
@@ -61,6 +65,10 @@ kubectl apply -f ./admin-next/admin-next-deployment.yaml
 
 # Chain Next
 kubectl apply -f ./chain-next/chain-next-deployment.yaml
+
+# Project Next
+kubectl apply -f ./project-next/project-next-deployment.yaml
+kubectl apply -f ./project-baseline-next/project-baseline-next-deployment.yaml
 ```
 
 ### Test
@@ -108,6 +116,10 @@ kubectl rollout restart deployment admin-next-deployment
 
 # Chain Next.js
 kubectl rollout restart deployment chain-next-deployment
+
+# Project Next.js
+kubectl rollout restart deployment project-next-deployment
+kubectl rollout restart deployment project-baseline-next-deployment
 
 # Nginx
 kubectl rollout restart deployment nginx-deployment
