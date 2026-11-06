@@ -1,20 +1,30 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
 import { addDays, toCampusDate } from '../common/utils/campus-date';
 import { Caption } from '../captions/caption.entity';
+import { Role } from '../common/enums/role.enum';
 import { Image } from '../images/image.entity';
+import { UserResDto } from '../users/dto/user.res.dto';
+import { User } from '../users/user.entity';
 import { AdminService, buildDays, escapeLike } from './admin.service';
 import { AdminDayResDto } from './dto/admin.res.dto';
 
 const today = toCampusDate(new Date());
 
 function createService(stubs: {
+  userRepository?: object;
   imageRepository?: object;
   captionRepository?: object;
   voteRepository?: object;
   itemRepository?: object;
+  cacheManager?: object;
 }): AdminService {
   return new AdminService(
-    {} as never,
+    (stubs.userRepository ?? {}) as never,
     (stubs.imageRepository ?? {}) as never,
     (stubs.captionRepository ?? {}) as never,
     (stubs.voteRepository ?? {}) as never,
@@ -37,6 +47,8 @@ function createService(stubs: {
         color: flavor.color,
       }),
     } as never,
+    { getUserCacheKey: (id: number) => `user:${id}` } as never,
+    (stubs.cacheManager ?? {}) as never,
   );
 }
 
@@ -186,6 +198,122 @@ describe('removeCaption', () => {
     });
     await expect(service.removeCaption('c1')).rejects.toThrow(
       NotFoundException,
+    );
+  });
+});
+
+describe('updateUser', () => {
+  const actor = { id: 1 } as UserResDto;
+  const values = {
+    username: ' roaster ',
+    firstName: ' Ada ',
+    lastName: '',
+    admin: true,
+  };
+
+  // A repository whose grouped counts answer no row
+  const noRows = () => {
+    const builder: Record<string, unknown> = {
+      getRawMany: () => Promise.resolve([]),
+    };
+    for (const method of ['select', 'addSelect', 'where', 'groupBy']) {
+      builder[method] = () => builder;
+    }
+    return { createQueryBuilder: () => builder };
+  };
+
+  function createUserService(user: Partial<User> | null, save: jest.Mock) {
+    const deleted: string[] = [];
+    const service = createService({
+      userRepository: { findOneBy: () => Promise.resolve(user), save },
+      imageRepository: noRows(),
+      voteRepository: noRows(),
+      cacheManager: {
+        del: (key: string) => {
+          deleted.push(key);
+          return Promise.resolve();
+        },
+      },
+    });
+    return { service, deleted };
+  }
+
+  const stored = (id: number, roles: Role[]): Partial<User> => ({
+    id,
+    username: 'old',
+    email: 'a@columbia.edu',
+    roles,
+    createdAt: new Date(1),
+  });
+
+  it('saves the trimmed fields with the role and drops the cached user', async () => {
+    const save = jest.fn((user: User) => Promise.resolve(user));
+    const { service, deleted } = createUserService(
+      stored(2, [Role.User]),
+      save,
+    );
+
+    const updated = await service.updateUser(actor, 2, values);
+
+    expect(save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 2,
+        username: 'roaster',
+        firstName: 'Ada',
+        lastName: '',
+        roles: [Role.User, Role.Admin],
+      }),
+    );
+    expect(deleted).toEqual(['user:2']);
+    expect(updated).toMatchObject({
+      id: 2,
+      username: 'roaster',
+      firstName: 'Ada',
+      roles: [Role.User, Role.Admin],
+      photos: 0,
+      photosJudged: 0,
+      lastActiveAt: null,
+    });
+  });
+
+  it("keeps an admin's own admin role and lets the other fields change", async () => {
+    const save = jest.fn((user: User) => Promise.resolve(user));
+    const { service } = createUserService(stored(1, [Role.Admin]), save);
+
+    await expect(
+      service.updateUser(actor, 1, { ...values, admin: false }),
+    ).rejects.toThrow(BadRequestException);
+    expect(save).not.toHaveBeenCalled();
+
+    await expect(service.updateUser(actor, 1, values)).resolves.toMatchObject({
+      username: 'roaster',
+    });
+  });
+
+  it('answers 404 for an unknown user and 400 for a blank username', async () => {
+    const save = jest.fn();
+    await expect(
+      createUserService(null, save).service.updateUser(actor, 2, values),
+    ).rejects.toThrow(NotFoundException);
+    await expect(
+      createUserService(stored(2, [Role.User]), save).service.updateUser(
+        actor,
+        2,
+        { ...values, username: '  ' },
+      ),
+    ).rejects.toThrow(BadRequestException);
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('answers 409 for a username another user has', async () => {
+    const taken = new QueryFailedError('UPDATE', [], {
+      code: '23505',
+    } as never);
+    const save = jest.fn(() => Promise.reject(taken));
+    const { service } = createUserService(stored(2, [Role.User]), save);
+
+    await expect(service.updateUser(actor, 2, values)).rejects.toThrow(
+      ConflictException,
     );
   });
 });

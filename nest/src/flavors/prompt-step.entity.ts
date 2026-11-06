@@ -63,7 +63,4 @@ export class PromptStep extends BaseEntity {
   @ManyToOne(() => LlmModel, { onDelete: 'RESTRICT', nullable: false })
   @JoinColumn()
   model: LlmModel;
-
-  @Column({ type: 'real', default: 1 })
-  temperature: number;
 }

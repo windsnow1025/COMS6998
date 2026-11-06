@@ -4,6 +4,7 @@ import { AccessModule } from '../access/access.module';
 import { DailyBatch } from '../batches/daily-batch.entity';
 import { DailyBatchItem } from '../batches/daily-batch-item.entity';
 import { Caption } from '../captions/caption.entity';
+import { CoreModule } from '../core/core.module';
 import { CaptionExample } from '../flavors/caption-example.entity';
 import { FlavorsModule } from '../flavors/flavors.module';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
@@ -42,6 +43,7 @@ import { AdminService } from './admin.service';
       PipelineStep,
       PromptStep,
     ]),
+    CoreModule,
     ImagesModule,
     VotesModule,
     FlavorsModule,

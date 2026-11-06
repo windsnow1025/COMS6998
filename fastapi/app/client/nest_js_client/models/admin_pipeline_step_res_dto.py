@@ -6,41 +6,39 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="AdminScreeningResDto")
+from ..models.admin_pipeline_step_res_dto_step import AdminPipelineStepResDtoStep
+
+T = TypeVar("T", bound="AdminPipelineStepResDto")
 
 
 @_attrs_define
-class AdminScreeningResDto:
+class AdminPipelineStepResDto:
     """
     Attributes:
-        step (str):
+        step (AdminPipelineStepResDtoStep):
         model_id (str):
         model (str):
         api_type (str):
-        temperature (float):
         system_prompt (str):
         user_prompt (str):
     """
 
-    step: str
+    step: AdminPipelineStepResDtoStep
     model_id: str
     model: str
     api_type: str
-    temperature: float
     system_prompt: str
     user_prompt: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        step = self.step
+        step = self.step.value
 
         model_id = self.model_id
 
         model = self.model
 
         api_type = self.api_type
-
-        temperature = self.temperature
 
         system_prompt = self.system_prompt
 
@@ -54,7 +52,6 @@ class AdminScreeningResDto:
                 "modelId": model_id,
                 "model": model,
                 "apiType": api_type,
-                "temperature": temperature,
                 "systemPrompt": system_prompt,
                 "userPrompt": user_prompt,
             }
@@ -65,7 +62,7 @@ class AdminScreeningResDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        step = d.pop("step")
+        step = AdminPipelineStepResDtoStep(d.pop("step"))
 
         model_id = d.pop("modelId")
 
@@ -73,24 +70,21 @@ class AdminScreeningResDto:
 
         api_type = d.pop("apiType")
 
-        temperature = d.pop("temperature")
-
         system_prompt = d.pop("systemPrompt")
 
         user_prompt = d.pop("userPrompt")
 
-        admin_screening_res_dto = cls(
+        admin_pipeline_step_res_dto = cls(
             step=step,
             model_id=model_id,
             model=model,
             api_type=api_type,
-            temperature=temperature,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
         )
 
-        admin_screening_res_dto.additional_properties = d
-        return admin_screening_res_dto
+        admin_pipeline_step_res_dto.additional_properties = d
+        return admin_pipeline_step_res_dto
 
     @property
     def additional_keys(self) -> list[str]:

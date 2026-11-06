@@ -55,6 +55,10 @@ export class AdminOverviewResDto {
 export class AdminUserResDto {
   id: number;
   username: string;
+  @ApiProperty({ type: String, nullable: true })
+  firstName: string | null;
+  @ApiProperty({ type: String, nullable: true })
+  lastName: string | null;
   email: string;
   @ApiProperty({ enum: Role, isArray: true, nullable: true })
   roles: Role[] | null;
@@ -160,13 +164,11 @@ export class AdminLlmCallResDto {
   imageId: string;
   @ApiProperty({ type: Number, nullable: true })
   userId: number | null;
-  // The voice whose chain step made the request; null for the screening
+  // The voice whose chain step made the request; null for the product's own steps
   @ApiProperty({ type: FlavorResDto, nullable: true })
   flavor: FlavorResDto | null;
   step: string;
   model: string;
-  @ApiProperty({ type: Number, nullable: true })
-  temperature: number | null;
   systemPrompt: string;
   userPrompt: string;
   response: string;

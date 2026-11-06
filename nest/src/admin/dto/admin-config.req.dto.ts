@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsEmail,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -12,15 +11,22 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { MaxWeight } from '../../flavors/humor-flavor.entity';
 import { MaxStepNameLength } from '../../flavors/prompt-step.entity';
 import { MaxCaptionLength } from '../../llm/llm.constants';
 import { MaxSearchLength } from './admin.req.dto';
 
-export const MaxTemperature = 2;
-
+// A voice's place in the mix and its weight there
 export class AdminChainReqDto {
+  @IsOptional()
   @IsBoolean()
-  inMix: boolean;
+  inMix?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MaxWeight)
+  weight?: number;
 }
 
 export class AdminProviderReqDto {
@@ -68,16 +74,9 @@ export class AdminModelUpdateReqDto {
   enabled?: boolean;
 }
 
-export class AdminScreeningReqDto {
-  @IsOptional()
+export class AdminPipelineStepReqDto {
   @IsUUID()
-  modelId?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(MaxTemperature)
-  temperature?: number;
+  modelId: string;
 }
 
 export class AdminTermReqDto {
@@ -122,7 +121,7 @@ export class AdminLlmCallsReqDto {
   @Min(0)
   offset: number;
 
-  // The screening's name or a chain step's name
+  // The name of one of the product's own steps or of a chain step
   @IsOptional()
   @IsString()
   @MaxLength(MaxStepNameLength)

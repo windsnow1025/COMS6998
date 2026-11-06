@@ -17,6 +17,8 @@ T = TypeVar("T", bound="AdminUserResDto")
 class AdminUserResDto:
     """
     Attributes:
+        first_name (None | str):
+        last_name (None | str):
         roles (list[AdminUserResDtoRolesType0Item] | None):
         last_active_at (datetime.datetime | None):
         id (float):
@@ -27,6 +29,8 @@ class AdminUserResDto:
         photos_judged (float):
     """
 
+    first_name: None | str
+    last_name: None | str
     roles: list[AdminUserResDtoRolesType0Item] | None
     last_active_at: datetime.datetime | None
     id: float
@@ -38,6 +42,12 @@ class AdminUserResDto:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        first_name: None | str
+        first_name = self.first_name
+
+        last_name: None | str
+        last_name = self.last_name
+
         roles: list[str] | None
         if isinstance(self.roles, list):
             roles = []
@@ -70,6 +80,8 @@ class AdminUserResDto:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "firstName": first_name,
+                "lastName": last_name,
                 "roles": roles,
                 "lastActiveAt": last_active_at,
                 "id": id,
@@ -86,6 +98,20 @@ class AdminUserResDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
+
+        def _parse_first_name(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        first_name = _parse_first_name(d.pop("firstName"))
+
+        def _parse_last_name(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        last_name = _parse_last_name(d.pop("lastName"))
 
         def _parse_roles(data: object) -> list[AdminUserResDtoRolesType0Item] | None:
             if data is None:
@@ -135,6 +161,8 @@ class AdminUserResDto:
         photos_judged = d.pop("photosJudged")
 
         admin_user_res_dto = cls(
+            first_name=first_name,
+            last_name=last_name,
             roles=roles,
             last_active_at=last_active_at,
             id=id,

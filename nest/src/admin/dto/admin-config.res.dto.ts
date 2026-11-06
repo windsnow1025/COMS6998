@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FlavorResDto } from '../../flavors/dto/flavor.res.dto';
+import { LlmStep } from '../../llm/llm-call.entity';
 
 // A model FastAPI can call; a provider's API type and a model's name are chosen from this list
 export class AdminAvailableModelResDto {
@@ -14,7 +15,7 @@ export class AdminProviderResDto {
   models: number;
 }
 
-// A step that runs on a model: the screening, which has no voice, or a chain's step with its voice
+// A step that runs on a model: one of the product's own steps, which has no voice, or a chain's step with its voice
 export class AdminModelStepResDto {
   @ApiProperty({ type: FlavorResDto, nullable: true })
   flavor: FlavorResDto | null;
@@ -32,14 +33,13 @@ export class AdminModelResDto {
   steps: AdminModelStepResDto[];
 }
 
-// The product's own step before any chain, with the prompts it runs; the user prompt carries the uploader's note as a
-// placeholder
-export class AdminScreeningResDto {
-  step: string;
+// One of the product's own steps before any chain, the screening or the description, with the prompts it runs; the
+// user prompt carries the uploader's note as a placeholder
+export class AdminPipelineStepResDto {
+  step: LlmStep;
   modelId: string;
   model: string;
   apiType: string;
-  temperature: number;
   systemPrompt: string;
   userPrompt: string;
 }
@@ -70,7 +70,7 @@ export class AdminLlmCallSummaryResDto {
   userId: number | null;
   @ApiProperty({ type: String, nullable: true })
   username: string | null;
-  // The voice whose chain step made the request; null for the screening
+  // The voice whose chain step made the request; null for the product's own steps
   @ApiProperty({ type: FlavorResDto, nullable: true })
   flavor: FlavorResDto | null;
   step: string;

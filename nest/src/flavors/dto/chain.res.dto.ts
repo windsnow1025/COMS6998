@@ -15,7 +15,6 @@ export class StepResDto {
   modelId: string;
   model: string;
   apiType: string;
-  temperature: number;
 }
 
 // A voice as a prompt chain, with its steps in order
@@ -28,6 +27,8 @@ export class ChainResDto {
   position: number;
   // Whether new photos get a caption in the voice
   inMix: boolean;
+  // The voice's share of new photos against the other voices in the mix
+  weight: number;
   // Whether the chain ends with a step that writes captions, which the mix needs
   writesCaptions: boolean;
   // Captions written in the voice for the product
@@ -62,8 +63,6 @@ export class RunCallResDto {
   id: string;
   step: string;
   model: string;
-  @ApiProperty({ type: Number, nullable: true })
-  temperature: number | null;
   systemPrompt: string;
   userPrompt: string;
   response: string;

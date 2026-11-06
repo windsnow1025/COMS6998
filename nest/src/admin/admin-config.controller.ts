@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseEnumPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -22,12 +23,13 @@ import {
   AdminLlmCallsReqDto,
   AdminModelReqDto,
   AdminModelUpdateReqDto,
+  AdminPipelineStepReqDto,
   AdminProviderReqDto,
   AdminProviderUpdateReqDto,
-  AdminScreeningReqDto,
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import { ChainResDto } from '../flavors/dto/chain.res.dto';
+import { LlmStep } from '../llm/llm-call.entity';
 import {
   AdminAccessPolicyResDto,
   AdminAvailableModelResDto,
@@ -36,8 +38,8 @@ import {
   AdminExampleResDto,
   AdminLlmCallPageResDto,
   AdminModelResDto,
+  AdminPipelineStepResDto,
   AdminProviderResDto,
-  AdminScreeningResDto,
   AdminTermResDto,
 } from './dto/admin-config.res.dto';
 
@@ -58,21 +60,22 @@ export class AdminConfigController {
     @Param('slug') slug: string,
     @Body() dto: AdminChainReqDto,
   ): Promise<ChainResDto> {
-    return await this.adminConfigService.updateChain(slug, dto.inMix);
+    return await this.adminConfigService.updateChain(slug, dto);
   }
 
-  @Get('screening')
+  @Get('pipeline-steps')
   @Roles([Role.Admin])
-  async findScreening(): Promise<AdminScreeningResDto> {
-    return await this.adminConfigService.findScreening();
+  async findPipelineSteps(): Promise<AdminPipelineStepResDto[]> {
+    return await this.adminConfigService.findPipelineSteps();
   }
 
-  @Patch('screening')
+  @Patch('pipeline-steps/:step')
   @Roles([Role.Admin])
-  async updateScreening(
-    @Body() dto: AdminScreeningReqDto,
-  ): Promise<AdminScreeningResDto> {
-    return await this.adminConfigService.updateScreening(dto);
+  async updatePipelineStep(
+    @Param('step', new ParseEnumPipe(LlmStep)) step: LlmStep,
+    @Body() dto: AdminPipelineStepReqDto,
+  ): Promise<AdminPipelineStepResDto> {
+    return await this.adminConfigService.updatePipelineStep(step, dto);
   }
 
   @Get('available-models')

@@ -17,12 +17,14 @@ class ChainReqDto:
         name (str):
         tagline (str):
         color (str):
+        weight (float):
     """
 
     slug: str
     name: str
     tagline: str
     color: str
+    weight: float
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -34,6 +36,8 @@ class ChainReqDto:
 
         color = self.color
 
+        weight = self.weight
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -42,6 +46,7 @@ class ChainReqDto:
                 "name": name,
                 "tagline": tagline,
                 "color": color,
+                "weight": weight,
             }
         )
 
@@ -58,11 +63,14 @@ class ChainReqDto:
 
         color = d.pop("color")
 
+        weight = d.pop("weight")
+
         chain_req_dto = cls(
             slug=slug,
             name=name,
             tagline=tagline,
             color=color,
+            weight=weight,
         )
 
         chain_req_dto.additional_properties = d

@@ -5,7 +5,6 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -23,8 +22,7 @@ import {
   StepInput,
   StepOutput,
 } from '../prompt-step.entity';
-
-export const MaxTemperature = 2;
+import { MaxWeight } from '../humor-flavor.entity';
 
 export class ChainReqDto {
   // Lower-case letters, digits, and hyphens; set at creation
@@ -43,6 +41,11 @@ export class ChainReqDto {
 
   @Matches(ColorPattern)
   color: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(MaxWeight)
+  weight: number;
 }
 
 export class ChainUpdateReqDto {
@@ -63,6 +66,12 @@ export class ChainUpdateReqDto {
   @IsOptional()
   @IsBoolean()
   inMix?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MaxWeight)
+  weight?: number;
 }
 
 export class StepReqDto {
@@ -86,11 +95,6 @@ export class StepReqDto {
 
   @IsUUID()
   modelId: string;
-
-  @IsNumber()
-  @Min(0)
-  @Max(MaxTemperature)
-  temperature: number;
 }
 
 // The chain's steps in their new order, every step of the chain once

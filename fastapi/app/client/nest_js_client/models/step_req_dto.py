@@ -23,7 +23,6 @@ class StepReqDto:
         system_prompt (str):
         user_prompt (str):
         model_id (UUID):
-        temperature (float):
     """
 
     name: str
@@ -32,7 +31,6 @@ class StepReqDto:
     system_prompt: str
     user_prompt: str
     model_id: UUID
-    temperature: float
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -48,8 +46,6 @@ class StepReqDto:
 
         model_id = str(self.model_id)
 
-        temperature = self.temperature
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -60,7 +56,6 @@ class StepReqDto:
                 "systemPrompt": system_prompt,
                 "userPrompt": user_prompt,
                 "modelId": model_id,
-                "temperature": temperature,
             }
         )
 
@@ -81,8 +76,6 @@ class StepReqDto:
 
         model_id = UUID(d.pop("modelId"))
 
-        temperature = d.pop("temperature")
-
         step_req_dto = cls(
             name=name,
             input_=input_,
@@ -90,7 +83,6 @@ class StepReqDto:
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             model_id=model_id,
-            temperature=temperature,
         )
 
         step_req_dto.additional_properties = d

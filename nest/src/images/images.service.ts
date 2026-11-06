@@ -24,7 +24,7 @@ import { LlmBusyException } from '../llm/llm.client';
 import { LlmCall } from '../llm/llm-call.entity';
 import { CaptionsPerPhoto, MaxCaptionLength } from '../llm/llm.constants';
 import { RoastQuotaService } from '../llm/roast-quota.service';
-import { PhotoScreening, RoastService } from '../llm/roast.service';
+import { PhotoAdmission, RoastService } from '../llm/roast.service';
 import { UserResDto } from '../users/dto/user.res.dto';
 import { VotesService } from '../votes/votes.service';
 import { detectImageType } from './image-type';
@@ -77,7 +77,7 @@ export class ImagesService {
     });
   }
 
-  // Stores the photo's file, which the LLM reads by its URL, then screens and describes the photo.
+  // Stores the photo's file, which the LLM reads by its URL, then screens and describes the photo (RoastService).
   // The file of an unsuitable photo is removed, and nothing of the photo is kept.
   // A seed photo has no uploader; the batches serve it when no upload of a user waits.
   // `authorization` is the Authorization header of the user's request.
@@ -97,7 +97,7 @@ export class ImagesService {
 
     await this.roastQuotaService.takeRoast(user);
     const storageKey = `photos/${user.id}/${randomUUID()}.${type.extension}`;
-    let screening: PhotoScreening;
+    let admission: PhotoAdmission;
     try {
       await this.s3Service.uploadFile(
         storageKey,
@@ -105,7 +105,7 @@ export class ImagesService {
         file.size,
         type.mediaType,
       );
-      screening = await this.roastService.screen(
+      admission = await this.roastService.admit(
         this.s3Service.getFileUrl(storageKey),
         place,
         authorization,
@@ -115,25 +115,29 @@ export class ImagesService {
       await this.s3Service.removeObject(storageKey);
       throw error;
     }
-    if (!screening.suitable) {
+    if (!admission.suitable) {
       await this.s3Service.removeObject(storageKey);
-      throw new UnprocessableEntityException(screening.reason);
+      throw new UnprocessableEntityException(admission.reason);
     }
+    const { description, records } = admission;
 
     try {
       return await this.dataSource.transaction(async (manager) => {
         const image = await manager.save(Image, {
           url: this.s3Service.getFileUrl(storageKey),
-          description: screening.description,
+          description,
           place,
           storageKey,
           uploader: seed ? null : { id: user.id },
         });
-        await manager.save(LlmCall, {
-          ...screening.record,
-          image: { id: image.id },
-          user: { id: user.id },
-        });
+        await manager.save(
+          LlmCall,
+          records.map((record) => ({
+            ...record,
+            image: { id: image.id },
+            user: { id: user.id },
+          })),
+        );
         return image;
       });
     } catch (error) {
@@ -156,7 +160,7 @@ export class ImagesService {
     }
 
     const flavors = await this.flavorsService.findWriters();
-    const voices = this.flavorsService.pickLeastUsed(
+    const voices = this.flavorsService.pickByWeight(
       flavors,
       await this.flavorsService.countKeptCaptions(),
       CaptionsPerPhoto,

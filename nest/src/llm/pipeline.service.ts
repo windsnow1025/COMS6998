@@ -4,14 +4,13 @@ import { Repository } from 'typeorm';
 import { LlmStep } from './llm-call.entity';
 import { LlmModel } from './llm-model.entity';
 import { LlmProvider } from './llm-provider.entity';
-import { DescribeApiType, DescribeModel, Temperature } from './llm.constants';
+import { PipelineApiType, PipelineModel } from './llm.constants';
 import { PipelineStep } from './pipeline-step.entity';
 
 // What one call to a step is made with
 export interface StepSetting {
   apiType: string;
   model: string;
-  temperature: number;
 }
 
 @Injectable()
@@ -25,20 +24,19 @@ export class PipelineService implements OnModuleInit {
     private readonly stepRepository: Repository<PipelineStep>,
   ) {}
 
-  // Seeds the screening from the code's constants while the table lacks it; the admin owns it afterwards
+  // Seeds each of the product's own steps from the code's constants while the table lacks it; the admin owns it
+  // afterwards
   async onModuleInit() {
-    if (await this.stepRepository.existsBy({ step: LlmStep.Describe })) {
-      return;
+    for (const step of Object.values(LlmStep)) {
+      if (await this.stepRepository.existsBy({ step })) {
+        continue;
+      }
+      const model = await this.ensureModel(PipelineApiType, PipelineModel);
+      await this.stepRepository.save({ step, model });
     }
-    const model = await this.ensureModel(DescribeApiType, DescribeModel);
-    await this.stepRepository.save({
-      step: LlmStep.Describe,
-      model,
-      temperature: Temperature,
-    });
   }
 
-  // The provider, the model, and the temperature of a step, read at each call so that the admin's changes apply at once
+  // The provider and the model of a step, read at each call so that the admin's changes apply at once
   async findStep(step: LlmStep): Promise<StepSetting> {
     const row = await this.stepRepository.findOne({
       where: { step },
@@ -50,7 +48,6 @@ export class PipelineService implements OnModuleInit {
     return {
       apiType: row.model.provider.apiType,
       model: row.model.name,
-      temperature: row.temperature,
     };
   }
 

@@ -51,8 +51,9 @@ interface FilledPrompts {
   userPrompt: string;
 }
 
-// Runs a voice's chain on a photo: each step's prompts are filled from the photo and the previous step's answer, its
-// request is made on its model, and the request is recorded as it completes
+// Runs a voice's chain on a photo. The chain starts from the photo's description, the answer of the describe step
+// that every chain shares (RoastService); each of its own steps has its prompts filled from the photo and the
+// previous step's answer, its request made on its model, and the request recorded as it completes
 @Injectable()
 export class ChainRunnerService {
   constructor(
@@ -79,7 +80,9 @@ export class ChainRunnerService {
     taken: string[] = [],
   ): Promise<ChainOutcome> {
     if (flavor.steps.length === 0) {
-      throw new Error(`The chain of the voice "${flavor.slug}" has no step`);
+      throw new Error(
+        `The chain of the voice "${flavor.slug}" has no step of its own`,
+      );
     }
     const [terms, examples] = await Promise.all([
       this.termRepository.find({ order: { term: 'ASC' } }),
@@ -96,7 +99,7 @@ export class ChainRunnerService {
     };
 
     const calls: LlmCall[] = [];
-    let previous = '';
+    let previous = photo.description;
     let captions: string[] | null = null;
     for (const [index, step] of flavor.steps.entries()) {
       const values: PlaceholderValues = {
@@ -114,7 +117,6 @@ export class ChainRunnerService {
         authorization,
         apiType: step.model.provider.apiType,
         model: step.model.name,
-        temperature: step.temperature,
         system: prompts.systemPrompt,
         user: prompts.userPrompt,
         imageUrl: step.input === StepInput.Image ? photo.url : undefined,
@@ -238,7 +240,6 @@ export class ChainRunnerService {
       run: run ? { id: run.id } : null,
       step: step.name,
       model: step.model.name,
-      temperature: step.temperature,
       systemPrompt: prompts.systemPrompt,
       userPrompt: prompts.userPrompt,
       response: response.text,

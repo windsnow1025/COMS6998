@@ -7,13 +7,16 @@ from starlette.responses import StreamingResponse
 
 from app.service.chat import response_handler
 
+# llm_bridge takes a temperature for every model. The newer models ignore or refuse one, so a request carries none,
+# and the providers' default is passed.
+Temperature = 1
+
 
 async def handle_chat_interaction(
         user_id: str,
         messages: list[Message],
         model: str,
         api_type: str,
-        temperature: float,
         stream: bool,
         thought: bool,
         web_search: bool,
@@ -39,7 +42,7 @@ async def handle_chat_interaction(
         messages=messages,
         model=model,
         api_type=api_type,
-        temperature=temperature,
+        temperature=Temperature,
         stream=stream,
         thought=thought,
         web_search=web_search,
