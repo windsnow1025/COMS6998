@@ -116,6 +116,7 @@ export class ChainsService implements OnModuleInit {
       name: dto.name,
       tagline: dto.tagline,
       color: dto.color,
+      weight: dto.weight,
       position: Number(row?.max ?? -1) + 1,
       inMix: false,
     });
@@ -134,6 +135,9 @@ export class ChainsService implements OnModuleInit {
     if (dto.color !== undefined) {
       changes.color = dto.color;
     }
+    if (dto.weight !== undefined) {
+      changes.weight = dto.weight;
+    }
     if (dto.inMix !== undefined && dto.inMix !== flavor.inMix) {
       await this.checkMixChange(flavor, dto.inMix);
       changes.inMix = dto.inMix;
@@ -144,13 +148,16 @@ export class ChainsService implements OnModuleInit {
     return await this.findChain(id);
   }
 
-  // For the admin's mix switch, which names the voice by its slug
-  async updateMixBySlug(slug: string, inMix: boolean): Promise<ChainResDto> {
+  // For the admin's Chains page, which names the voice by its slug
+  async updateBySlug(
+    slug: string,
+    dto: Pick<ChainUpdateReqDto, 'inMix' | 'weight'>,
+  ): Promise<ChainResDto> {
     const flavor = await this.flavorRepository.findOneBy({ slug });
     if (!flavor) {
       throw new NotFoundException('Voice not found');
     }
-    return await this.updateChain(flavor.id, { inMix });
+    return await this.updateChain(flavor.id, dto);
   }
 
   // A chain that wrote captions of the product stays, since they reference it; it can leave the mix instead
@@ -184,7 +191,6 @@ export class ChainsService implements OnModuleInit {
       systemPrompt: dto.systemPrompt,
       userPrompt: dto.userPrompt,
       model,
-      temperature: dto.temperature,
     });
     return await this.findChain(chainId);
   }
@@ -210,7 +216,6 @@ export class ChainsService implements OnModuleInit {
       systemPrompt: dto.systemPrompt,
       userPrompt: dto.userPrompt,
       model,
-      temperature: dto.temperature,
     });
     return await this.findChain(chainId);
   }
@@ -262,7 +267,7 @@ export class ChainsService implements OnModuleInit {
   ): Promise<RunResDto> {
     const flavor = await this.loadChain(chainId);
     if (flavor.steps.length === 0) {
-      throw new BadRequestException('The chain has no step to run');
+      throw new BadRequestException('The chain has no step of its own to run');
     }
     const image = await this.imageRepository.findOneBy({ id: imageId });
     if (!image) {
@@ -527,6 +532,7 @@ export class ChainsService implements OnModuleInit {
       color: flavor.color,
       position: flavor.position,
       inMix: flavor.inMix,
+      weight: flavor.weight,
       writesCaptions: canWriteCaptions(flavor.steps),
       captions,
       runs,
@@ -547,7 +553,6 @@ export class ChainsService implements OnModuleInit {
       modelId: step.model.id,
       model: step.model.name,
       apiType: step.model.provider.apiType,
-      temperature: step.temperature,
     };
   }
 
@@ -576,7 +581,6 @@ export class ChainsService implements OnModuleInit {
       id: call.id,
       step: call.step,
       model: call.model,
-      temperature: call.temperature,
       systemPrompt: call.systemPrompt,
       userPrompt: call.userPrompt,
       response: call.response,

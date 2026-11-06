@@ -21,7 +21,6 @@ class AdminLlmCallResDto:
     Attributes:
         user_id (float | None):
         flavor (FlavorResDto):
-        temperature (float | None):
         id (str):
         image_id (str):
         step (str):
@@ -37,7 +36,6 @@ class AdminLlmCallResDto:
 
     user_id: float | None
     flavor: FlavorResDto
-    temperature: float | None
     id: str
     image_id: str
     step: str
@@ -56,9 +54,6 @@ class AdminLlmCallResDto:
         user_id = self.user_id
 
         flavor = self.flavor.to_dict()
-
-        temperature: float | None
-        temperature = self.temperature
 
         id = self.id
 
@@ -88,7 +83,6 @@ class AdminLlmCallResDto:
             {
                 "userId": user_id,
                 "flavor": flavor,
-                "temperature": temperature,
                 "id": id,
                 "imageId": image_id,
                 "step": step,
@@ -120,13 +114,6 @@ class AdminLlmCallResDto:
 
         flavor = FlavorResDto.from_dict(d.pop("flavor"))
 
-        def _parse_temperature(data: object) -> float | None:
-            if data is None:
-                return data
-            return cast(float | None, data)
-
-        temperature = _parse_temperature(d.pop("temperature"))
-
         id = d.pop("id")
 
         image_id = d.pop("imageId")
@@ -152,7 +139,6 @@ class AdminLlmCallResDto:
         admin_llm_call_res_dto = cls(
             user_id=user_id,
             flavor=flavor,
-            temperature=temperature,
             id=id,
             image_id=image_id,
             step=step,

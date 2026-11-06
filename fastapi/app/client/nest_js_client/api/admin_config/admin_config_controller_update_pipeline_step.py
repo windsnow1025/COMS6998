@@ -1,26 +1,43 @@
 from http import HTTPStatus
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.admin_screening_res_dto import AdminScreeningResDto
+from ...models.admin_pipeline_step_req_dto import AdminPipelineStepReqDto
+from ...models.admin_pipeline_step_res_dto import AdminPipelineStepResDto
 from ...types import Response
 
 
-def _get_kwargs() -> dict[str, Any]:
+def _get_kwargs(
+    step: str,
+    *,
+    body: AdminPipelineStepReqDto,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/admin/screening",
+        "method": "patch",
+        "url": "/admin/pipeline-steps/{step}".format(
+            step=quote(str(step), safe=""),
+        ),
     }
 
+    _kwargs["json"] = body.to_dict()
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> AdminScreeningResDto | None:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> AdminPipelineStepResDto | None:
     if response.status_code == 200:
-        response_200 = AdminScreeningResDto.from_dict(response.json())
+        response_200 = AdminPipelineStepResDto.from_dict(response.json())
 
         return response_200
 
@@ -32,7 +49,7 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[AdminScreeningResDto]:
+) -> Response[AdminPipelineStepResDto]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -42,19 +59,28 @@ def _build_response(
 
 
 def sync_detailed(
+    step: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[AdminScreeningResDto]:
+    body: AdminPipelineStepReqDto,
+) -> Response[AdminPipelineStepResDto]:
     """
+    Args:
+        step (str):
+        body (AdminPipelineStepReqDto):
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdminScreeningResDto]
+        Response[AdminPipelineStepResDto]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        step=step,
+        body=body,
+    )
 
     response = client.get_httpx_client().request(
         **kwargs,
@@ -64,37 +90,54 @@ def sync_detailed(
 
 
 def sync(
+    step: str,
     *,
     client: AuthenticatedClient | Client,
-) -> AdminScreeningResDto | None:
+    body: AdminPipelineStepReqDto,
+) -> AdminPipelineStepResDto | None:
     """
+    Args:
+        step (str):
+        body (AdminPipelineStepReqDto):
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdminScreeningResDto
+        AdminPipelineStepResDto
     """
 
     return sync_detailed(
+        step=step,
         client=client,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
+    step: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[AdminScreeningResDto]:
+    body: AdminPipelineStepReqDto,
+) -> Response[AdminPipelineStepResDto]:
     """
+    Args:
+        step (str):
+        body (AdminPipelineStepReqDto):
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdminScreeningResDto]
+        Response[AdminPipelineStepResDto]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        step=step,
+        body=body,
+    )
 
     response = await client.get_async_httpx_client().request(**kwargs)
 
@@ -102,20 +145,28 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    step: str,
     *,
     client: AuthenticatedClient | Client,
-) -> AdminScreeningResDto | None:
+    body: AdminPipelineStepReqDto,
+) -> AdminPipelineStepResDto | None:
     """
+    Args:
+        step (str):
+        body (AdminPipelineStepReqDto):
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdminScreeningResDto
+        AdminPipelineStepResDto
     """
 
     return (
         await asyncio_detailed(
+            step=step,
             client=client,
+            body=body,
         )
     ).parsed

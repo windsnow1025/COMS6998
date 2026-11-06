@@ -2,6 +2,9 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../common/entities/base.entity';
 import { PromptStep, StepOutput } from './prompt-step.entity';
 
+// The most a voice's weight can be; the least is 1
+export const MaxWeight = 10;
+
 // A voice in which captions are written: a prompt chain, whose steps (PromptStep) write a photo's caption in the voice
 @Entity()
 export class HumorFlavor extends BaseEntity {
@@ -29,6 +32,11 @@ export class HumorFlavor extends BaseEntity {
   // the mix can write captions (ChainsService)
   @Column({ default: false })
   inMix: boolean;
+
+  // The voice's share of new photos against the other voices in the mix: a voice of weight 2 captions twice the photos
+  // of one of weight 1, as far as CaptionsPerPhoto voices per photo allow (FlavorsService.pickByWeight)
+  @Column({ type: 'int', default: 1 })
+  weight: number;
 
   @OneToMany(() => PromptStep, (step) => step.flavor)
   steps: PromptStep[];

@@ -6,6 +6,7 @@ import {
   MaxDailyLlmCalls,
   MaxDailyRoasts,
   MaxDailyUserLlmCalls,
+  UploadLlmCalls,
 } from './llm.constants';
 import { RoastQuotaService } from './roast-quota.service';
 
@@ -13,14 +14,14 @@ import { RoastQuotaService } from './roast-quota.service';
 class FakeCounterClient {
   private readonly counts = new Map<string, number>();
 
-  increment(key: string): Promise<number> {
-    const count = (this.counts.get(key) ?? 0) + 1;
+  increment(key: string, amount: number): Promise<number> {
+    const count = (this.counts.get(key) ?? 0) + amount;
     this.counts.set(key, count);
     return Promise.resolve(count);
   }
 
-  decrement(key: string): Promise<void> {
-    this.counts.set(key, (this.counts.get(key) ?? 0) - 1);
+  decrement(key: string, amount: number): Promise<void> {
+    this.counts.set(key, (this.counts.get(key) ?? 0) - amount);
     return Promise.resolve();
   }
 
@@ -89,14 +90,30 @@ describe('RoastQuotaService', () => {
     );
   });
 
-  it('exempts an admin from the limits per user and not from the limit of the site', async () => {
-    const results = await Promise.allSettled(
-      Array.from({ length: MaxDailyLlmCalls + 5 }, () =>
-        service.takeRoast(admin),
+  it('takes the LLM calls of the upload with a roast, all of them or none', async () => {
+    await Promise.all(
+      Array.from({ length: MaxDailyUserLlmCalls - 1 }, () =>
+        service.takeLlmCall(user),
       ),
     );
 
-    expect(countFulfilled(results)).toBe(MaxDailyLlmCalls);
+    await expect(service.takeRoast(user)).rejects.toMatchObject({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+    });
+    expect(await service.getRoastsLeft(user)).toBe(MaxDailyRoasts);
+    await expect(service.takeLlmCall(user)).resolves.toBeUndefined();
+    await expect(service.takeLlmCall(user)).rejects.toMatchObject({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+    });
+  });
+
+  it('exempts an admin from the limits per user and not from the limit of the site', async () => {
+    const roasts = MaxDailyLlmCalls / UploadLlmCalls;
+    const results = await Promise.allSettled(
+      Array.from({ length: roasts + 5 }, () => service.takeRoast(admin)),
+    );
+
+    expect(countFulfilled(results)).toBe(roasts);
     expect(await service.getRoastsLeft(admin)).toBe(MaxDailyRoasts);
   });
 

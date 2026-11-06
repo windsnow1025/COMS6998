@@ -8,7 +8,6 @@ export interface LlmRequest<Schema extends z.ZodType> {
   authorization: string;
   apiType: string;
   model: string;
-  temperature: number;
   system: string;
   user: string;
   // The public URL of an image for the model to look at
@@ -40,7 +39,6 @@ interface ChatRequest {
   messages: ChatMessage[];
   api_type: string;
   model: string;
-  temperature: number;
   stream: boolean;
   thought: boolean;
   web_search: boolean;
@@ -105,7 +103,6 @@ export class LlmClient {
       ],
       api_type: request.apiType,
       model: request.model,
-      temperature: request.temperature,
       stream: false,
       thought: false,
       web_search: false,

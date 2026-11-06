@@ -27,14 +27,17 @@ import { LlmProvider } from '../llm/llm-provider.entity';
 import { PipelineStep } from '../llm/pipeline-step.entity';
 import {
   buildDescribeUserPrompt,
+  buildScreeningUserPrompt,
   DescribeSystemPrompt,
+  ScreeningSystemPrompt,
 } from '../llm/roast.prompts';
 import {
+  AdminChainReqDto,
   AdminModelReqDto,
   AdminModelUpdateReqDto,
+  AdminPipelineStepReqDto,
   AdminProviderReqDto,
   AdminProviderUpdateReqDto,
-  AdminScreeningReqDto,
   AdminTermReqDto,
 } from './dto/admin-config.req.dto';
 import {
@@ -47,8 +50,8 @@ import {
   AdminLlmCallSummaryResDto,
   AdminModelResDto,
   AdminModelStepResDto,
+  AdminPipelineStepResDto,
   AdminProviderResDto,
-  AdminScreeningResDto,
   AdminTermResDto,
 } from './dto/admin-config.res.dto';
 import { escapeLike } from './admin.service';
@@ -63,8 +66,24 @@ export function toExcerpt(response: string): string {
     : collapsed;
 }
 
-// The admin's view of the generation and what feeds it: the voices as chains and their mix (ChainsService), the screening
-// with its model, the providers and the models, the terms and the caption examples, the LLM calls, and who may sign up
+// The prompts of the product's own steps, which are the code's, the uploader's note standing as a placeholder
+const PipelinePrompts: Record<
+  LlmStep,
+  Pick<AdminPipelineStepResDto, 'systemPrompt' | 'userPrompt'>
+> = {
+  [LlmStep.Screen]: {
+    systemPrompt: ScreeningSystemPrompt,
+    userPrompt: buildScreeningUserPrompt('{place}'),
+  },
+  [LlmStep.Describe]: {
+    systemPrompt: DescribeSystemPrompt,
+    userPrompt: buildDescribeUserPrompt('{place}'),
+  },
+};
+
+// The admin's view of the generation and what feeds it: the voices as chains and their mix (ChainsService), the product's
+// own steps with their models, the providers and the models, the terms and the caption examples, the LLM calls, and who
+// may sign up
 @Injectable()
 export class AdminConfigService {
   constructor(
@@ -96,40 +115,39 @@ export class AdminConfigService {
     return await this.chainsService.findChains();
   }
 
-  // Takes a voice into the mix or out of it
-  async updateChain(slug: string, inMix: boolean): Promise<ChainResDto> {
-    return await this.chainsService.updateMixBySlug(slug, inMix);
+  // Takes a voice into the mix or out of it, or sets its weight there
+  async updateChain(slug: string, dto: AdminChainReqDto): Promise<ChainResDto> {
+    return await this.chainsService.updateBySlug(slug, dto);
   }
 
-  // The screening: the product's own step before any chain, with the prompts it runs
+  // The product's own steps before any chain, the screening and the description, each with the prompts it runs
 
-  async findScreening(): Promise<AdminScreeningResDto> {
-    return this.toScreeningDto(await this.findScreeningRow());
+  async findPipelineSteps(): Promise<AdminPipelineStepResDto[]> {
+    return (await this.findPipelineRows()).map((row) =>
+      this.toPipelineStepDto(row),
+    );
   }
 
-  async updateScreening(
-    dto: AdminScreeningReqDto,
-  ): Promise<AdminScreeningResDto> {
-    const row = await this.findScreeningRow();
-    if (dto.modelId !== undefined) {
-      const model = await this.modelRepository.findOne({
-        where: { id: dto.modelId },
-        relations: { provider: true },
-      });
-      if (!model) {
-        throw new NotFoundException('Model not found');
-      }
-      if (!model.enabled || !model.provider.enabled) {
-        throw new BadRequestException(
-          'A step runs on an enabled model of an enabled provider',
-        );
-      }
-      row.model = model;
+  // Sets the model one of the product's own steps runs on
+  async updatePipelineStep(
+    step: LlmStep,
+    dto: AdminPipelineStepReqDto,
+  ): Promise<AdminPipelineStepResDto> {
+    const row = await this.findPipelineRow(step);
+    const model = await this.modelRepository.findOne({
+      where: { id: dto.modelId },
+      relations: { provider: true },
+    });
+    if (!model) {
+      throw new NotFoundException('Model not found');
     }
-    if (dto.temperature !== undefined) {
-      row.temperature = dto.temperature;
+    if (!model.enabled || !model.provider.enabled) {
+      throw new BadRequestException(
+        'A step runs on an enabled model of an enabled provider',
+      );
     }
-    return this.toScreeningDto(await this.stepRepository.save(row));
+    row.model = model;
+    return this.toPipelineStepDto(await this.stepRepository.save(row));
   }
 
   // Providers and models
@@ -194,15 +212,17 @@ export class AdminConfigService {
   }
 
   async findModels(): Promise<AdminModelResDto[]> {
-    const [models, screening, chainSteps] = await Promise.all([
+    const [models, pipelineSteps, chainSteps] = await Promise.all([
       this.modelRepository.find({
         relations: { provider: true },
         order: { provider: { apiType: 'ASC' }, name: 'ASC' },
       }),
-      this.findScreeningRow(),
+      this.findPipelineRows(),
       this.findChainSteps(),
     ]);
-    return models.map((model) => this.toModelDto(model, screening, chainSteps));
+    return models.map((model) =>
+      this.toModelDto(model, pipelineSteps, chainSteps),
+    );
   }
 
   async createModel(dto: AdminModelReqDto): Promise<AdminModelResDto> {
@@ -219,7 +239,7 @@ export class AdminConfigService {
       name,
       enabled: dto.enabled ?? true,
     });
-    return this.toModelDto(await this.saveModel(model), null, []);
+    return this.toModelDto(await this.saveModel(model), [], []);
   }
 
   async updateModel(
@@ -243,7 +263,7 @@ export class AdminConfigService {
     const saved = await this.saveModel(model);
     return this.toModelDto(
       saved,
-      await this.findScreeningRow(),
+      await this.findPipelineRows(),
       await this.findChainSteps(),
     );
   }
@@ -343,8 +363,8 @@ export class AdminConfigService {
 
   // LLM calls: the generation requests and their responses, newest first
 
-  // The steps requests were made for, in the order the filter lists them: the screening, the chains' steps in the
-  // chains' order, then the steps of no chain any more, by name
+  // The steps requests were made for, in the order the filter lists them: the product's own steps, the chains' steps
+  // in the chains' order, then the steps of no chain any more, by name
   async findLlmCallSteps(): Promise<string[]> {
     const [rows, chainSteps] = await Promise.all([
       this.llmCallRepository
@@ -356,7 +376,7 @@ export class AdminConfigService {
     const used = new Set(rows.map((row) => row.step));
     const ordered: string[] = [];
     for (const name of [
-      LlmStep.Describe as string,
+      ...(Object.values(LlmStep) as string[]),
       ...chainSteps.map((step) => step.name),
       ...[...used].sort(),
     ]) {
@@ -482,14 +502,21 @@ export class AdminConfigService {
     }
   }
 
-  // The screening's row, which PipelineService seeds at the start
-  private async findScreeningRow(): Promise<PipelineStep> {
+  // The rows of the product's own steps, in the steps' order
+  private async findPipelineRows(): Promise<PipelineStep[]> {
+    return await Promise.all(
+      Object.values(LlmStep).map((step) => this.findPipelineRow(step)),
+    );
+  }
+
+  // The row of one of the product's own steps, which PipelineService seeds at the start
+  private async findPipelineRow(step: LlmStep): Promise<PipelineStep> {
     const row = await this.stepRepository.findOne({
-      where: { step: LlmStep.Describe },
+      where: { step },
       relations: { model: { provider: true } },
     });
     if (!row) {
-      throw new Error('The screening is not configured');
+      throw new Error(`The pipeline step "${step}" is not configured`);
     }
     return row;
   }
@@ -538,16 +565,13 @@ export class AdminConfigService {
     }
   }
 
-  // The screening's prompts are the code's, the uploader's note standing as a placeholder
-  private toScreeningDto(row: PipelineStep): AdminScreeningResDto {
+  private toPipelineStepDto(row: PipelineStep): AdminPipelineStepResDto {
     return {
       step: row.step,
       modelId: row.model.id,
       model: row.model.name,
       apiType: row.model.provider.apiType,
-      temperature: row.temperature,
-      systemPrompt: DescribeSystemPrompt,
-      userPrompt: buildDescribeUserPrompt('{place}'),
+      ...PipelinePrompts[row.step],
     };
   }
 
@@ -570,12 +594,14 @@ export class AdminConfigService {
 
   private toModelDto(
     model: LlmModel,
-    screening: PipelineStep | null,
+    pipelineSteps: PipelineStep[],
     chainSteps: PromptStep[],
   ): AdminModelResDto {
     const steps: AdminModelStepResDto[] = [];
-    if (screening && screening.model.id === model.id) {
-      steps.push({ flavor: null, step: screening.step });
+    for (const step of pipelineSteps) {
+      if (step.model.id === model.id) {
+        steps.push({ flavor: null, step: step.step });
+      }
     }
     for (const step of chainSteps) {
       if (step.model.id === model.id) {

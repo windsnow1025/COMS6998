@@ -19,12 +19,14 @@ class ChainUpdateReqDto:
         tagline (str | Unset):
         color (str | Unset):
         in_mix (bool | Unset):
+        weight (float | Unset):
     """
 
     name: str | Unset = UNSET
     tagline: str | Unset = UNSET
     color: str | Unset = UNSET
     in_mix: bool | Unset = UNSET
+    weight: float | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -35,6 +37,8 @@ class ChainUpdateReqDto:
         color = self.color
 
         in_mix = self.in_mix
+
+        weight = self.weight
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -47,6 +51,8 @@ class ChainUpdateReqDto:
             field_dict["color"] = color
         if in_mix is not UNSET:
             field_dict["inMix"] = in_mix
+        if weight is not UNSET:
+            field_dict["weight"] = weight
 
         return field_dict
 
@@ -61,11 +67,14 @@ class ChainUpdateReqDto:
 
         in_mix = d.pop("inMix", UNSET)
 
+        weight = d.pop("weight", UNSET)
+
         chain_update_req_dto = cls(
             name=name,
             tagline=tagline,
             color=color,
             in_mix=in_mix,
+            weight=weight,
         )
 
         chain_update_req_dto.additional_properties = d

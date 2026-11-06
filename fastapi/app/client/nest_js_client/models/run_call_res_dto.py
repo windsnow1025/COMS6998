@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -15,7 +15,6 @@ T = TypeVar("T", bound="RunCallResDto")
 class RunCallResDto:
     """
     Attributes:
-        temperature (float | None):
         id (str):
         step (str):
         model (str):
@@ -28,7 +27,6 @@ class RunCallResDto:
         created_at (datetime.datetime):
     """
 
-    temperature: float | None
     id: str
     step: str
     model: str
@@ -42,9 +40,6 @@ class RunCallResDto:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        temperature: float | None
-        temperature = self.temperature
-
         id = self.id
 
         step = self.step
@@ -69,7 +64,6 @@ class RunCallResDto:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "temperature": temperature,
                 "id": id,
                 "step": step,
                 "model": model,
@@ -88,14 +82,6 @@ class RunCallResDto:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-
-        def _parse_temperature(data: object) -> float | None:
-            if data is None:
-                return data
-            return cast(float | None, data)
-
-        temperature = _parse_temperature(d.pop("temperature"))
-
         id = d.pop("id")
 
         step = d.pop("step")
@@ -117,7 +103,6 @@ class RunCallResDto:
         created_at = isoparse(d.pop("createdAt"))
 
         run_call_res_dto = cls(
-            temperature=temperature,
             id=id,
             step=step,
             model=model,

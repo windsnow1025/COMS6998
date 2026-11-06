@@ -12,8 +12,9 @@ import { MaxStepNameLength } from '../flavors/prompt-step.entity';
 import { Image } from '../images/image.entity';
 import { User } from '../users/user.entity';
 
-// The product's own step before any chain: the photo's screening and description
+// The product's own steps before any chain: the photo's screening and its description
 export enum LlmStep {
+  Screen = 'screen',
   Describe = 'describe',
 }
 
@@ -31,7 +32,7 @@ export class LlmCall {
   @JoinColumn()
   user: User | null;
 
-  // The voice whose chain step made the request; null for the screening
+  // The voice whose chain step made the request; null for the product's own steps
   @ManyToOne(() => HumorFlavor, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn()
   flavor: HumorFlavor | null;
@@ -41,16 +42,12 @@ export class LlmCall {
   @JoinColumn()
   run: ChainRun | null;
 
-  // The screening (LlmStep) or the name of the chain step
+  // One of the product's own steps (LlmStep) or the name of the chain step
   @Column({ type: 'varchar', length: MaxStepNameLength })
   step: string;
 
   @Column({ type: 'varchar', length: 64 })
   model: string;
-
-  // The temperature the request was made with; null for a request from before it was recorded
-  @Column({ type: 'real', nullable: true })
-  temperature: number | null;
 
   @Column({ type: 'text' })
   systemPrompt: string;

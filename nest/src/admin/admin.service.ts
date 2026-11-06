@@ -1,5 +1,8 @@
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   BadRequestException,
+  ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,20 +11,25 @@ import { Brackets, Repository } from 'typeorm';
 import { DailyBatch } from '../batches/daily-batch.entity';
 import { DailyBatchItem } from '../batches/daily-batch-item.entity';
 import { Caption } from '../captions/caption.entity';
+import { Role } from '../common/enums/role.enum';
 import {
   addDays,
   CampusTimeZone,
   startOfCampusDate,
   toCampusDate,
 } from '../common/utils/campus-date';
+import { isUniqueViolation } from '../common/utils/query-error';
 import { FlavorsService } from '../flavors/flavors.service';
 import { HumorFlavor } from '../flavors/humor-flavor.entity';
 import { Image } from '../images/image.entity';
 import { PhotosService } from '../images/photos.service';
 import { LlmCall } from '../llm/llm-call.entity';
+import { UserResDto } from '../users/dto/user.res.dto';
 import { User } from '../users/user.entity';
+import { UsersCoreService } from '../users/users.core.service';
 import { CaptionVote, VoteValue } from '../votes/caption-vote.entity';
 import { VotesService } from '../votes/votes.service';
+import { AdminUserReqDto } from './dto/admin.req.dto';
 import {
   AdminCaptionResDto,
   AdminDayResDto,
@@ -85,6 +93,9 @@ export class AdminService {
     private readonly photosService: PhotosService,
     private readonly votesService: VotesService,
     private readonly flavorsService: FlavorsService,
+    private readonly usersCoreService: UsersCoreService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async findOverview(): Promise<AdminOverviewResDto> {
@@ -243,8 +254,52 @@ export class AdminService {
   }
 
   async findUsers(): Promise<AdminUserResDto[]> {
-    const users = await this.userRepository.find({ order: { id: 'ASC' } });
+    return await this.toUserDtos(
+      await this.userRepository.find({ order: { id: 'ASC' } }),
+    );
+  }
 
+  // Changes a user's username, name, and admin role. An admin's own admin role stays as it is: only another admin
+  // takes it, so an admin always remains.
+  async updateUser(
+    actor: UserResDto,
+    id: number,
+    dto: AdminUserReqDto,
+  ): Promise<AdminUserResDto> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const username = dto.username.trim();
+    if (!username) {
+      throw new BadRequestException('A username cannot be empty');
+    }
+    const wasAdmin = user.roles?.includes(Role.Admin) ?? false;
+    if (id === actor.id && dto.admin !== wasAdmin) {
+      throw new BadRequestException('Another admin changes your admin role');
+    }
+
+    user.username = username;
+    user.firstName = dto.firstName.trim();
+    user.lastName = dto.lastName.trim();
+    user.roles = dto.admin ? [Role.User, Role.Admin] : [Role.User];
+    // The requests of the user read the user from the cache (UsersCoreService)
+    await this.cacheManager.del(this.usersCoreService.getUserCacheKey(id));
+    try {
+      const [saved] = await this.toUserDtos([
+        await this.userRepository.save(user),
+      ]);
+      return saved;
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException('The username is taken');
+      }
+      throw error;
+    }
+  }
+
+  // The users with what each did: the photos uploaded, the photos voted on, and the latest of either
+  private async toUserDtos(users: User[]): Promise<AdminUserResDto[]> {
     const photoRows = await this.imageRepository
       .createQueryBuilder('image')
       .select('image."uploaderId"', 'userId')
@@ -273,6 +328,8 @@ export class AdminService {
       return {
         id: user.id,
         username: user.username,
+        firstName: user.firstName ?? null,
+        lastName: user.lastName ?? null,
         email: user.email,
         roles: user.roles,
         createdAt: user.createdAt,
@@ -445,7 +502,6 @@ export class AdminService {
       flavor: call.flavor ? this.flavorsService.toFlavorDto(call.flavor) : null,
       step: call.step,
       model: call.model,
-      temperature: call.temperature,
       systemPrompt: call.systemPrompt,
       userPrompt: call.userPrompt,
       response: call.response,

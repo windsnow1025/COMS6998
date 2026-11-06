@@ -6,6 +6,8 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..types import UNSET, Unset
+
 T = TypeVar("T", bound="AdminChainReqDto")
 
 
@@ -13,32 +15,39 @@ T = TypeVar("T", bound="AdminChainReqDto")
 class AdminChainReqDto:
     """
     Attributes:
-        in_mix (bool):
+        in_mix (bool | Unset):
+        weight (float | Unset):
     """
 
-    in_mix: bool
+    in_mix: bool | Unset = UNSET
+    weight: float | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         in_mix = self.in_mix
 
+        weight = self.weight
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "inMix": in_mix,
-            }
-        )
+        field_dict.update({})
+        if in_mix is not UNSET:
+            field_dict["inMix"] = in_mix
+        if weight is not UNSET:
+            field_dict["weight"] = weight
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        in_mix = d.pop("inMix")
+        in_mix = d.pop("inMix", UNSET)
+
+        weight = d.pop("weight", UNSET)
 
         admin_chain_req_dto = cls(
             in_mix=in_mix,
+            weight=weight,
         )
 
         admin_chain_req_dto.additional_properties = d

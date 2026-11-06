@@ -26,7 +26,6 @@ class StepResDto:
         model_id (str):
         model (str):
         api_type (str):
-        temperature (float):
     """
 
     input_: StepResDtoInput
@@ -39,7 +38,6 @@ class StepResDto:
     model_id: str
     model: str
     api_type: str
-    temperature: float
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -63,8 +61,6 @@ class StepResDto:
 
         api_type = self.api_type
 
-        temperature = self.temperature
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -79,7 +75,6 @@ class StepResDto:
                 "modelId": model_id,
                 "model": model,
                 "apiType": api_type,
-                "temperature": temperature,
             }
         )
 
@@ -108,8 +103,6 @@ class StepResDto:
 
         api_type = d.pop("apiType")
 
-        temperature = d.pop("temperature")
-
         step_res_dto = cls(
             input_=input_,
             output=output,
@@ -121,7 +114,6 @@ class StepResDto:
             model_id=model_id,
             model=model,
             api_type=api_type,
-            temperature=temperature,
         )
 
         step_res_dto.additional_properties = d

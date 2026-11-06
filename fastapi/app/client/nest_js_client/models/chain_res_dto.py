@@ -26,6 +26,7 @@ class ChainResDto:
         color (str):
         position (float):
         in_mix (bool):
+        weight (float):
         writes_captions (bool):
         captions (float):
         runs (float):
@@ -40,6 +41,7 @@ class ChainResDto:
     color: str
     position: float
     in_mix: bool
+    weight: float
     writes_captions: bool
     captions: float
     runs: float
@@ -61,6 +63,8 @@ class ChainResDto:
         position = self.position
 
         in_mix = self.in_mix
+
+        weight = self.weight
 
         writes_captions = self.writes_captions
 
@@ -86,6 +90,7 @@ class ChainResDto:
                 "color": color,
                 "position": position,
                 "inMix": in_mix,
+                "weight": weight,
                 "writesCaptions": writes_captions,
                 "captions": captions,
                 "runs": runs,
@@ -115,6 +120,8 @@ class ChainResDto:
 
         in_mix = d.pop("inMix")
 
+        weight = d.pop("weight")
+
         writes_captions = d.pop("writesCaptions")
 
         captions = d.pop("captions")
@@ -138,6 +145,7 @@ class ChainResDto:
             color=color,
             position=position,
             in_mix=in_mix,
+            weight=weight,
             writes_captions=writes_captions,
             captions=captions,
             runs=runs,

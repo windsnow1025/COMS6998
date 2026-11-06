@@ -4,11 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Query,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { AdminService } from './admin.service';
@@ -16,6 +19,7 @@ import { AdminPhotoReqDto } from './dto/admin-config.req.dto';
 import {
   AdminCaptionReqDto,
   AdminPhotosReqDto,
+  AdminUserReqDto,
   AdminVotesReqDto,
 } from './dto/admin.req.dto';
 import {
@@ -42,6 +46,16 @@ export class AdminController {
   @Roles([Role.Admin])
   async findUsers(): Promise<AdminUserResDto[]> {
     return await this.adminService.findUsers();
+  }
+
+  @Patch('users/:id')
+  @Roles([Role.Admin])
+  async updateUser(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() adminUserReqDto: AdminUserReqDto,
+  ): Promise<AdminUserResDto> {
+    return await this.adminService.updateUser(req.user, id, adminUserReqDto);
   }
 
   @Get('photos')

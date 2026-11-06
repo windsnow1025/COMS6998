@@ -16,7 +16,6 @@ class ChatRequest(BaseModel):
     messages: list[Message]
     api_type: str
     model: str
-    temperature: float
     stream: bool
     thought: bool
     web_search: bool
@@ -40,7 +39,6 @@ async def generate(
         messages=chat_request.messages,
         model=chat_request.model,
         api_type=chat_request.api_type,
-        temperature=chat_request.temperature,
         stream=chat_request.stream,
         thought=chat_request.thought,
         web_search=chat_request.web_search,

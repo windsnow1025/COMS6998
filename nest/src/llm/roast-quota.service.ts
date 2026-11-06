@@ -7,6 +7,7 @@ import {
   MaxDailyLlmCalls,
   MaxDailyRoasts,
   MaxDailyUserLlmCalls,
+  UploadLlmCalls,
 } from './llm.constants';
 
 // Daily limits on LLM spending, counted per campus date. Admins are exempt from the limits per user.
@@ -25,17 +26,18 @@ export class RoastQuotaService {
     return Math.max(MaxDailyRoasts - used, 0);
   }
 
-  // Takes one of the user's roasts for today, and one LLM call for the photo's description.
+  // Takes one of the user's roasts for today, and the LLM calls of the upload.
   async takeRoast(user: UserResDto): Promise<void> {
     if (!this.isUnlimited(user)) {
       await this.take(
         this.getRoastsKey(user.id),
+        1,
         MaxDailyRoasts,
         `You have used your ${MaxDailyRoasts} roasts for today. Come back tomorrow.`,
       );
     }
     try {
-      await this.takeLlmCall(user);
+      await this.takeLlmCalls(user, UploadLlmCalls);
     } catch (error) {
       await this.returnRoast(user);
       throw error;
@@ -45,39 +47,48 @@ export class RoastQuotaService {
   // Gives back a roast that failed through no fault of the user.
   async returnRoast(user: UserResDto): Promise<void> {
     if (!this.isUnlimited(user)) {
-      await this.counterClient.decrement(this.getRoastsKey(user.id));
+      await this.counterClient.decrement(this.getRoastsKey(user.id), 1);
     }
   }
 
   async takeLlmCall(user: UserResDto): Promise<void> {
+    await this.takeLlmCalls(user, 1);
+  }
+
+  // Takes the calls together: a limit that cannot hold all of them rejects all of them
+  private async takeLlmCalls(user: UserResDto, count: number): Promise<void> {
     const date = toCampusDate(new Date());
     // The user's limit comes first: a request that it rejects must not count against the site
     if (!this.isUnlimited(user)) {
       await this.take(
         `llm-calls:${date}:${user.id}`,
+        count,
         MaxDailyUserLlmCalls,
         'You have reached your limit for today. Come back tomorrow.',
       );
     }
     await this.take(
       `llm-calls:${date}`,
+      count,
       MaxDailyLlmCalls,
       'The roastery is closed for today. Come back tomorrow.',
     );
   }
 
-  // Counts one use of the counter, unless the limit is reached.
+  // Counts the uses of the counter, unless they pass the limit.
   private async take(
     key: string,
+    amount: number,
     limit: number,
     message: string,
   ): Promise<void> {
     const used = await this.counterClient.increment(
       key,
+      amount,
       this.counterTtlSeconds,
     );
     if (used > limit) {
-      await this.counterClient.decrement(key);
+      await this.counterClient.decrement(key, amount);
       throw new HttpException(message, HttpStatus.TOO_MANY_REQUESTS);
     }
   }

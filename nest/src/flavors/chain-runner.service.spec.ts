@@ -18,7 +18,6 @@ const flavor = {
       systemPrompt: 'S1',
       userPrompt: 'Look.{uploader_note}',
       model,
-      temperature: 1,
     },
     {
       id: 's2',
@@ -28,7 +27,6 @@ const flavor = {
       systemPrompt: 'S2{terms}',
       userPrompt: 'From: {previous}',
       model,
-      temperature: 0.8,
     },
   ],
 } as unknown as HumorFlavor;
@@ -103,7 +101,6 @@ describe('ChainRunnerService.run', () => {
         imageUrl: 'http://x/i.jpg',
         system: 'S1',
         user: 'Look.\n<uploader_note>\nButler\n</uploader_note>',
-        temperature: 1,
       }),
     );
     expect(generate).toHaveBeenNthCalledWith(
@@ -112,7 +109,6 @@ describe('ChainRunnerService.run', () => {
         imageUrl: undefined,
         system: 'S2',
         user: 'From: A pigeon.',
-        temperature: 0.8,
       }),
     );
     expect(outcome.captions).toEqual(['One.', 'Two.']);
@@ -127,6 +123,29 @@ describe('ChainRunnerService.run', () => {
       userPrompt: 'From: A pigeon.',
       inputTokens: 20,
     });
+  });
+
+  it("gives the chain's first step the photo's description as the previous answer", async () => {
+    const generate = jest.fn().mockResolvedValue({
+      output: { captions: ['One.'] },
+      text: '{"captions":["One."]}',
+      inputTokens: 20,
+      outputTokens: 6,
+      durationMs: 7,
+    });
+    const service = createService(generate, []);
+
+    await service.run(
+      { ...flavor, steps: [flavor.steps[1]] },
+      photo,
+      user,
+      'Bearer t',
+      null,
+    );
+
+    expect(generate).toHaveBeenCalledWith(
+      expect.objectContaining({ user: 'From: D' }),
+    );
   });
 
   it('reports a step that answered no text as the provider being busy', async () => {

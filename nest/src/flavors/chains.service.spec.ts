@@ -16,7 +16,6 @@ function step(id: string, position: number, output: StepOutput): PromptStep {
     systemPrompt: 'S',
     userPrompt: 'U',
     model,
-    temperature: 1,
   } as PromptStep;
 }
 

@@ -2,11 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Caption } from '../captions/caption.entity';
-import {
-  CaptionApiType,
-  CaptionModel,
-  Temperature,
-} from '../llm/llm.constants';
+import { CaptionApiType, CaptionModel } from '../llm/llm.constants';
 import { PipelineService } from '../llm/pipeline.service';
 import { PipelineStep } from '../llm/pipeline-step.entity';
 import {
@@ -24,7 +20,7 @@ import { canWriteCaptions, HumorFlavor } from './humor-flavor.entity';
 import { PromptStep, StepInput, StepOutput } from './prompt-step.entity';
 
 // The pipeline's caption row from before each voice had a chain of its own: at the first start after the change its
-// model and temperature move into the voices' caption steps, and the row goes
+// model moves into the voices' caption steps, and the row goes
 const FormerCaptionStep = 'caption';
 
 // A voice with its chain: the steps in order, each with its model and the model's provider
@@ -70,8 +66,7 @@ export class FlavorsService implements OnModuleInit {
   }
 
   // A seeded voice without steps gets its chain, the caption step after a look at the photo where its seed asks for
-  // one, on the model and the temperature of the pipeline's former caption row while that row exists and of the code's
-  // constants otherwise
+  // one, on the model of the pipeline's former caption row while that row exists and of the code's constants otherwise
   private async seedSteps(): Promise<void> {
     const former = await this.pipelineStepRepository
       .createQueryBuilder('step')
@@ -114,7 +109,6 @@ export class FlavorsService implements OnModuleInit {
           flavor: { id: flavor.id },
           position,
           model,
-          temperature: former?.temperature ?? Temperature,
           ...step,
         });
       }
@@ -160,8 +154,9 @@ export class FlavorsService implements OnModuleInit {
     return flavors.filter((flavor) => canWriteCaptions(flavor.steps));
   }
 
-  // The voices for a new photo: those with the fewest captions so far, so that every voice is seen equally often.
-  public pickLeastUsed(
+  // The voices for a new photo: those whose captions so far are fewest against their weight, so that each voice's
+  // share of the photos follows its weight, as far as `count` voices per photo allow
+  public pickByWeight(
     flavors: HumorFlavor[],
     captionCounts: Map<string, number>,
     count: number,
@@ -169,10 +164,10 @@ export class FlavorsService implements OnModuleInit {
     return flavors
       .map((flavor) => ({
         flavor,
-        captions: captionCounts.get(flavor.id) ?? 0,
+        load: (captionCounts.get(flavor.id) ?? 0) / flavor.weight,
         tieBreak: Math.random(),
       }))
-      .sort((a, b) => a.captions - b.captions || a.tieBreak - b.tieBreak)
+      .sort((a, b) => a.load - b.load || a.tieBreak - b.tieBreak)
       .slice(0, count)
       .map((entry) => entry.flavor);
   }

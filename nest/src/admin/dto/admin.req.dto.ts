@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsInt,
   IsOptional,
   IsString,
@@ -11,6 +12,8 @@ import {
 import { MaxCaptionLength } from '../../llm/llm.constants';
 
 export const MaxSearchLength = 160;
+// The length of the user table's username and name columns
+export const MaxUserFieldLength = 255;
 
 export class AdminPhotosReqDto {
   @Type(() => Number)
@@ -42,6 +45,26 @@ export class AdminVotesReqDto {
   @IsInt()
   @Min(0)
   offset: number;
+}
+
+// A user's fields an admin may change; the email is the sign-in's and stays
+export class AdminUserReqDto {
+  @IsString()
+  @Length(1, MaxUserFieldLength)
+  username: string;
+
+  // An empty string clears the name
+  @IsString()
+  @MaxLength(MaxUserFieldLength)
+  firstName: string;
+
+  @IsString()
+  @MaxLength(MaxUserFieldLength)
+  lastName: string;
+
+  // Whether the user has the admin role
+  @IsBoolean()
+  admin: boolean;
 }
 
 export class AdminCaptionReqDto {

@@ -12,11 +12,12 @@ export enum Placeholder {
 }
 
 export const PlaceholderMeanings: Record<Placeholder, string> = {
-  [Placeholder.Description]: "The photo's description from its screening.",
+  [Placeholder.Description]:
+    "The photo's description, which the describe step that every chain shares wrote once for the photo.",
   [Placeholder.UploaderNote]:
     "The uploader's note on where the photo was taken, inside an <uploader_note> block; empty without one.",
   [Placeholder.Previous]:
-    "The previous step's answer; empty in the first step.",
+    "The previous step's answer; in the chain's first own step, the photo's description.",
   [Placeholder.Examples]:
     "The voice's further caption examples (the admin's Examples), each with its photo's description; empty without one.",
   [Placeholder.Terms]:

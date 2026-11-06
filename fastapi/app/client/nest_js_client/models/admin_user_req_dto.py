@@ -2,64 +2,71 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from typing import Any, TypeVar
-from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
-T = TypeVar("T", bound="AdminScreeningReqDto")
+T = TypeVar("T", bound="AdminUserReqDto")
 
 
 @_attrs_define
-class AdminScreeningReqDto:
+class AdminUserReqDto:
     """
     Attributes:
-        model_id (UUID | Unset):
-        temperature (float | Unset):
+        username (str):
+        first_name (str):
+        last_name (str):
+        admin (bool):
     """
 
-    model_id: UUID | Unset = UNSET
-    temperature: float | Unset = UNSET
+    username: str
+    first_name: str
+    last_name: str
+    admin: bool
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        model_id: str | Unset = UNSET
-        if not isinstance(self.model_id, Unset):
-            model_id = str(self.model_id)
+        username = self.username
 
-        temperature = self.temperature
+        first_name = self.first_name
+
+        last_name = self.last_name
+
+        admin = self.admin
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({})
-        if model_id is not UNSET:
-            field_dict["modelId"] = model_id
-        if temperature is not UNSET:
-            field_dict["temperature"] = temperature
+        field_dict.update(
+            {
+                "username": username,
+                "firstName": first_name,
+                "lastName": last_name,
+                "admin": admin,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        _model_id = d.pop("modelId", UNSET)
-        model_id: UUID | Unset
-        if isinstance(_model_id, Unset):
-            model_id = UNSET
-        else:
-            model_id = UUID(_model_id)
+        username = d.pop("username")
 
-        temperature = d.pop("temperature", UNSET)
+        first_name = d.pop("firstName")
 
-        admin_screening_req_dto = cls(
-            model_id=model_id,
-            temperature=temperature,
+        last_name = d.pop("lastName")
+
+        admin = d.pop("admin")
+
+        admin_user_req_dto = cls(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            admin=admin,
         )
 
-        admin_screening_req_dto.additional_properties = d
-        return admin_screening_req_dto
+        admin_user_req_dto.additional_properties = d
+        return admin_user_req_dto
 
     @property
     def additional_keys(self) -> list[str]:
