@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-baseline-next-deployment
+  labels:
+    app: project-baseline-next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-baseline-next
+  template:
+    metadata:
+      labels:
+        app: project-baseline-next
+    spec:
+      containers:
+        - name: project-baseline-next
+          image: windsnow1025/coms6998-project-next:baseline
+          ports:
+            - containerPort: 3000
+  revisionHistoryLimit: 0

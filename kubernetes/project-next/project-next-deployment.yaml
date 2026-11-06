@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-next-deployment
+  labels:
+    app: project-next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-next
+  template:
+    metadata:
+      labels:
+        app: project-next
+    spec:
+      containers:
+        - name: project-next
+          image: windsnow1025/coms6998-project-next
+          ports:
+            - containerPort: 3000
+  revisionHistoryLimit: 0

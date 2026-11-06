@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-caption-api-service
+  labels:
+    app: project-caption-api
+spec:
+  type: ClusterIP
+  selector:
+    app: project-caption-api
+  ports:
+    - protocol: TCP
+      port: 3101
+      targetPort: 3101

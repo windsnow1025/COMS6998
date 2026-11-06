@@ -1,0 +1,40 @@
+# https://github.com/marketplace/actions/build-and-push-docker-images
+
+name: Project caption API publish
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - "main"
+      - "test"
+    paths:
+      - 'project-caption-api/**'
+      - '.github/workflows/project-caption-api-docker-publish.yml'
+
+jobs:
+  build-project-caption-api:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      -
+        name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./project-caption-api
+          file: ./project-caption-api/Dockerfile
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/coms6998-project-caption-api:${{ github.ref == 'refs/heads/test' && 'test' || 'latest' }}

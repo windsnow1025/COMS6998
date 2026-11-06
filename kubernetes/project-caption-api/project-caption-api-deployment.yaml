@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-caption-api-deployment
+  labels:
+    app: project-caption-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-caption-api
+  template:
+    metadata:
+      labels:
+        app: project-caption-api
+    spec:
+      containers:
+        - name: project-caption-api
+          image: windsnow1025/coms6998-project-caption-api
+          ports:
+            - containerPort: 3101
+          env:
+            - name: SUPABASE_URL
+              value: "https://noksybwcqzobljldnpek.supabase.co"
+            - name: SUPABASE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: project-caption-api-secret
+                  key: SUPABASE_SECRET_KEY
+            - name: FASTAPI_URL
+              value: "http://fastapi-service:80"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: JWT_SECRET
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: OPENAI_API_KEY
+            - name: COSINE_THRESHOLD
+              value: "0.6"
+  revisionHistoryLimit: 0
