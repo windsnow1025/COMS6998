@@ -16,7 +16,7 @@ export default function ViewerAvatar({ user, className }: ViewerAvatarProps) {
     return <img src={user.avatar} alt={name} className={className} referrerPolicy="no-referrer" />;
   }
   return (
-    <span className={className} aria-label={name}>
+    <span className={className} role="img" aria-label={name}>
       {name[0].toUpperCase()}
     </span>
   );

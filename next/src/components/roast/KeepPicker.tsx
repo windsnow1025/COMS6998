@@ -58,27 +58,21 @@ export default function KeepPicker({ photo, onKept, onCancel }: KeepPickerProps)
   };
 
   return (
-    <section aria-labelledby="keep-title">
+    <section aria-label="Captions to keep">
       <div className={styles.keepHead}>
-        <h2 id="keep-title" className={styles.sectionTitle}>
-          Keep your {KeptCount} favorites
-        </h2>
+        <button
+          type="button"
+          className={`${styles.buttonGhost} ${styles.buttonSmall}`}
+          disabled={isSaving}
+          onClick={pickRandom}
+        >
+          <ShuffleRoundedIcon fontSize="small" />
+          Pick {KeptCount} for me
+        </button>
         <span className={styles.keepCount} data-full={isFull}>
           {keptIds.length} of {KeptCount}
         </span>
       </div>
-      <p className={`${styles.muted} ${styles.small}`}>
-        Classmates vote on the {KeptCount} you keep. You can change them until your photo is in a batch.
-      </p>
-      <button
-        type="button"
-        className={`${styles.buttonGhost} ${styles.buttonSmall} mt-3`}
-        disabled={isSaving}
-        onClick={pickRandom}
-      >
-        <ShuffleRoundedIcon fontSize="small" />
-        Pick {KeptCount} for me
-      </button>
       <ol className={styles.options}>
         {drafts.map((draft) => {
           const isKept = keptIds.includes(draft.id);
@@ -99,7 +93,7 @@ export default function KeepPicker({ photo, onKept, onCancel }: KeepPickerProps)
                   <div>
                     <div className={styles.optionText}>{draft.content}</div>
                     <div className={styles.keepVoice}>
-                      <FlavorChip flavor={draft.flavor} />
+                      <FlavorChip flavor={draft.flavor} plain />
                     </div>
                   </div>
                 </div>
@@ -108,10 +102,10 @@ export default function KeepPicker({ photo, onKept, onCancel }: KeepPickerProps)
           );
         })}
       </ol>
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
       <div className={`${styles.actions} mt-5`}>
         <button type="button" className={styles.button} disabled={!isFull || isSaving} onClick={save}>
-          {photo.captions.length > 0 ? `Save my ${KeptCount}` : 'Send to the batch'}
+          {photo.captions.length > 0 ? `Save my ${KeptCount}` : 'Publish'}
         </button>
         {onCancel && (
           <button type="button" className={styles.buttonGhost} disabled={isSaving} onClick={onCancel}>

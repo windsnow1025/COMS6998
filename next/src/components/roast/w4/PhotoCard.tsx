@@ -5,9 +5,9 @@ import RoastLogic from '@/lib/roast/RoastLogic';
 import {RoastError} from '@/lib/roast/RoastError';
 import {formatPercent, getNoneShare, getOutcome, getWinner, isTied} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
-import {useRoast} from '../RoastContext';
+import {useRoast} from './RoastContext';
 import RevealedOption from './RevealedOption';
-import styles from '../roast.module.css';
+import styles from './roast.module.css';
 
 const Unauthorized = 401;
 const Conflict = 409;

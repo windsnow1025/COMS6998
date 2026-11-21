@@ -33,6 +33,7 @@ export function useRoast(): RoastContextValue {
 let cachedViewer: UserResDto | null = null;
 
 const ToastDurationMs = 3000;
+const ErrorToastDurationMs = 8000;
 const Unauthorized = 401;
 
 // The signed-in user; null when no token is stored, or the stored token is no longer accepted
@@ -99,7 +100,8 @@ export function RoastProvider({ paths, children }: RoastProviderProps) {
     if (!toast) {
       return;
     }
-    const timer = setTimeout(() => setToast(''), ToastDurationMs);
+    const isError = toast.endsWith('Try again.') || toast.endsWith('Check your connection.');
+    const timer = setTimeout(() => setToast(''), isError ? ErrorToastDurationMs : ToastDurationMs);
     return () => clearTimeout(timer);
   }, [toast]);
 

@@ -1,6 +1,4 @@
 import * as React from 'react';
-import Link from 'next/link';
-import {useRouter} from 'next/router';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import {isDone} from '@/lib/roast/PhotoResults';
 import {BatchResDto, PhotoResDto} from '@/client/nest';
@@ -19,8 +17,7 @@ interface BatchFeedProps {
 // a meter of the photos the viewer has judged, and the summary once all are.
 // A closed batch is read-only: its results show to everyone, and a viewer who took part gets their summary first.
 export default function BatchFeed({ batch }: BatchFeedProps) {
-  const { viewer, paths } = useRoast();
-  const router = useRouter();
+  const { viewer } = useRoast();
 
   const [photos, setPhotos] = React.useState(batch.photos);
   // A viewer who returns to a finished or closed batch they took part in gets the summary first;
@@ -52,8 +49,6 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
 
   const doneCount = photos.filter(isDone).length;
   const isAllDone = doneCount === photos.length;
-  // Anonymous viewers cannot vote; the photos they have yet to see the verdict of are the ones they can sign in for
-  const isOpenToVotes = photos.some((photo) => !photo.revealed);
   // Hand-holding until the viewer's first vote on this page: a hint on the first open card and the goal under
   // the meter, both gone with that vote, after which the reveals and the meter show the rest
   const isGuided = Boolean(viewer) && !batch.closed && !wasDoneAtLoad && !hasVotedHere && !isAllDone;
@@ -63,7 +58,7 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
     <>
       {viewer && !batch.closed && !wasDoneAtLoad && (
         <div className={styles.meter}>
-          <div className={styles.progress} role="img" aria-label={`${doneCount} of ${photos.length} photos judged`}>
+          <div className={styles.progress} role="img" aria-label={`${doneCount} of ${photos.length} photos voted on`}>
             {photos.map((photo, index) => (
               <span key={photo.id} className={styles.progressStep} data-done={index < doneCount} />
             ))}
@@ -72,7 +67,12 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
             <button
               type="button"
               className={`${styles.button} ${styles.buttonSmall}`}
-              onClick={() => summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onClick={() =>
+                summaryRef.current?.scrollIntoView({
+                  behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                  block: 'start',
+                })
+              }
             >
               My results
               <ArrowDownwardRoundedIcon sx={{ fontSize: 18 }} />
@@ -84,14 +84,13 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
           )}
         </div>
       )}
-      {isGuided && (
-        <p className={styles.meterHint}>
-          Judge all {photos.length} to see your score and your streak.
-        </p>
-      )}
 
       <div className={styles.stack}>
-        {viewer && wasDoneAtLoad && <BatchSummary batch={{ ...batch, photos }} />}
+        {viewer && wasDoneAtLoad && (
+          <div data-fresh={false}>
+            <BatchSummary batch={{ ...batch, photos }} />
+          </div>
+        )}
         {photos.map((photo) =>
           judgedAtLoad.has(photo.id) ? (
             <div key={photo.id} className={styles.judged}>
@@ -115,11 +114,6 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
           <div ref={summaryRef} className={styles.feedEnd}>
             <BatchSummary batch={{ ...batch, photos }} />
           </div>
-        )}
-        {!viewer && isOpenToVotes && (
-          <Link href={paths.signIn(router.asPath)} className={`${styles.button} ${styles.buttonBlock}`}>
-            Sign in to vote on all {photos.length}
-          </Link>
         )}
       </div>
     </>

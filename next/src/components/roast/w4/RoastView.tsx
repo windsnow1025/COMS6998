@@ -8,11 +8,11 @@ import {RoastError} from '@/lib/roast/RoastError';
 import {preparePhoto} from '@/lib/roast/PhotoUpload';
 import {share} from '@/lib/roast/Share';
 import {PhotoResDto} from '@/client/nest';
-import {useRoast} from '../RoastContext';
+import {useRoast} from './RoastContext';
 import {useLoad} from '../useLoad';
 import PhotoCard from './PhotoCard';
-import {Loading} from '../Status';
-import styles from '../roast.module.css';
+import {Loading} from './Status';
+import styles from './roast.module.css';
 
 // The API's limit on the note about where a photo was taken
 const MaxPlaceLength = 80;
@@ -95,7 +95,7 @@ export default function RoastView() {
         setPhoto(uploaded);
       }
       setStage('writing');
-      setPhoto(await roastLogic.writeCaptions(uploaded.id));
+      setPhoto(await roastLogic.writeCaptions(uploaded.id, 'The roast failed. Try again.'));
       setStage('done');
     } catch (err) {
       if (err instanceof RoastError && err.status === Unauthorized) {

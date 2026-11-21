@@ -79,3 +79,34 @@ export function buildShareGrid(photos: PhotoResDto[]): string {
 export function formatPercent(share: number): string {
   return `${Math.round(share * 100)}%`;
 }
+
+// The whole percentages that a revealed photo shows, which add up to 100: one per caption in the captions' order,
+// then that of the voters who picked none. Each share is rounded down, and the points left over go to the shares
+// with the largest remainders (the largest remainder method), so that no rounding makes a card's shares add up to
+// 99 or 101.
+function getShownPercents(photo: PhotoResDto): number[] {
+  const voters = photo.voters ?? 0;
+  const counts = [...photo.captions.map((caption) => caption.picks ?? 0), photo.nonePicks ?? 0];
+  if (voters === 0) {
+    return counts.map(() => 0);
+  }
+  const exact = counts.map((count) => (count * 100) / voters);
+  const percents = exact.map(Math.floor);
+  const left = 100 - percents.reduce((sum, percent) => sum + percent, 0);
+  exact
+    .map((value, index) => ({ index, remainder: value - percents[index] }))
+    .sort((a, b) => b.remainder - a.remainder)
+    .slice(0, left)
+    .forEach(({ index }) => percents[index]++);
+  return percents;
+}
+
+// The caption's share of the photo's voters as the photo's card shows it
+export function formatPickShare(photo: PhotoResDto, caption: PhotoCaptionResDto): string {
+  return `${getShownPercents(photo)[photo.captions.findIndex(({ id }) => id === caption.id)]}%`;
+}
+
+// The share of the photo's voters who rejected every caption as the photo's card shows it
+export function formatNoneShare(photo: PhotoResDto): string {
+  return `${getShownPercents(photo)[photo.captions.length]}%`;
+}

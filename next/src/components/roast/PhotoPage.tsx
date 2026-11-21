@@ -30,8 +30,8 @@ export default function PhotoPage({ base, brandMark, account, preview, children 
         <div className={`${styles.card} ${styles.empty}`}>
           <h1 className={styles.title}>This photo is gone.</h1>
           <p className={styles.subtitle}>It may have been deleted, or the link is wrong.</p>
-          <Link href={createRoastPaths(base).today} className={`${styles.button} mt-5`}>
-            Today&apos;s batch
+          <Link href={createRoastPaths(base).today} className={styles.button}>
+            Play today&apos;s batch
           </Link>
         </div>
       </RoastShell>

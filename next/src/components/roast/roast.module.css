@@ -5,14 +5,16 @@
   --dr-bg: #fbf4ea;
   --dr-surface: #ffffff;
   --dr-surface-2: #f4e8d7;
+  /* The share bar of a caption that did not win */
+  --dr-bar: #f4e8d7;
   --dr-ink: #21160f;
   --dr-ink-soft: #6f5d50;
   --dr-line: #e6d6c1;
-  --dr-accent: #e04a14;
-  --dr-accent-strong: #bd3a0b;
+  --dr-accent: #cf4310;
+  --dr-accent-strong: #b8380a;
   --dr-accent-soft: #ffe1d1;
   --dr-on-accent: #ffffff;
-  --dr-gold: #c98a00;
+  --dr-gold: #9a6a00;
   --dr-shadow: 0 1px 2px rgba(33, 22, 15, 0.06), 0 10px 30px rgba(33, 22, 15, 0.08);
   --dr-radius: 20px;
   /* The color of a voice, which an element that shows one sets on itself from the voice's own color */
@@ -23,6 +25,7 @@
   --dr-bg: #17100c;
   --dr-surface: #231913;
   --dr-surface-2: #30231a;
+  --dr-bar: #45352a;
   --dr-ink: #f8ecde;
   --dr-ink-soft: #b8a493;
   --dr-line: #3d2e23;
@@ -80,6 +83,7 @@
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  min-height: 44px;
 }
 
 .brandMark {
@@ -99,7 +103,7 @@
 }
 
 .navLink {
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-radius: 999px;
   color: var(--dr-ink-soft);
   font-weight: 600;
@@ -124,8 +128,8 @@
 .iconButton {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--dr-line);
   border-radius: 999px;
   background: var(--dr-surface);
@@ -136,8 +140,8 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid var(--dr-line);
   background: var(--dr-surface-2);
@@ -208,7 +212,7 @@
 }
 
 .tab[aria-current='page'] {
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
 }
 
 /* A narrow phone keeps the name and both header buttons on one line */
@@ -262,7 +266,7 @@
 }
 
 .sectionTitle {
-  margin: 32px 0 12px;
+  margin: 40px 0 16px;
   font-family: var(--dr-font-display), sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -324,19 +328,15 @@
   background: var(--dr-surface-2);
 }
 
-.buttonBlock {
-  width: 100%;
-}
-
 .buttonSmall {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   font-size: 14px;
 }
 
 .linkButton {
   border: 0;
-  padding: 8px 4px;
+  padding: 10px 4px;
   background: none;
   color: var(--dr-ink-soft);
   font-weight: 600;
@@ -382,6 +382,9 @@
 }
 
 .empty {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
   padding: 40px 20px;
   text-align: center;
 }
@@ -445,7 +448,8 @@
 }
 
 .heroSplit .heroTitle {
-  font-size: clamp(38px, 6.4vw, 66px);
+  /* Each sentence on one line of a phone */
+  font-size: clamp(28px, 8.4vw, 66px);
   line-height: 1;
   letter-spacing: -0.035em;
 }
@@ -457,18 +461,6 @@
 /* On the landing page, each sentence of the title starts a line */
 .heroSplit .heroAccent {
   display: block;
-}
-
-.heroText {
-  max-width: 34em;
-  margin: 16px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 17px;
-}
-
-.heroSplit .heroText {
-  margin-top: 20px;
-  font-size: 18px;
 }
 
 .heroActions {
@@ -485,26 +477,40 @@
   width: min(300px, 100%);
 }
 
-.heroFacts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  margin: 22px 0 0;
-  padding: 0;
-  list-style: none;
-  color: var(--dr-ink-soft);
-  font-size: 14px;
-  font-weight: 600;
+/* On the landing page, Google's button stands beside the product's own, at a width it draws itself well at */
+.heroSplit .heroActions {
+  gap: 12px;
 }
 
-.heroFacts li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.heroSplit .heroSignIn {
+  width: 220px;
 }
 
-.heroFacts svg {
-  color: var(--dr-accent);
+/* The product's button at the height of Google's */
+.heroBrowse {
+  composes: button;
+  min-height: 40px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+/* On a phone, the two ways on stack at one width, which Google's button takes up to 400px */
+@media (max-width: 479px) {
+  .heroSplit {
+    gap: 28px;
+  }
+
+  .heroSplit .heroActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    max-width: 400px;
+    margin-top: 14px;
+  }
+
+  .heroSplit .heroSignIn {
+    width: 100%;
+  }
 }
 
 @media (min-width: 900px) {
@@ -512,6 +518,24 @@
     grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
     gap: 56px;
     min-height: min(640px, calc(100vh - 140px));
+  }
+
+  /* Beside the pitch, the card is low enough to end on a first screen 720px high */
+  .showcaseCard .photo {
+    aspect-ratio: 2 / 1;
+  }
+
+  /* The wide crop keeps the top of the photo, where a subject's head is */
+  .showcaseCard .photoImage {
+    object-position: center 25%;
+  }
+
+  .showcaseCard .option {
+    padding: 8px 14px;
+  }
+
+  .showcaseCard .optionMeta {
+    margin-top: 6px;
   }
 }
 
@@ -545,12 +569,11 @@
   position: relative;
   display: block;
   padding: 12px 12px 14px;
-  transform: rotate(-2deg);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .showcaseCard:hover {
-  transform: rotate(0) translateY(-4px);
+  transform: translateY(-4px);
 }
 
 .showcaseCard .options {
@@ -574,14 +597,47 @@
   box-shadow: var(--dr-shadow);
 }
 
-.skeleton {
-  background: var(--dr-surface-2);
-  animation: pulse 1.4s ease-in-out infinite;
+/* On a phone, the card is short enough for its 3 captions to show on the first screen */
+@media (max-width: 479px) {
+  .showcase {
+    padding: 14px 0 0;
+  }
+
+  .showcaseCard {
+    padding: 10px;
+  }
+
+  .showcaseCard .photo {
+    aspect-ratio: 5 / 2;
+  }
+
+  .showcaseCard .options {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .showcaseCard .option {
+    padding: 6px 12px;
+  }
+
+  .showcaseCard .optionText {
+    font-size: 14px;
+  }
+
+  .showcaseCard .optionMeta {
+    margin-top: 6px;
+  }
 }
 
-.skeletonOption {
-  height: 64px;
-  border-radius: 16px;
+/* The share of the voters who picked none, under the captions' shares and in their column */
+.noneNote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0 0;
+  padding: 0 15px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 /* Sections below the hero */
@@ -604,32 +660,14 @@
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.03em;
-}
-
-.landingText {
-  margin: 10px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 17px;
-}
-
-.sectionIntroCenter {
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.sectionIntroRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px 24px;
+  text-wrap: balance;
 }
 
 .moreLink {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 44px;
   color: var(--dr-accent-strong);
   font-weight: 700;
 }
@@ -658,72 +696,109 @@
   box-shadow: none;
 }
 
+/* Grows to the row's tallest step, so that the 3 titles sit on one line */
 .stepVisual {
-  display: grid;
-  align-content: center;
-  gap: 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: 210px;
-  padding: 14px;
+  padding: 12px;
   border-radius: 14px;
   background: var(--dr-surface-2);
   overflow: hidden;
 }
 
-.stepVisual .option {
-  padding: 9px 12px;
+/* A photo over its 3 captions and the fourth choice */
+.stepList {
+  composes: stepVisual;
+  display: grid;
+  gap: 8px;
+}
+
+.stepPhoto {
+  width: 100%;
+  height: 84px;
+  border-radius: 12px;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.stepList .option {
+  display: grid;
+  align-content: center;
+  padding: 8px 10px;
   border-radius: 12px;
 }
 
-.stepVisual .option[data-hover='true'] {
+.stepList .option[data-hover='true'] {
+  z-index: 1;
   border-color: var(--dr-ink);
   box-shadow: var(--dr-shadow);
+  overflow: visible;
 }
 
-.stepVisual .optionChoice {
+/* The tapping hand, over the picked row's corner rather than in a column of the row */
+.stepList .tapMark {
+  position: absolute;
+  right: 10px;
+  bottom: -14px;
+  color: var(--dr-ink);
+  font-size: 30px;
+}
+
+.stepList .optionChoice {
   align-items: center;
   gap: 10px;
 }
 
-.stepVisual .optionMark {
+.stepList .optionMark {
   width: 16px;
   height: 16px;
   margin-top: 0;
 }
 
-.stepVisual .optionText {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: 14px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.stepList .optionText {
+  font-size: 13px;
 }
 
-.stepVisual .optionMeta {
+.stepList .optionMeta {
   gap: 6px;
-  margin-top: 6px;
+  margin-top: 5px;
   font-size: 12px;
 }
 
-.stepVisual .chip {
+.stepList .chip {
   padding: 1px 8px;
   font-size: 12px;
 }
 
-.stepVisual .optionShare {
+.stepList .optionShare {
   font-size: 15px;
 }
 
+.stepList .noneOption,
+.stepList .noneNote {
+  height: 36px;
+  margin: 0;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* 5 photos, 3 over 2, each at its full width; the padding holds the corners that the tilt turns outward */
 .fan {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  padding: 12px 0;
+  align-self: center;
+  width: min(100%, 250px);
+  padding: 10px 8px;
 }
 
 .fanPhoto {
-  width: 27%;
-  max-width: 96px;
+  width: 35%;
   aspect-ratio: 3 / 4;
-  margin-left: -7%;
+  margin-left: -4%;
   border: 3px solid var(--dr-surface);
   border-radius: 12px;
   object-fit: cover;
@@ -731,17 +806,25 @@
   transform: rotate(-7deg);
 }
 
-.fanPhoto:first-child {
-  margin-left: 0;
-}
-
 .fanPhoto:nth-child(even) {
+  z-index: 1;
   transform: rotate(6deg) translateY(8px);
 }
 
 .fanPhoto:nth-child(3) {
-  z-index: 1;
+  z-index: 2;
   transform: translateY(-6px) scale(1.08);
+}
+
+/* The lower 2, over the upper 3 */
+.fanPhoto:nth-child(n + 4) {
+  z-index: 3;
+  margin-top: -5%;
+}
+
+.fanPhoto:first-child,
+.fanPhoto:nth-child(4) {
+  margin-left: 0;
 }
 
 .stepHead {
@@ -772,75 +855,134 @@
   letter-spacing: -0.01em;
 }
 
-.stepText {
-  margin: 4px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 15px;
-}
-
-@media (min-width: 800px) {
+/* In a row of 3, the captions' rows are as high as the highest of them, and the other 2 rows of a list have set
+   heights, so that the rows of steps 2 and 3 lie beside each other; the photos of step 1 fill their higher panel */
+@media (min-width: 960px) {
   .stepGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .stepList {
+    grid-template-rows: auto repeat(3, 1fr) auto;
+  }
+
+  .fan {
+    width: 100%;
+  }
+
+  .fanPhoto {
+    aspect-ratio: 9 / 16;
+  }
 }
 
-/* The voices: a card each, in the voice's color */
+/* Narrow columns: a tighter card and a smaller title, so that a revealed caption keeps its voice and its share on
+   one line, and each title keeps to one line */
+@media (min-width: 960px) and (max-width: 1039px) {
+  .stepCard {
+    padding: 10px;
+  }
+
+  .stepTitle {
+    font-size: 17px;
+  }
+}
+
+/* The voices: the section's title and a card per voice as the cells of one grid, which 1 title and 5 voices fill
+   at 1, 2, and 3 columns */
 
 .voiceGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+}
+
+.voiceGrid .landingTitle {
+  margin-bottom: 16px;
 }
 
 .voiceCard {
   composes: card;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  border-top: 4px solid var(--dr-flavor);
+  gap: 12px;
+  padding: 16px 16px 18px 18px;
+  border-color: color-mix(in srgb, var(--dr-flavor) 40%, var(--dr-line));
+  background: color-mix(in srgb, var(--dr-flavor) 10%, var(--dr-surface));
   box-shadow: none;
 }
 
+/* The voice's name opposite the photo of its caption; as high as the photo where a voice has no caption yet */
+.voiceTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 72px;
+}
+
+.voiceThumb {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* The voice's name as a label on the voice's color, under which its caption is the card's content.
+   A tenth of white in the fill brings the dark ink to 4.5:1 or more on each of the voices' colors. */
 .voiceName {
   margin: 0;
-  font-family: var(--dr-font-display), sans-serif;
-  font-size: 18px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dr-flavor) 90%, #fff);
+  color: #17100c;
+  font-size: 13px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.voiceQuote {
+  margin: 0;
+  font-family: var(--dr-font-display), sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .voiceCard .voiceTagline {
-  margin: 0 0 12px;
-  font-size: 14px;
-}
-
-/* At the card's foot, so that the quotes of a row line up */
-.voiceQuote {
-  margin: auto 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--dr-line);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
+  margin: 0;
+  font-size: 16px;
 }
 
 @media (min-width: 640px) {
+  .voiceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .voiceGrid .landingTitle {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 900px) {
   .voiceGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 960px) {
-  .voiceGrid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
+/* The crowd's favorites: a row to swipe on a phone, over the way to the whole list; on a wide screen a grid of 4,
+   with the way to the whole list on the title's baseline */
+
+.gallerySection {
+  display: grid;
+  gap: 20px;
 }
 
-/* The crowd's favorites: a row to swipe on a phone, a grid of 4 on a wide screen */
+.gallerySection .moreLink {
+  grid-row: 3;
+}
 
 .gallery {
   display: grid;
@@ -856,8 +998,57 @@
   scroll-snap-align: start;
 }
 
+/* A favorite: the photo whole, over its winning caption and that caption's voice at the card's foot */
+.favorite {
+  composes: card;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: none;
+  transition: box-shadow 160ms ease;
+}
+
+.favorite:hover {
+  box-shadow: var(--dr-shadow);
+}
+
+.favoritePhoto {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.favoriteBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+}
+
+.favoriteCaption {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
 @media (min-width: 900px) {
+  .gallerySection {
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 28px 24px;
+  }
+
+  .gallerySection .moreLink {
+    grid-row: auto;
+    min-height: 0;
+  }
+
   .gallery {
+    grid-column: 1 / -1;
     grid-auto-flow: row;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
@@ -867,53 +1058,9 @@
 
 /* What a player keeps beyond a day */
 
-.featureGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.feature {
-  composes: card;
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 20px;
-  box-shadow: none;
-}
-
-.featureIcon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--dr-accent-soft);
-  color: var(--dr-accent-strong);
-}
-
-.featureTitle {
-  margin: 6px 0 0;
-  font-family: var(--dr-font-display), sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.featureText {
-  margin: 0;
-  color: var(--dr-ink-soft);
-  font-size: 15px;
-}
-
 /* The way in, at the end of the page */
 
 .cta {
-  position: relative;
-  overflow: hidden;
   padding: 48px 24px;
   border-radius: 28px;
   background: var(--dr-accent-soft);
@@ -921,23 +1068,27 @@
 }
 
 .ctaMark {
-  position: absolute;
-  right: -48px;
-  bottom: -72px;
+  display: flex;
   color: var(--dr-accent);
-  opacity: 0.16;
-  transform: rotate(-12deg);
+  font-size: 44px;
 }
 
 .ctaBody {
-  position: relative;
   display: grid;
   justify-items: center;
   gap: 16px;
 }
 
-.ctaBody .landingText {
-  margin: 0;
+.ctaBody .actions {
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* Stacked on a phone, at one width */
+@media (max-width: 479px) {
+  .ctaBody .actions {
+    display: grid;
+  }
 }
 
 .ctaBody .countdown {
@@ -1014,14 +1165,6 @@
 }
 
 /* Meter */
-
-/* The goal under the meter, for a viewer who has yet to vote on the batch */
-.meterHint {
-  margin: 0 0 14px;
-  color: var(--dr-ink-soft);
-  font-size: 14px;
-  font-weight: 600;
-}
 
 .meter {
   position: sticky;
@@ -1114,7 +1257,7 @@
   align-items: center;
   gap: 6px;
   margin: 14px 0 0;
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
   font-size: 14px;
   font-weight: 700;
 }
@@ -1169,7 +1312,7 @@ button.option:disabled {
   position: absolute;
   inset: 0 auto 0 0;
   width: var(--dr-share);
-  background: var(--dr-surface-2);
+  background: var(--dr-bar);
   transform-origin: left;
   animation: grow 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -1194,7 +1337,7 @@ button.option:disabled {
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  border: 2px solid var(--dr-line);
+  border: 2px solid var(--dr-ink-soft);
   border-radius: 999px;
   transition: border-color 120ms ease;
 }
@@ -1259,13 +1402,11 @@ button.option:hover .optionMark {
   gap: 4px;
 }
 
-/* The eyebrow's form, at the tooltip's size and in its muted ink */
+/* What the chip is, in the tooltip's muted ink */
 .voiceNoteKind {
   color: var(--dr-ink-soft);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .voiceNoteName {
@@ -1295,8 +1436,6 @@ button.option:hover .optionMark {
   color: var(--dr-on-accent);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
 .crown {
@@ -1357,6 +1496,17 @@ button.option:hover .optionMark {
 
 .verdict[data-tone='match'] {
   color: var(--dr-accent-strong);
+}
+
+/* Results animate in on the card the viewer has just voted on and on the summary of a batch just finished;
+   what a page loads already revealed shows at rest */
+[data-fresh='false'] .optionBar,
+[data-fresh='false'] .optionMeta,
+[data-fresh='false'] .crown,
+[data-fresh='false'] .verdict,
+[data-fresh='false'] .summary,
+[data-fresh='false'] .voiceFill {
+  animation: none;
 }
 
 .error {
@@ -1453,7 +1603,7 @@ button.option:hover .optionMark {
 }
 
 .segment {
-  padding: 8px 16px;
+  padding: 10px 16px;
   border: 0;
   border-radius: 999px;
   background: none;
@@ -1482,11 +1632,10 @@ button.option:hover .optionMark {
   border: 1px solid var(--dr-line);
   background: var(--dr-surface-2);
   aspect-ratio: 4 / 5;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: box-shadow 160ms ease;
 }
 
 .tile:hover {
-  transform: translateY(-3px);
   box-shadow: var(--dr-shadow);
 }
 
@@ -1539,7 +1688,8 @@ button.option:hover .optionMark {
 
 /* Roast (upload) */
 
-.drop {
+/* The place of the photo to roast: the dropzone, or what stands in for it while no photo can be chosen */
+.dropFrame {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1547,11 +1697,22 @@ button.option:hover .optionMark {
   gap: 10px;
   width: 100%;
   padding: 40px 20px;
-  border: 2px dashed var(--dr-line);
   border-radius: var(--dr-radius);
   background: var(--dr-surface);
   text-align: center;
+}
+
+.drop {
+  composes: dropFrame;
+  border: 2px dashed var(--dr-line);
   transition: border-color 120ms ease, background 120ms ease;
+}
+
+/* No roast is left: a plain frame of the dropzone's size, which a dashed one would offer as a place to drop */
+.dropOut {
+  composes: dropFrame;
+  padding: 41px 21px;
+  border: 1px solid var(--dr-line);
 }
 
 .drop:hover,
@@ -1570,6 +1731,13 @@ button.option:hover .optionMark {
   color: var(--dr-on-accent);
 }
 
+/* The dropzone's icon where no photo can be chosen */
+.dropIconIdle {
+  composes: dropIcon;
+  background: var(--dr-surface-2);
+  color: var(--dr-ink-soft);
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -1585,7 +1753,7 @@ button.option:hover .optionMark {
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
-  border: 1.5px solid var(--dr-line);
+  border: 1.5px solid var(--dr-ink-soft);
   border-radius: 14px;
   background: var(--dr-surface);
   color: var(--dr-ink);
@@ -1594,7 +1762,6 @@ button.option:hover .optionMark {
 
 .input:focus {
   border-color: var(--dr-accent);
-  outline: none;
 }
 
 .steps {
@@ -1603,6 +1770,13 @@ button.option:hover .optionMark {
   margin: 18px 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* The steps in the place of the button that started them, at its height */
+.stepsInPlace {
+  align-content: center;
+  min-height: 48px;
+  margin-top: 20px;
 }
 
 .step {
@@ -1656,6 +1830,12 @@ button.option:hover .optionMark {
   width: 64px;
   height: 64px;
   font-size: 24px;
+}
+
+/* The profile photo's place while nobody is signed in */
+.profileAvatarIdle {
+  composes: avatar profileAvatar;
+  color: var(--dr-ink-soft);
 }
 
 /* The profile photo is its own way to a new one: the photo darkens on hover, and a camera badge marks it */
@@ -1846,7 +2026,7 @@ button.option:hover .optionMark {
 }
 
 .myPhoto .thumbRow {
-  padding-right: 60px;
+  padding-right: 64px;
 }
 
 .myPhotoDelete {
@@ -1875,6 +2055,7 @@ button.option:hover .optionMark {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: 44px;
   padding: 8px 14px;
   border: 0;
   border-radius: 999px;
@@ -1892,13 +2073,10 @@ button.option:hover .optionMark {
 /* The uploader's choice of the drafts to keep: a check box per draft, as a choice of several */
 .keepHead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-}
-
-.keepHead .sectionTitle {
-  margin-bottom: 4px;
+  margin-top: 14px;
 }
 
 .keepCount {
@@ -1911,7 +2089,7 @@ button.option:hover .optionMark {
 }
 
 .keepCount[data-full='true'] {
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
 }
 
 .option[data-kept='true'] {
@@ -1930,7 +2108,7 @@ button.option:hover .optionMark {
   width: 22px;
   height: 22px;
   margin-top: 1px;
-  border: 2px solid var(--dr-line);
+  border: 2px solid var(--dr-ink-soft);
   border-radius: 7px;
   transition: background 120ms ease, border-color 120ms ease;
 }
@@ -2062,6 +2240,7 @@ button.option:hover .keepMark {
 @media (prefers-reduced-motion: reduce) {
   .root * {
     animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
 }

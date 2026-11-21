@@ -47,12 +47,14 @@ export default function RoastShell({ base, brandMark, account, active, wide, chi
 }
 
 function useTabs() {
-  const { paths } = useRoast();
+  const { paths, viewer, viewerLoaded } = useRoast();
+  // The profile has nothing to show a visitor, whose only step there is the sign-in
+  const me = viewerLoaded && !viewer ? paths.signIn(paths.me) : paths.me;
   return [
     { tab: 'today', label: 'Today', href: paths.today, icon: <TodayRoundedIcon /> },
     { tab: 'top', label: 'Top', href: paths.top, icon: <EmojiEventsRoundedIcon /> },
     { tab: 'roast', label: 'Roast', href: paths.roast, icon: <AddAPhotoRoundedIcon /> },
-    { tab: 'me', label: 'Me', href: paths.me, icon: <PersonRoundedIcon /> },
+    { tab: 'me', label: 'Me', href: me, icon: <PersonRoundedIcon /> },
   ] as const;
 }
 

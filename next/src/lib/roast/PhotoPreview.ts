@@ -16,7 +16,7 @@ export interface PhotoPreview {
 const NotFoundStatuses = [400, 404];
 
 // The preview of the photo's page under the week's base path; null when no photo has the id
-export async function fetchPhotoPreview(base: string, id: string): Promise<PhotoPreview | null> {
+export async function fetchPhotoPreview(base: string, id: string, unrevealedTitle: string): Promise<PhotoPreview | null> {
   const response = await fetch(`${getServerNestBaseUrl()}/images/${encodeURIComponent(id)}`);
   if (NotFoundStatuses.includes(response.status)) {
     return null;
@@ -29,7 +29,7 @@ export async function fetchPhotoPreview(base: string, id: string): Promise<Photo
   const winner = photo.revealed ? getWinner(photo) : undefined;
   return {
     id,
-    title: winner ? `“${winner.content}”` : "Which roast wins this photo?",
+    title: winner ? `“${winner.content}”` : unrevealedTitle,
     description: photo.description,
     imageUrl: photo.url,
     pageUrl: `${getBaseUrl()}${createRoastPaths(base).photo(id)}`,

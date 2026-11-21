@@ -3,7 +3,7 @@ import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import {formatPercent, getPickShare} from '@/lib/roast/PhotoResults';
 import {PhotoCaptionResDto, PhotoResDto} from '@/client/nest';
 import FlavorChip from './FlavorChip';
-import styles from '../roast.module.css';
+import styles from './roast.module.css';
 
 interface RevealedOptionProps {
   photo: PhotoResDto;

@@ -39,7 +39,12 @@ export default function TodayView() {
             <button
               type="button"
               className={styles.linkButton}
-              onClick={() => batchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onClick={() =>
+                batchRef.current?.scrollIntoView({
+                  behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                  block: 'start',
+                })
+              }
             >
               Browse today&apos;s batch
               <ArrowDownwardRoundedIcon sx={{ fontSize: 16, verticalAlign: 'text-bottom' }} />

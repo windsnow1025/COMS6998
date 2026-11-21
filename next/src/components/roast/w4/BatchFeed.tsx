@@ -4,10 +4,10 @@ import {useRouter} from 'next/router';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import {isDone} from '@/lib/roast/PhotoResults';
 import {BatchResDto, PhotoResDto} from '@/client/nest';
-import {useRoast} from '../RoastContext';
-import BatchSummary from '../BatchSummary';
+import {useRoast} from './RoastContext';
+import BatchSummary from './BatchSummary';
 import PhotoCard from './PhotoCard';
-import styles from '../roast.module.css';
+import styles from './roast.module.css';
 
 interface BatchFeedProps {
   // A batch with at least one photo

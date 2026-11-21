@@ -33,11 +33,22 @@ interface FlavorChipProps {
   flavor: FlavorResDto;
   // Shown after the name, such as a count
   suffix?: string;
+  // Without the explanation: a chip inside a link or a button, which takes the hover, the focus, and the tap itself
+  plain?: boolean;
 }
 
-// The voice a caption is written in; hovering or tapping the chip explains the voice: what the chip is, then
-// which voice, then how it writes
-export default function FlavorChip({ flavor, suffix }: FlavorChipProps) {
+// The voice a caption is written in; hovering, focusing, or tapping the chip explains the voice: what the chip is,
+// then which voice, then how it writes
+export default function FlavorChip({ flavor, suffix, plain = false }: FlavorChipProps) {
+  if (plain) {
+    return (
+      <span className={styles.chip} style={voiceStyle(flavor)}>
+        {flavor.name}
+        {suffix && ` ${suffix}`}
+      </span>
+    );
+  }
+
   return (
     <Tooltip
       title={
@@ -53,7 +64,7 @@ export default function FlavorChip({ flavor, suffix }: FlavorChipProps) {
       leaveTouchDelay={TouchLeaveDelayMs}
       slotProps={{ tooltip: { className: `${FontVariables} ${styles.tokens}`, sx: TipSx }, arrow: { sx: ArrowSx } }}
     >
-      <span className={styles.chipExplained} style={voiceStyle(flavor)}>
+      <span className={styles.chipExplained} style={voiceStyle(flavor)} tabIndex={0}>
         {flavor.name}
         {suffix && ` ${suffix}`}
       </span>

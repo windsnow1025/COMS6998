@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import {formatPercent, getPickShare, getWinner} from '@/lib/roast/PhotoResults';
+import {formatPickShare, getWinner} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import FlavorChip from './FlavorChip';
@@ -28,9 +28,9 @@ export default function TopTile({ photo, rank }: TopTileProps) {
       <div className={styles.tileShade}>
         <p className={styles.tileCaption}>{winner.content}</p>
         <div className={styles.tileMeta}>
-          {winner.flavor && <FlavorChip flavor={winner.flavor} />}
+          {winner.flavor && <FlavorChip flavor={winner.flavor} plain />}
           <span>
-            {formatPercent(getPickShare(photo, winner))} of {photo.voters} votes
+            {formatPickShare(photo, winner)} of {photo.voters} votes
           </span>
         </div>
       </div>

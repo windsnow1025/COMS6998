@@ -1,27 +1,24 @@
 import * as React from 'react';
 import Link from 'next/link';
-import AddAPhotoRoundedIcon from '@mui/icons-material/AddAPhotoRounded';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
-import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
-import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
 import TouchAppRoundedIcon from '@mui/icons-material/TouchAppRounded';
 import GoogleSignInButton from '@/components/common/components/GoogleSignInButton';
 import RoastLogic from '@/lib/roast/RoastLogic';
-import {getWinner} from '@/lib/roast/PhotoResults';
+import {formatNoneShare, getNoneShare, getWinner} from '@/lib/roast/PhotoResults';
 import {voiceStyle} from '@/lib/roast/VoiceStyle';
 import {FlavorResDto, PhotoCaptionResDto, PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
+import FlavorChip from './FlavorChip';
 import LandingHero from './LandingHero';
 import RevealedOption from './RevealedOption';
-import TopTile from './TopTile';
 import Countdown from './Countdown';
 import styles from './roast.module.css';
 
-// The photos of closed batches that the page shows as its examples, the most picked first
-const ExampleCount = 8;
+// The photos of closed batches that the page draws its examples from, the most picked first: enough for every
+// section to show captions that no other section shows
+const ExampleCount = 24;
 const GalleryCount = 4;
 const FanCount = 5;
 
@@ -43,6 +40,13 @@ export default function LandingView() {
   }, [roastLogic, notify]);
 
   const examples = photos ?? [];
+  const front = findMostVoted(examples, isSplit);
+  const demo = findMostVoted(
+    examples.filter((photo) => photo !== front),
+    isShared,
+  );
+  const favorites = examples.filter((photo) => photo !== front && photo !== demo).slice(0, GalleryCount);
+  const spare = examples.filter((photo) => photo !== front && photo !== demo && !favorites.includes(photo));
 
   return (
     <div className={styles.landing}>
@@ -60,33 +64,42 @@ export default function LandingView() {
             </>
           ) : (
             <>
+              <Link href={paths.today} className={styles.heroBrowse}>
+                Browse today&apos;s batch
+              </Link>
               <div className={styles.heroSignIn}>
                 <GoogleSignInButton />
               </div>
-              <Link href={paths.today} className={styles.linkButton}>
-                Browse today&apos;s batch
-              </Link>
             </>
           ))
         }
-        aside={photos?.length === 0 ? undefined : <Showcase photos={photos} />}
+        aside={
+          photos === null ? (
+            <ShowcaseSkeleton />
+          ) : (
+            front && <Showcase front={front} back={examples.find((photo) => photo !== front)} />
+          )
+        }
       />
-      <Steps photos={examples} />
-      {flavors.length > 0 && <Voices flavors={flavors} photos={examples} />}
-      {examples.length > 0 && <Gallery photos={examples.slice(0, GalleryCount)} />}
-      <Features />
+      <Steps photos={examples.slice(0, FanCount)} demo={demo} />
+      {flavors.length > 0 && <Voices flavors={flavors} spare={spare} examples={examples} />}
+      {favorites.length > 0 && <Gallery photos={favorites} />}
       <section className={styles.cta} aria-labelledby="cta-title">
-        <span className={styles.ctaMark} aria-hidden="true">
-          <LocalFireDepartmentRoundedIcon sx={{ fontSize: 280 }} />
-        </span>
         <div className={styles.ctaBody}>
+          <span className={styles.ctaMark} aria-hidden="true">
+            <LocalFireDepartmentRoundedIcon fontSize="inherit" />
+          </span>
           <h2 id="cta-title" className={styles.landingTitle}>
             Today&apos;s batch is open.
           </h2>
-          <p className={styles.landingText}>5 photos, 3 captions each, 1 tap per photo.</p>
-          <Link href={paths.today} className={styles.button}>
-            Play today&apos;s batch
-          </Link>
+          <div className={styles.actions}>
+            <Link href={paths.today} className={styles.button}>
+              {viewer ? "Play today's batch" : "Browse today's batch"}
+            </Link>
+            <Link href={paths.roast} className={styles.buttonGhost}>
+              Upload your own photo
+            </Link>
+          </div>
           {/* After the first render, so that the build's clock never reaches the page */}
           {viewerLoaded && <Countdown />}
         </div>
@@ -95,29 +108,50 @@ export default function LandingView() {
   );
 }
 
-// The most picked photo of the closed batches, as its card shows it after the reveal, over the second one
-function Showcase({ photos }: { photos: PhotoResDto[] | null }) {
-  const { paths } = useRoast();
+const countPicked = (photo: PhotoResDto) => photo.captions.filter((caption) => (caption.picks ?? 0) > 0).length;
+// A card where one caption took every vote shows 100% beside two 0%, which reads as a vote nobody took part in
+const isSplit = (photo: PhotoResDto) => countPicked(photo) > 1;
+const isShared = (photo: PhotoResDto) => countPicked(photo) === photo.captions.length;
 
-  if (photos === null) {
-    return (
-      <div className={styles.showcase} role="status" aria-label="Loading">
-        <div className={styles.showcaseCard}>
-          <div className={`${styles.photo} ${styles.skeleton}`} />
-          <div className={styles.options}>
-            {[0, 1, 2].map((index) => (
-              <div key={index} className={`${styles.skeleton} ${styles.skeletonOption}`} />
-            ))}
-          </div>
+// The example with the most voters among those that `isFit` holds for, then among the others; of two with as
+// many voters, the one whose picks are spread over more captions
+function findMostVoted(photos: PhotoResDto[], isFit: (photo: PhotoResDto) => boolean): PhotoResDto | undefined {
+  return [...photos].sort(
+    (a, b) =>
+      Number(isFit(b)) - Number(isFit(a)) ||
+      (b.voters ?? 0) - (a.voters ?? 0) ||
+      countPicked(b) - countPicked(a),
+  )[0];
+}
+
+// The voters that no caption's share counts, as the product's card tells them in its verdict
+function NoneNote({ photo }: { photo: PhotoResDto }) {
+  return (
+    <p className={styles.noneNote}>
+      Picked none
+      <span className={styles.optionShare}>{formatNoneShare(photo)}</span>
+    </p>
+  );
+}
+
+function ShowcaseSkeleton() {
+  return (
+    <div className={styles.showcase} role="status" aria-label="Loading">
+      <div className={styles.showcaseCard}>
+        <div className={`${styles.photo} ${styles.skeleton}`} />
+        <div className={styles.options}>
+          {[0, 1, 2].map((index) => (
+            <div key={index} className={`${styles.skeleton} ${styles.skeletonOption}`} />
+          ))}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  const [front, back] = photos;
-  if (!front) {
-    throw new Error('The showcase is given no photo');
-  }
+// A photo with a split vote, as its card shows it after the reveal, over another photo
+function Showcase({ front, back }: { front: PhotoResDto; back: PhotoResDto | undefined }) {
+  const { paths } = useRoast();
   const winnerId = getWinner(front)?.id;
 
   return (
@@ -126,7 +160,7 @@ function Showcase({ photos }: { photos: PhotoResDto[] | null }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={back.url} alt="" className={styles.showcaseBack} aria-hidden="true" />
       )}
-      <Link href={paths.photo(front.id)} className={styles.showcaseCard}>
+      <Link href={paths.photo(front.id)} className={styles.showcaseCard} data-fresh={false}>
         <span className={`${styles.tag} ${styles.showcaseTag}`}>
           <EmojiEventsRoundedIcon sx={{ fontSize: 14 }} />
           Top roast
@@ -147,82 +181,76 @@ function Showcase({ photos }: { photos: PhotoResDto[] | null }) {
         <ol className={styles.options}>
           {front.captions.map((caption) => (
             <li key={caption.id}>
-              <RevealedOption photo={front} caption={caption} isWinner={caption.id === winnerId} />
+              <RevealedOption photo={front} caption={caption} isWinner={caption.id === winnerId} plainVoice />
             </li>
           ))}
         </ol>
+        {getNoneShare(front) > 0 && <NoneNote photo={front} />}
       </Link>
     </div>
   );
 }
 
-// A day of the game in 3 steps, each shown with the product's own pieces filled with real examples
-function Steps({ photos }: { photos: PhotoResDto[] }) {
-  // The examples after the hero's, where there are enough
-  const choice = photos.at(1) ?? photos.at(0);
-  const reveal = photos.at(2) ?? photos.at(0);
-  const revealWinnerId = reveal ? getWinner(reveal)?.id : undefined;
+// A day of the game in 3 steps, each shown with the product's own pieces filled with real examples.
+// Steps 2 and 3 show one photo with its choices, before the pick and after it, row beside row.
+function Steps({ photos, demo }: { photos: PhotoResDto[]; demo: PhotoResDto | undefined }) {
+  const winnerId = demo && getWinner(demo)?.id;
 
   return (
     <section className={styles.landingSection} aria-labelledby="steps-title">
-      <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>How it works</p>
-        <h2 id="steps-title" className={styles.landingTitle}>
-          3 steps, once a day
-        </h2>
-      </div>
+      <h2 id="steps-title" className={styles.landingTitle}>
+        3 steps, once a day
+      </h2>
       <ol className={styles.stepGrid}>
         <li className={styles.stepCard}>
           {photos.length > 0 && (
             <div className={styles.stepVisual}>
               <div className={styles.fan}>
-                {photos.slice(0, FanCount).map((photo) => (
+                {photos.map((photo) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img key={photo.id} src={photo.url} alt="" className={styles.fanPhoto} loading="lazy" />
                 ))}
               </div>
             </div>
           )}
-          <StepText number={1} title="A batch drops at midnight">
-            5 photos from campus and the city, new every day.
-          </StepText>
+          <StepText number={1} title="5 new photos at midnight" />
         </li>
         <li className={styles.stepCard}>
-          {choice && (
-            <div className={styles.stepVisual}>
-              {choice.captions.map((caption, index) => (
-                <div key={caption.id} className={styles.option} data-hover={index === 0}>
+          {demo && (
+            <div className={styles.stepList}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={demo.url} alt="" className={styles.stepPhoto} loading="lazy" />
+              {demo.captions.map((caption) => (
+                <div key={caption.id} className={styles.option} data-hover={caption.id === winnerId}>
                   <div className={`${styles.optionBody} ${styles.optionChoice}`}>
                     <span className={styles.optionMark} aria-hidden="true" />
                     <div className={styles.optionText}>{caption.content}</div>
-                    {index === 0 && (
-                      <TouchAppRoundedIcon sx={{ flex: 'none', ml: 'auto', fontSize: 20, color: 'var(--dr-ink)' }} />
-                    )}
                   </div>
+                  {caption.id === winnerId && <TouchAppRoundedIcon className={styles.tapMark} />}
                 </div>
               ))}
+              <div className={`${styles.option} ${styles.noneOption}`}>
+                <div className={`${styles.optionBody} ${styles.optionChoice}`}>
+                  <span className={styles.optionMark} aria-hidden="true" />
+                  <div className={styles.optionText}>None of these is funny</div>
+                </div>
+              </div>
             </div>
           )}
-          <StepText number={2} title="Pick the funniest caption">
-            3 AI voices write one caption each. You vote before you know who wrote what.
-          </StepText>
+          <StepText number={2} title="Tap the funniest caption" />
         </li>
         <li className={styles.stepCard}>
-          {reveal && (
-            <div className={styles.stepVisual}>
-              {reveal.captions.map((caption) => (
-                <RevealedOption
-                  key={caption.id}
-                  photo={reveal}
-                  caption={caption}
-                  isWinner={caption.id === revealWinnerId}
-                />
+          {demo && (
+            <div className={styles.stepList} data-fresh={false}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={demo.url} alt="" className={styles.stepPhoto} loading="lazy" />
+              {demo.captions.map((caption) => (
+                <RevealedOption key={caption.id} photo={demo} caption={caption} isWinner={caption.id === winnerId} />
               ))}
+              <NoneNote photo={demo} />
             </div>
           )}
-          <StepText number={3} title="See who wrote it">
-            Then the voices, the crowd&apos;s picks, and whether you agree with them.
-          </StepText>
+          <StepText number={3} title="See which AI voice wrote it" />
         </li>
       </ol>
     </section>
@@ -232,129 +260,126 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
 interface StepTextProps {
   number: number;
   title: string;
-  children: React.ReactNode;
 }
 
-function StepText({ number, title, children }: StepTextProps) {
+function StepText({ number, title }: StepTextProps) {
   return (
     <div className={styles.stepHead}>
       <span className={styles.stepNumber}>{number}</span>
-      <div>
-        <h3 className={styles.stepTitle}>{title}</h3>
-        <p className={styles.stepText}>{children}</p>
-      </div>
+      <h3 className={styles.stepTitle}>{title}</h3>
     </div>
   );
 }
 
-// The caption of the voice that the crowd picked most among the examples; none while no caption of it has a pick
-function findBestCaption(photos: PhotoResDto[], slug: string): PhotoCaptionResDto | undefined {
-  return photos
-    .flatMap((photo) => photo.captions)
-    .filter((caption) => caption.flavor?.slug === slug && (caption.picks ?? 0) > 0)
-    .sort((a, b) => (b.picks ?? 0) - (a.picks ?? 0))
+interface Quote {
+  photo: PhotoResDto;
+  caption: PhotoCaptionResDto;
+}
+
+const listQuotes = (photos: PhotoResDto[]): Quote[] =>
+  photos.flatMap((photo) => photo.captions.map((caption) => ({ photo, caption })));
+
+// A caption for each voice among the photos, each voice's on a photo of its own: the captions take their voices in
+// the order of their picks, then of their photos' voters, and a caption is passed over when its voice has one or
+// its photo is taken
+function assignQuotes(photos: PhotoResDto[]): Map<string, Quote> {
+  const assigned = new Map<string, Quote>();
+  const quotes = listQuotes(photos).sort(
+    (a, b) => (b.caption.picks ?? 0) - (a.caption.picks ?? 0) || (b.photo.voters ?? 0) - (a.photo.voters ?? 0),
+  );
+  for (const quote of quotes) {
+    const slug = quote.caption.flavor?.slug;
+    if (slug && !assigned.has(slug) && [...assigned.values()].every(({ photo }) => photo !== quote.photo)) {
+      assigned.set(slug, quote);
+    }
+  }
+  return assigned;
+}
+
+// The voice's most picked caption on the photos
+function findBestQuote(photos: PhotoResDto[], slug: string): Quote | undefined {
+  return listQuotes(photos)
+    .filter(({ caption }) => caption.flavor?.slug === slug)
+    .sort((a, b) => (b.caption.picks ?? 0) - (a.caption.picks ?? 0))
     .at(0);
 }
 
-// The 5 voices, each with its tagline and its best caption so far
-function Voices({ flavors, photos }: { flavors: FlavorResDto[]; photos: PhotoResDto[] }) {
+interface VoicesProps {
+  flavors: FlavorResDto[];
+  // The examples that no other section shows
+  spare: PhotoResDto[];
+  examples: PhotoResDto[];
+}
+
+// The voices after the section's title in one grid, each with a caption of its own beside the caption's photo: one
+// among the spare examples, then its most picked one among all the examples; its tagline while it has none
+function Voices({ flavors, spare, examples }: VoicesProps) {
+  const assigned = assignQuotes(spare);
+
   return (
-    <section className={styles.landingSection} aria-labelledby="voices-title">
-      <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>The voices</p>
-        <h2 id="voices-title" className={styles.landingTitle}>
-          {flavors.length} AI voices compete for every photo
-        </h2>
-        <p className={styles.landingText}>Each photo gets 3 of them. Find out which one gets you.</p>
-      </div>
-      <ul className={styles.voiceGrid}>
-        {flavors.map((flavor) => {
-          const best = findBestCaption(photos, flavor.slug);
-          return (
-            <li key={flavor.slug} className={styles.voiceCard} style={voiceStyle(flavor)}>
+    <section className={styles.voiceGrid} aria-labelledby="voices-title">
+      <h2 id="voices-title" className={styles.landingTitle}>
+        {flavors.length} AI voices compete for every photo
+      </h2>
+      {flavors.map((flavor) => {
+        const quote = assigned.get(flavor.slug) ?? findBestQuote(examples, flavor.slug);
+        return (
+          <article key={flavor.slug} className={styles.voiceCard} style={voiceStyle(flavor)}>
+            <div className={styles.voiceTop}>
               <h3 className={styles.voiceName}>{flavor.name}</h3>
+              {quote && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={quote.photo.url} alt="" className={styles.voiceThumb} loading="lazy" />
+              )}
+            </div>
+            {quote ? (
+              <p className={styles.voiceQuote}>&ldquo;{quote.caption.content}&rdquo;</p>
+            ) : (
               <p className={styles.voiceTagline}>{flavor.tagline}</p>
-              {best && <p className={styles.voiceQuote}>&ldquo;{best.content}&rdquo;</p>}
-            </li>
-          );
-        })}
-      </ul>
+            )}
+          </article>
+        );
+      })}
     </section>
   );
 }
 
-// The most picked photos of the closed batches
+// The most picked photos of the closed batches, each over its winning caption
 function Gallery({ photos }: { photos: PhotoResDto[] }) {
   const { paths } = useRoast();
 
   return (
-    <section className={styles.landingSection} aria-labelledby="gallery-title">
-      <div className={styles.sectionIntroRow}>
-        <div>
-          <p className={styles.eyebrow}>Hall of fame</p>
-          <h2 id="gallery-title" className={styles.landingTitle}>
-            The crowd&apos;s favorites
-          </h2>
-        </div>
-        <Link href={paths.top} className={styles.moreLink}>
-          All top roasts
-          <ArrowForwardRoundedIcon sx={{ fontSize: 18 }} />
-        </Link>
-      </div>
+    <section className={styles.gallerySection} aria-labelledby="gallery-title">
+      <h2 id="gallery-title" className={styles.landingTitle}>
+        The crowd&apos;s favorites
+      </h2>
+      <Link href={paths.top} className={styles.moreLink}>
+        All top roasts
+      </Link>
       <div className={styles.gallery}>
-        {photos.map((photo, index) => (
-          <TopTile key={photo.id} photo={photo} rank={index + 1} />
+        {photos.map((photo) => (
+          <FavoriteTile key={photo.id} photo={photo} />
         ))}
       </div>
     </section>
   );
 }
 
-// What a player keeps beyond a day
-function Features() {
+function FavoriteTile({ photo }: { photo: PhotoResDto }) {
   const { paths } = useRoast();
+  const winner = getWinner(photo);
+  if (!winner) {
+    throw new Error('A photo of the top list has no winning caption');
+  }
 
   return (
-    <section className={styles.landingSection} aria-labelledby="features-title">
-      <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>Beyond today</p>
-        <h2 id="features-title" className={styles.landingTitle}>
-          Every pick adds up
-        </h2>
+    <Link href={paths.photo(photo.id)} className={styles.favorite}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={photo.url} alt={photo.description} className={styles.favoritePhoto} loading="lazy" />
+      <div className={styles.favoriteBody}>
+        <p className={styles.favoriteCaption}>{winner.content}</p>
+        {winner.flavor && <FlavorChip flavor={winner.flavor} plain />}
       </div>
-      <ul className={styles.featureGrid}>
-        <Feature icon={<LocalFireDepartmentRoundedIcon />} title="Keep your streak">
-          Finish the day&apos;s batch to keep the flame going.
-        </Feature>
-        <Feature icon={<GroupsRoundedIcon />} title="You vs. the crowd">
-          See how often your pick is the crowd&apos;s favorite.
-        </Feature>
-        <Feature icon={<InsightsRoundedIcon />} title="Find your humor">
-          Your picks add up to the voices you laugh at most.
-        </Feature>
-        <Feature icon={<AddAPhotoRoundedIcon />} title="Roast your own photo">
-          The AI writes its captions, and it joins the next batch.{' '}
-          <Link href={paths.roast} className={styles.link}>
-            Upload a photo
-          </Link>
-        </Feature>
-      </ul>
-    </section>
-  );
-}
-
-interface FeatureProps {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}
-
-function Feature({ icon, title, children }: FeatureProps) {
-  return (
-    <li className={styles.feature}>
-      <span className={styles.featureIcon}>{icon}</span>
-      <h3 className={styles.featureTitle}>{title}</h3>
-      <p className={styles.featureText}>{children}</p>
-    </li>
+    </Link>
   );
 }

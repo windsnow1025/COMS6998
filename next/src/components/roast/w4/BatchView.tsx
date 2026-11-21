@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
-import {useBatch} from '../useBatch';
+import {useBatch} from './useBatch';
 import BatchFeed from './BatchFeed';
-import {LoadError, Loading} from '../Status';
-import styles from '../roast.module.css';
+import {LoadError, Loading} from './Status';
+import styles from './roast.module.css';
 
 interface BatchViewProps {
   // The batch's campus date, as YYYY-MM-DD; undefined until the router knows the route's query

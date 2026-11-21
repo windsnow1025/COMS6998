@@ -10,7 +10,7 @@ import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutl
 import TouchAppRoundedIcon from '@mui/icons-material/TouchAppRounded';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {RoastError} from '@/lib/roast/RoastError';
-import {formatPercent, getNoneShare, getOutcome, getWinner, hasVerdict, isTied, type Outcome as OutcomeTone} from '@/lib/roast/PhotoResults';
+import {formatNoneShare, getNoneShare, getOutcome, getWinner, hasVerdict, isTied, type Outcome as OutcomeTone} from '@/lib/roast/PhotoResults';
 import {PhotoResDto} from '@/client/nest';
 import {useRoast} from './RoastContext';
 import RevealedOption from './RevealedOption';
@@ -36,6 +36,8 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
 
   const [isVoting, setIsVoting] = React.useState(false);
   const [error, setError] = React.useState('');
+  // Whether the card was revealed by the viewer's vote in this page view, which its results animate in for
+  const [isFresh, setIsFresh] = React.useState(false);
 
   const vote = async (captionId: string | null) => {
     if (!viewer) {
@@ -46,7 +48,9 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
     setIsVoting(true);
     setError('');
     try {
-      onVoted(await roastLogic.vote(photo.id, captionId));
+      const voted = await roastLogic.vote(photo.id, captionId);
+      setIsFresh(true);
+      onVoted(voted);
     } catch (err) {
       const status = err instanceof RoastError ? err.status : undefined;
       if (status === Unauthorized) {
@@ -66,7 +70,7 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
   const winnerId = hasVerdict(photo) ? getWinner(photo)?.id : undefined;
 
   return (
-    <article>
+    <article data-fresh={isFresh}>
       <figure className={styles.photo}>
         {/* The photo is served from object storage, outside the image optimizer */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,7 +127,7 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
           </li>
         )}
       </ol>
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
       {photo.revealed && <Outcome photo={photo} />}
     </article>
   );
@@ -134,7 +138,7 @@ function Outcome({ photo }: { photo: PhotoResDto }) {
   // A non-breaking space keeps the count and its word on one line
   const votes = `${voters}\u00A0${voters === 1 ? 'vote' : 'votes'}`;
   const noneShare = getNoneShare(photo);
-  const none = noneShare > 0 ? ` ${formatPercent(noneShare)} picked none.` : '';
+  const none = noneShare > 0 ? ` ${formatNoneShare(photo)} picked none.` : '';
   // A tie at the top is never broken: the photo goes back into a batch until a vote breaks it
   const tie = isTied(photo) ? ' The top captions are tied.' : '';
 
@@ -150,9 +154,8 @@ function Outcome({ photo }: { photo: PhotoResDto }) {
   // The viewer is one of the none picks, so the others are the rest
   const othersNone = (photo.nonePicks ?? 0) - 1;
   const text = {
-    // The owner's line states that the photo is published wherever the owner meets the card; before a batch serves
-    // the photo, there is no vote to count
-    owner: photo.batchDate ? `Published. ${votes} so far.${tie}${none}` : 'Published. Voting starts when your photo is in a batch.',
+    // The owner's line counts the votes; before a batch serves the photo, there is no vote to count
+    owner: photo.batchDate ? `${votes}.${tie}${none}` : 'Voting starts when your photo is in a batch.',
     match: `You picked the crowd favorite. ${votes}.${none}`,
     miss: `Hot take. The crowd went another way. ${votes}.${none}`,
     early: isTied(photo)

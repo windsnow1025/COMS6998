@@ -20,7 +20,6 @@ export default function MyBatches() {
     <section>
       <div className={styles.batchHead}>
         <h2 className={styles.sectionTitle}>Your batches</h2>
-        <span className={`${styles.muted} ${styles.small}`}>The days you played</span>
       </div>
       {batches.error && <LoadError message={batches.error} onRetry={batches.reload} />}
       {!batches.data && !batches.error && <Loading />}
@@ -28,7 +27,7 @@ export default function MyBatches() {
         <div className={`${styles.card} ${styles.empty} mt-4`}>
           <p>You have not voted in a batch yet.</p>
           <Link href={paths.today} className={styles.button}>
-            Today&apos;s batch
+            Play today&apos;s batch
           </Link>
         </div>
       )}
