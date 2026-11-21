@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Link from 'next/link';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {TopRange} from '@/lib/roast/RoastClient';
 import {useRoast} from './RoastContext';
@@ -16,7 +17,7 @@ const PageSize = 24;
 
 // The photos of past batches, ranked by the picks of their winning caption
 export default function TopView() {
-  const { viewer, viewerLoaded } = useRoast();
+  const { viewer, viewerLoaded, paths } = useRoast();
   const roastLogic = React.useMemo(() => new RoastLogic(), []);
 
   const [range, setRange] = React.useState<TopRange>('week');
@@ -33,7 +34,6 @@ export default function TopView() {
   return (
     <>
       <h1 className={styles.title}>Top roasts</h1>
-      <p className={styles.subtitle}>The captions the crowd picked, from every batch that has closed.</p>
 
       <div className={`${styles.segments} mt-5`}>
         {Ranges.map((option) => (
@@ -57,9 +57,12 @@ export default function TopView() {
       {photos.data && photos.data.length === 0 && (
         <div className={`${styles.card} ${styles.empty} mt-5`}>
           <p>
-            No caption has won {range === 'week' ? 'this week' : 'yet'}. A photo lands here once its batch has closed
-            at midnight with votes on it.
+            No winners {range === 'week' ? 'this week yet' : 'yet'}. A batch&apos;s winners land here when it closes at
+            midnight.
           </p>
+          <Link href={paths.today} className={styles.button}>
+            Play today&apos;s batch
+          </Link>
         </div>
       )}
       {photos.data && photos.data.length > 0 && (

@@ -28,7 +28,7 @@ export default function TopTile({ photo, rank }: TopTileProps) {
       <div className={styles.tileShade}>
         <p className={styles.tileCaption}>{winner.content}</p>
         <div className={styles.tileMeta}>
-          {winner.flavor && <FlavorChip flavor={winner.flavor} />}
+          {winner.flavor && <FlavorChip flavor={winner.flavor} plain />}
           <span>
             {formatPercent(getPickShare(photo, winner))} of {photo.voters} votes
           </span>

@@ -81,19 +81,19 @@ export default class RoastLogic {
     }
   }
 
-  async writeCaptions(id: string): Promise<PhotoResDto> {
+  async writeCaptions(id: string, failureMessage: string): Promise<PhotoResDto> {
     try {
       return await this.roastClient.writeCaptions(id);
     } catch (error) {
-      throw toRoastError(error, "The roast failed. Try again.");
+      throw toRoastError(error, failureMessage);
     }
   }
 
-  async writeDrafts(id: string): Promise<PhotoResDto> {
+  async writeDrafts(id: string, failureMessage: string): Promise<PhotoResDto> {
     try {
       return await this.roastClient.writeDrafts(id);
     } catch (error) {
-      throw toRoastError(error, "The roast failed. Try again.");
+      throw toRoastError(error, failureMessage);
     }
   }
 

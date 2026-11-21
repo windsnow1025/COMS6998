@@ -45,7 +45,6 @@ export default function EarlierBatches({ batches }: EarlierBatchesProps) {
     <section>
       <div className={styles.batchHead}>
         <h2 className={styles.sectionTitle}>Earlier batches</h2>
-        <span className={`${styles.muted} ${styles.small}`}>How the crowd voted</span>
       </div>
       <ul className={styles.archive}>
         {batches.map((batch) => (

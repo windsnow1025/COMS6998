@@ -27,9 +27,6 @@ export default function SignInView({ brandMark }: SignInViewProps) {
     <div className={styles.signIn}>
       <span className={`${styles.brandMark} mx-auto`}>{brandMark}</span>
       <h1 className={styles.title}>Sign in to Daily Roast</h1>
-      <p className={styles.subtitle}>
-        Vote on the daily batch, keep your streak, and get your own photos roasted.
-      </p>
       <div className={styles.signInButton}>
         <GoogleSignInButton />
       </div>

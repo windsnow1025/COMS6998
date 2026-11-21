@@ -24,9 +24,9 @@ export default function TodayBatch({ load: { key, batch }, feed: Feed }: TodayBa
         <div className={`${styles.card} ${styles.empty}`}>
           {batch.data.judgedBefore.length > 0 ? (
             // The batch holds only photos the viewer judged on earlier dates; a new upload still joins it
-            <p>No new photo for you today. Your earlier picks are still collecting votes.</p>
+            <p>You already voted on every photo in today&apos;s batch.</p>
           ) : (
-            <p>No photo is in line for today&apos;s batch. Yours can open it.</p>
+            <p>No photos in today&apos;s batch yet. Upload one to start it.</p>
           )}
           <Link href={paths.roast} className={styles.button}>
             Roast my photo

@@ -10,10 +10,12 @@ interface RevealedOptionProps {
   caption: PhotoCaptionResDto;
   // Whether the caption has the most picks of the photo
   isWinner: boolean;
+  // The voice's chip without its explanation: an option inside a link
+  plainVoice?: boolean;
 }
 
 // A caption of a revealed photo: its share of the picks as a bar, its voice, and its standing
-export default function RevealedOption({ photo, caption, isWinner }: RevealedOptionProps) {
+export default function RevealedOption({ photo, caption, isWinner, plainVoice = false }: RevealedOptionProps) {
   const isPicked = photo.viewer.captionId === caption.id;
   const share = formatPercent(getPickShare(photo, caption));
   // A photo that nobody has voted on has no shares to show
@@ -25,10 +27,10 @@ export default function RevealedOption({ photo, caption, isWinner }: RevealedOpt
       <div className={styles.optionBody}>
         <div className={styles.optionText}>{caption.content}</div>
         <div className={styles.optionMeta}>
-          {caption.flavor && <FlavorChip flavor={caption.flavor} />}
+          {caption.flavor && <FlavorChip flavor={caption.flavor} plain={plainVoice} />}
           {isPicked && <span className={styles.tag}>Your pick</span>}
           {isWinner && (
-            <span className={styles.crown} title="Most picked">
+            <span className={styles.crown} role="img" aria-label="Most picked">
               <EmojiEventsRoundedIcon fontSize="small" />
             </span>
           )}

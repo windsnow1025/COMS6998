@@ -63,7 +63,7 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
     <>
       {viewer && !batch.closed && !wasDoneAtLoad && (
         <div className={styles.meter}>
-          <div className={styles.progress} role="img" aria-label={`${doneCount} of ${photos.length} photos judged`}>
+          <div className={styles.progress} role="img" aria-label={`${doneCount} of ${photos.length} photos voted on`}>
             {photos.map((photo, index) => (
               <span key={photo.id} className={styles.progressStep} data-done={index < doneCount} />
             ))}
@@ -72,7 +72,12 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
             <button
               type="button"
               className={`${styles.button} ${styles.buttonSmall}`}
-              onClick={() => summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              onClick={() =>
+                summaryRef.current?.scrollIntoView({
+                  behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                  block: 'start',
+                })
+              }
             >
               My results
               <ArrowDownwardRoundedIcon sx={{ fontSize: 18 }} />
@@ -84,14 +89,13 @@ export default function BatchFeed({ batch }: BatchFeedProps) {
           )}
         </div>
       )}
-      {isGuided && (
-        <p className={styles.meterHint}>
-          Judge all {photos.length} to see your score and your streak.
-        </p>
-      )}
 
       <div className={styles.stack}>
-        {viewer && wasDoneAtLoad && <BatchSummary batch={{ ...batch, photos }} />}
+        {viewer && wasDoneAtLoad && (
+          <div data-fresh={false}>
+            <BatchSummary batch={{ ...batch, photos }} />
+          </div>
+        )}
         {photos.map((photo) =>
           judgedAtLoad.has(photo.id) ? (
             <div key={photo.id} className={styles.judged}>

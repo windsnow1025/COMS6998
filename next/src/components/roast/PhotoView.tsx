@@ -1,8 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import IosShareRoundedIcon from '@mui/icons-material/IosShareRounded';
 import RoastLogic from '@/lib/roast/RoastLogic';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
@@ -49,7 +47,7 @@ export default function PhotoView({ id }: PhotoViewProps) {
     const winner = photo.revealed ? getWinner(photo) : undefined;
     const result = await share({
       title: 'Daily Roast',
-      text: winner ? `“${winner.content}”` : 'Which roast wins this photo?',
+      text: winner ? `“${winner.content}”` : 'Which caption wins this photo?',
       url: `${window.location.origin}${paths.photo(photo.id)}`,
     });
     if (result === 'copied') {
@@ -61,7 +59,7 @@ export default function PhotoView({ id }: PhotoViewProps) {
     setIsWorking(true);
     setError('');
     try {
-      setPhoto(await roastLogic.writeDrafts(photo.id));
+      setPhoto(await roastLogic.writeDrafts(photo.id, 'The captions were not written. Try again.'));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -90,7 +88,7 @@ export default function PhotoView({ id }: PhotoViewProps) {
       {!isUnkept && photo.captions.length > 0 && (
         <>
           <h1 className={`${styles.title} ${styles.photoTitle}`}>
-            {photo.revealed ? 'The verdict' : 'Which roast wins?'}
+            {photo.revealed ? 'The verdict' : 'Which caption wins?'}
           </h1>
           {isChoosing ? (
             <>
@@ -103,23 +101,25 @@ export default function PhotoView({ id }: PhotoViewProps) {
         </>
       )}
       {!hasDrafts && photo.captions.length === 0 && (
-        <UncaptionedPhoto photo={photo} isWorking={isWorking} onWriteDrafts={handleWriteDrafts} />
+        <>
+          <h1 className={`${styles.title} ${styles.photoTitle}`}>No captions yet</h1>
+          <UncaptionedPhoto photo={photo} isWorking={isWorking} onWriteDrafts={handleWriteDrafts} />
+        </>
       )}
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
 
       <p className={`${styles.muted} ${styles.small} mt-5`}>
         {photo.batchDate && (
           <>
-            Served in the batch of{' '}
+            In the batch of{' '}
             <Link href={paths.batch(photo.batchDate)} className={styles.link}>
               {formatCampusDate(photo.batchDate)}
             </Link>
             .
           </>
         )}
-        {!photo.batchDate && photo.queuePosition !== undefined && `Number ${photo.queuePosition} in line.`}
-        {!photo.batchDate && photo.queuePosition === undefined && isUnkept && 'In line for a batch once you keep 3.'}
+        {!photo.batchDate && photo.queuePosition !== undefined && `Number ${photo.queuePosition} in line for a batch.`}
         {!photo.batchDate && photo.queuePosition === undefined && !isUnkept && 'Waiting in line for a batch.'}
       </p>
 
@@ -130,17 +130,17 @@ export default function PhotoView({ id }: PhotoViewProps) {
         </button>
         {hasDrafts && !isUnkept && !isChoosing && (
           <button type="button" className={styles.buttonGhost} onClick={() => setIsChoosing(true)}>
-            <EditRoundedIcon fontSize="small" />
             Change my 3
           </button>
         )}
-        {photo.viewer.isOwner && (
-          <button type="button" className={styles.buttonGhost} onClick={() => setDeleteId(photo.id)}>
-            <DeleteOutlineRoundedIcon fontSize="small" />
-            Delete
-          </button>
-        )}
       </div>
+      {photo.viewer.isOwner && (
+        <div className="mt-4">
+          <button type="button" className={styles.linkButton} onClick={() => setDeleteId(photo.id)}>
+            Delete this photo
+          </button>
+        </div>
+      )}
 
       <DeletePhotoDialog
         photoId={deleteId}
@@ -173,10 +173,10 @@ function UncaptionedPhoto({ photo, isWorking, onWriteDrafts }: UncaptionedPhotoP
     <>
       <PhotoImage photo={photo} />
       <div className={`${styles.card} ${styles.empty} mt-5`}>
-        <p>{photo.viewer.isOwner ? 'The roast of this photo stopped halfway.' : 'This photo has no captions yet.'}</p>
+        <p>{photo.viewer.isOwner ? 'The captions for this photo were never written.' : 'This photo has no captions yet.'}</p>
         {photo.viewer.isOwner && (
           <button type="button" className={styles.button} disabled={isWorking} onClick={onWriteDrafts}>
-            {isWorking ? 'Writing the roasts' : 'Write the roasts'}
+            {isWorking ? 'Writing the captions, about 30 seconds' : 'Write the captions'}
           </button>
         )}
       </div>

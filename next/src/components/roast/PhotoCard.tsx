@@ -36,6 +36,8 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
 
   const [isVoting, setIsVoting] = React.useState(false);
   const [error, setError] = React.useState('');
+  // Whether the card was revealed by the viewer's vote in this page view, which its results animate in for
+  const [isFresh, setIsFresh] = React.useState(false);
 
   const vote = async (captionId: string | null) => {
     if (!viewer) {
@@ -46,7 +48,9 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
     setIsVoting(true);
     setError('');
     try {
-      onVoted(await roastLogic.vote(photo.id, captionId));
+      const voted = await roastLogic.vote(photo.id, captionId);
+      setIsFresh(true);
+      onVoted(voted);
     } catch (err) {
       const status = err instanceof RoastError ? err.status : undefined;
       if (status === Unauthorized) {
@@ -66,7 +70,7 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
   const winnerId = hasVerdict(photo) ? getWinner(photo)?.id : undefined;
 
   return (
-    <article>
+    <article data-fresh={isFresh}>
       <figure className={styles.photo}>
         {/* The photo is served from object storage, outside the image optimizer */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,7 +127,7 @@ export default function PhotoCard({ photo, onVoted, showHint = false }: PhotoCar
           </li>
         )}
       </ol>
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
       {photo.revealed && <Outcome photo={photo} />}
     </article>
   );

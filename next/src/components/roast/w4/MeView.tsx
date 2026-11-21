@@ -10,11 +10,11 @@ import {preparePhoto} from '@/lib/roast/PhotoUpload';
 import {formatPercent, getWinner} from '@/lib/roast/PhotoResults';
 import {voiceStyle} from '@/lib/roast/VoiceStyle';
 import {PhotoResDto, StatsResDto, UserResDto} from '@/client/nest';
-import {useRoast} from '../RoastContext';
+import {useRoast} from './RoastContext';
 import {useLoad} from '../useLoad';
-import {LoadError, Loading} from '../Status';
-import ViewerAvatar from '../ViewerAvatar';
-import styles from '../roast.module.css';
+import {LoadError, Loading} from './Status';
+import ViewerAvatar from './ViewerAvatar';
+import styles from './roast.module.css';
 
 interface MeViewProps {
   // The section of the viewer's batches, which the page composes; a route of Week 5 on

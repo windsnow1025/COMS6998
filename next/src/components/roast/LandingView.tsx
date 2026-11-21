@@ -1,10 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import AddAPhotoRoundedIcon from '@mui/icons-material/AddAPhotoRounded';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
-import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
-import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
 import TouchAppRoundedIcon from '@mui/icons-material/TouchAppRounded';
@@ -74,7 +70,6 @@ export default function LandingView() {
       <Steps photos={examples} />
       {flavors.length > 0 && <Voices flavors={flavors} photos={examples} />}
       {examples.length > 0 && <Gallery photos={examples.slice(0, GalleryCount)} />}
-      <Features />
       <section className={styles.cta} aria-labelledby="cta-title">
         <span className={styles.ctaMark} aria-hidden="true">
           <LocalFireDepartmentRoundedIcon sx={{ fontSize: 280 }} />
@@ -83,10 +78,14 @@ export default function LandingView() {
           <h2 id="cta-title" className={styles.landingTitle}>
             Today&apos;s batch is open.
           </h2>
-          <p className={styles.landingText}>5 photos, 3 captions each, 1 tap per photo.</p>
-          <Link href={paths.today} className={styles.button}>
-            Play today&apos;s batch
-          </Link>
+          <div className={styles.actions}>
+            <Link href={paths.today} className={styles.button}>
+              {viewer ? "Play today's batch" : "Browse today's batch"}
+            </Link>
+            <Link href={paths.roast} className={styles.buttonGhost}>
+              Roast my photo
+            </Link>
+          </div>
           {/* After the first render, so that the build's clock never reaches the page */}
           {viewerLoaded && <Countdown />}
         </div>
@@ -126,7 +125,7 @@ function Showcase({ photos }: { photos: PhotoResDto[] | null }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={back.url} alt="" className={styles.showcaseBack} aria-hidden="true" />
       )}
-      <Link href={paths.photo(front.id)} className={styles.showcaseCard}>
+      <Link href={paths.photo(front.id)} className={styles.showcaseCard} data-fresh={false}>
         <span className={`${styles.tag} ${styles.showcaseTag}`}>
           <EmojiEventsRoundedIcon sx={{ fontSize: 14 }} />
           Top roast
@@ -147,7 +146,7 @@ function Showcase({ photos }: { photos: PhotoResDto[] | null }) {
         <ol className={styles.options}>
           {front.captions.map((caption) => (
             <li key={caption.id}>
-              <RevealedOption photo={front} caption={caption} isWinner={caption.id === winnerId} />
+              <RevealedOption photo={front} caption={caption} isWinner={caption.id === winnerId} plainVoice />
             </li>
           ))}
         </ol>
@@ -166,7 +165,6 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
   return (
     <section className={styles.landingSection} aria-labelledby="steps-title">
       <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>How it works</p>
         <h2 id="steps-title" className={styles.landingTitle}>
           3 steps, once a day
         </h2>
@@ -183,9 +181,7 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
               </div>
             </div>
           )}
-          <StepText number={1} title="A batch drops at midnight">
-            5 photos from campus and the city, new every day.
-          </StepText>
+          <StepText number={1} title="5 new photos at midnight" />
         </li>
         <li className={styles.stepCard}>
           {choice && (
@@ -203,13 +199,11 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
               ))}
             </div>
           )}
-          <StepText number={2} title="Pick the funniest caption">
-            3 AI voices write one caption each. You vote before you know who wrote what.
-          </StepText>
+          <StepText number={2} title="Tap the funniest of 3 captions" />
         </li>
         <li className={styles.stepCard}>
           {reveal && (
-            <div className={styles.stepVisual}>
+            <div className={styles.stepVisual} data-fresh={false}>
               {reveal.captions.map((caption) => (
                 <RevealedOption
                   key={caption.id}
@@ -220,9 +214,7 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
               ))}
             </div>
           )}
-          <StepText number={3} title="See who wrote it">
-            Then the voices, the crowd&apos;s picks, and whether you agree with them.
-          </StepText>
+          <StepText number={3} title="See which AI voice wrote it" />
         </li>
       </ol>
     </section>
@@ -232,17 +224,13 @@ function Steps({ photos }: { photos: PhotoResDto[] }) {
 interface StepTextProps {
   number: number;
   title: string;
-  children: React.ReactNode;
 }
 
-function StepText({ number, title, children }: StepTextProps) {
+function StepText({ number, title }: StepTextProps) {
   return (
     <div className={styles.stepHead}>
       <span className={styles.stepNumber}>{number}</span>
-      <div>
-        <h3 className={styles.stepTitle}>{title}</h3>
-        <p className={styles.stepText}>{children}</p>
-      </div>
+      <h3 className={styles.stepTitle}>{title}</h3>
     </div>
   );
 }
@@ -256,16 +244,14 @@ function findBestCaption(photos: PhotoResDto[], slug: string): PhotoCaptionResDt
     .at(0);
 }
 
-// The 5 voices, each with its tagline and its best caption so far
+// The 5 voices, each with its best caption so far, or its tagline while it has none
 function Voices({ flavors, photos }: { flavors: FlavorResDto[]; photos: PhotoResDto[] }) {
   return (
     <section className={styles.landingSection} aria-labelledby="voices-title">
       <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>The voices</p>
         <h2 id="voices-title" className={styles.landingTitle}>
           {flavors.length} AI voices compete for every photo
         </h2>
-        <p className={styles.landingText}>Each photo gets 3 of them. Find out which one gets you.</p>
       </div>
       <ul className={styles.voiceGrid}>
         {flavors.map((flavor) => {
@@ -273,8 +259,11 @@ function Voices({ flavors, photos }: { flavors: FlavorResDto[]; photos: PhotoRes
           return (
             <li key={flavor.slug} className={styles.voiceCard} style={voiceStyle(flavor)}>
               <h3 className={styles.voiceName}>{flavor.name}</h3>
-              <p className={styles.voiceTagline}>{flavor.tagline}</p>
-              {best && <p className={styles.voiceQuote}>&ldquo;{best.content}&rdquo;</p>}
+              {best ? (
+                <p className={styles.voiceQuote}>&ldquo;{best.content}&rdquo;</p>
+              ) : (
+                <p className={styles.voiceTagline}>{flavor.tagline}</p>
+              )}
             </li>
           );
         })}
@@ -291,14 +280,12 @@ function Gallery({ photos }: { photos: PhotoResDto[] }) {
     <section className={styles.landingSection} aria-labelledby="gallery-title">
       <div className={styles.sectionIntroRow}>
         <div>
-          <p className={styles.eyebrow}>Hall of fame</p>
           <h2 id="gallery-title" className={styles.landingTitle}>
             The crowd&apos;s favorites
           </h2>
         </div>
         <Link href={paths.top} className={styles.moreLink}>
           All top roasts
-          <ArrowForwardRoundedIcon sx={{ fontSize: 18 }} />
         </Link>
       </div>
       <div className={styles.gallery}>
@@ -307,54 +294,5 @@ function Gallery({ photos }: { photos: PhotoResDto[] }) {
         ))}
       </div>
     </section>
-  );
-}
-
-// What a player keeps beyond a day
-function Features() {
-  const { paths } = useRoast();
-
-  return (
-    <section className={styles.landingSection} aria-labelledby="features-title">
-      <div className={styles.sectionIntroCenter}>
-        <p className={styles.eyebrow}>Beyond today</p>
-        <h2 id="features-title" className={styles.landingTitle}>
-          Every pick adds up
-        </h2>
-      </div>
-      <ul className={styles.featureGrid}>
-        <Feature icon={<LocalFireDepartmentRoundedIcon />} title="Keep your streak">
-          Finish the day&apos;s batch to keep the flame going.
-        </Feature>
-        <Feature icon={<GroupsRoundedIcon />} title="You vs. the crowd">
-          See how often your pick is the crowd&apos;s favorite.
-        </Feature>
-        <Feature icon={<InsightsRoundedIcon />} title="Find your humor">
-          Your picks add up to the voices you laugh at most.
-        </Feature>
-        <Feature icon={<AddAPhotoRoundedIcon />} title="Roast your own photo">
-          The AI writes its captions, and it joins the next batch.{' '}
-          <Link href={paths.roast} className={styles.link}>
-            Upload a photo
-          </Link>
-        </Feature>
-      </ul>
-    </section>
-  );
-}
-
-interface FeatureProps {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}
-
-function Feature({ icon, title, children }: FeatureProps) {
-  return (
-    <li className={styles.feature}>
-      <span className={styles.featureIcon}>{icon}</span>
-      <h3 className={styles.featureTitle}>{title}</h3>
-      <p className={styles.featureText}>{children}</p>
-    </li>
   );
 }

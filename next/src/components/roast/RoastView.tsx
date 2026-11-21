@@ -59,9 +59,8 @@ export default function RoastView() {
     return (
       <div className={`${styles.card} ${styles.empty}`}>
         <h1 className={styles.title}>Roast my photo</h1>
-        <p className={styles.subtitle}>Sign in to upload a photo and let AI caption it in 5 voices.</p>
-        <Link href={paths.signIn(router.asPath)} className={`${styles.button} mt-5`}>
-          Sign in
+        <Link href={paths.signIn(router.asPath)} className={styles.button}>
+          Sign in to upload
         </Link>
       </div>
     );
@@ -97,7 +96,7 @@ export default function RoastView() {
         setPhoto(uploaded);
       }
       setStage('writing');
-      setPhoto(await roastLogic.writeDrafts(uploaded.id));
+      setPhoto(await roastLogic.writeDrafts(uploaded.id, 'The captions were not written. Try again.'));
       setStage('choosing');
     } catch (err) {
       if (err instanceof RoastError && err.status === Unauthorized) {
@@ -126,7 +125,6 @@ export default function RoastView() {
     return (
       <>
         <h1 className={styles.title}>Pick your 3</h1>
-        <p className={styles.subtitle}>AI wrote a caption in each of the 5 voices. Keep the 3 you find funniest.</p>
         <figure className={`${styles.photo} mt-5`}>
           {/* The photo is served from object storage, outside the image optimizer */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -153,13 +151,11 @@ export default function RoastView() {
   if (stage === 'done' && photo) {
     return (
       <>
-        <h1 className={styles.title}>Roasted.</h1>
+        <h1 className={styles.title}>Published.</h1>
         <p className={styles.subtitle}>
-          {photo.batchDate && "Your photo is in today's batch. Classmates are voting on your 3."}
+          {photo.batchDate && "In today's batch."}
           {!photo.batchDate &&
-            (photo.queuePosition === 1
-              ? 'Your photo is next in line for a batch. You can change your 3 until it is served.'
-              : `Your photo is number ${photo.queuePosition} in line for a batch. You can change your 3 until it is served.`)}
+            (photo.queuePosition === 1 ? 'Next in line for a batch.' : `Number ${photo.queuePosition} in line for a batch.`)}
         </p>
         <div className="mt-5">
           <PhotoCard photo={photo} onVoted={setPhoto} />
@@ -190,10 +186,6 @@ export default function RoastView() {
   return (
     <>
       <h1 className={styles.title}>Roast my photo</h1>
-      <p className={styles.subtitle}>
-        Upload a photo from campus or the city. AI captions it in 5 voices, you keep your 3 favorites, and
-        classmates pick the winner.
-      </p>
 
       <div className="mt-5">
         {previewUrl ? (
@@ -249,24 +241,24 @@ export default function RoastView() {
       )}
 
       {isBusy && (
-        <ol className={styles.steps}>
+        <ol className={styles.steps} role="status">
           <li className={styles.step} data-state={stage === 'screening' ? 'active' : 'done'}>
             <span className={styles.stepDot}>{stage !== 'screening' && <CheckRoundedIcon sx={{ fontSize: 16 }} />}</span>
-            Looking at your photo
+            Checking your photo
           </li>
           <li className={styles.step} data-state={stage === 'writing' ? 'active' : 'todo'}>
             <span className={styles.stepDot} />
-            Writing a roast in each voice
+            Writing a caption in each voice, about 30 seconds
           </li>
         </ol>
       )}
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
 
       {previewUrl && !isBusy && (
         <div className={`${styles.actions} mt-5`}>
           <button type="button" className={styles.button} disabled={roastsLeft === 0 && !photo} onClick={roast}>
-            {photo ? 'Try the roasts again' : 'Roast it'}
+            {photo ? 'Write the captions again' : 'Roast it'}
           </button>
           <button type="button" className={styles.buttonGhost} onClick={startOver}>
             {photo ? 'Start over' : 'Choose another'}
@@ -277,7 +269,7 @@ export default function RoastView() {
       {roastsLeft !== undefined && !isBusy && (
         <p className={`${styles.muted} ${styles.small} mt-4`}>
           {roastsLeft === 0
-            ? 'You have used your roasts for today. Come back tomorrow.'
+            ? 'No roasts left today. You get more at midnight.'
             : `${roastsLeft} ${roastsLeft === 1 ? 'roast' : 'roasts'} left today.`}
         </p>
       )}

@@ -44,10 +44,9 @@ export default function MeView({ batchesSection }: MeViewProps) {
   if (!viewer) {
     return (
       <div className={`${styles.card} ${styles.empty}`}>
-        <h1 className={styles.title}>Your page</h1>
-        <p className={styles.subtitle}>Sign in to keep a streak, see your taste, and follow your photos.</p>
-        <Link href={paths.signIn(router.asPath)} className={`${styles.button} mt-5`}>
-          Sign in
+        <h1 className={styles.title}>Your profile</h1>
+        <Link href={paths.signIn(router.asPath)} className={styles.button}>
+          Sign in to see your profile
         </Link>
       </div>
     );
@@ -192,7 +191,7 @@ function Profile({ user }: { user: UserResDto }) {
       {isEditing && (
         <form className={`${styles.card} p-4 mt-3`} onSubmit={handleSaveName}>
           {(!user.firstName || !user.lastName) && (
-            <p className={styles.small}>Add your name. Your roasts are credited to it, as your first name and last initial.</p>
+            <p className={styles.small}>Shown on your photos as first name and last initial.</p>
           )}
           <div className={styles.row}>
             <label className={styles.field}>
@@ -218,7 +217,7 @@ function Profile({ user }: { user: UserResDto }) {
           </div>
           <div className={`${styles.actions} mt-4`}>
             <button type="submit" className={styles.button} disabled={isSaving}>
-              Save
+              Save name
             </button>
             {user.firstName && user.lastName && (
               <button type="button" className={styles.buttonGhost} onClick={() => setIsEditing(false)}>
@@ -228,7 +227,7 @@ function Profile({ user }: { user: UserResDto }) {
           </div>
         </form>
       )}
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
     </section>
   );
 }
@@ -255,7 +254,7 @@ function Standing({ stats }: { stats: StatsResDto }) {
         </div>
         <div className={styles.stat}>
           <div className={styles.statValue}>{stats.votes}</div>
-          <div className={styles.statLabel}>photos judged</div>
+          <div className={styles.statLabel}>photos voted on</div>
         </div>
         <div className={styles.stat}>
           <div className={styles.statValue}>{stats.picksReceived}</div>
@@ -267,14 +266,13 @@ function Standing({ stats }: { stats: StatsResDto }) {
       {totalPicks === 0 ? (
         <p className={styles.muted}>Vote on a batch to see which voices you pick.</p>
       ) : (
-        <div className={styles.voices}>
+        <div className={styles.voices} data-fresh={false}>
           {flavors.map(({ flavor, picks }) => (
             <div key={flavor.slug} className={styles.voice} style={voiceStyle(flavor)}>
               <div className={styles.voiceHead}>
                 <span>{flavor.name}</span>
                 <span>{formatPercent(picks / totalPicks)}</span>
               </div>
-              <div className={styles.voiceTagline}>{flavor.tagline}</div>
               <div className={styles.voiceTrack}>
                 <div
                   className={styles.voiceFill}
@@ -292,9 +290,9 @@ function Standing({ stats }: { stats: StatsResDto }) {
 // The status of a photo of the viewer's that no batch has served yet
 function getWaitingStatus(photo: PhotoResDto): string {
   if (photo.queuePosition !== undefined) {
-    return `Published · number ${photo.queuePosition} in line`;
+    return `Published. Number ${photo.queuePosition} in line.`;
   }
-  return photo.drafts ? 'Keep 3 captions to get in line' : 'Not roasted yet';
+  return photo.drafts ? 'Keep 3 captions to get in line' : 'Open the photo to write its captions';
 }
 
 function MyPhoto({ photo, onDelete }: { photo: PhotoResDto; onDelete: () => void }) {
@@ -310,10 +308,10 @@ function MyPhoto({ photo, onDelete }: { photo: PhotoResDto; onDelete: () => void
         <img src={photo.url} alt={photo.description} className={styles.thumb} loading="lazy" />
         <div className={styles.thumbBody}>
           <p className={styles.thumbCaption}>
-            {caption?.content ?? (photo.drafts ? 'Pick your 3 captions.' : 'The roast stopped halfway.')}
+            {caption?.content ?? (photo.drafts ? '5 captions are ready.' : 'Captions not written yet.')}
           </p>
           <div className={`${styles.muted} ${styles.small}`}>
-            {photo.batchDate ? `Batch of ${formatCampusDate(photo.batchDate)} · ${votes}` : getWaitingStatus(photo)}
+            {photo.batchDate ? `Batch of ${formatCampusDate(photo.batchDate)}. ${votes}.` : getWaitingStatus(photo)}
           </div>
         </div>
       </Link>

@@ -24,7 +24,6 @@ export default function BatchView({ date }: BatchViewProps) {
   return (
     <>
       <h1 className={styles.title}>{date ? formatCampusDate(date) : 'Batch'}</h1>
-      <p className={styles.subtitle}>The batch of that day and how the crowd voted.</p>
       {batch.data && (batch.data.previousDate || batch.data.nextDate) && (
         <nav className={styles.batchNav} aria-label="Nearby batches">
           {batch.data.previousDate ? (
@@ -49,7 +48,10 @@ export default function BatchView({ date }: BatchViewProps) {
         {!batch.data && !batch.error && <Loading />}
         {batch.data && batch.data.photos.length === 0 && batch.data.judgedBefore.length === 0 && (
           <div className={`${styles.card} ${styles.empty}`}>
-            <p>This batch has no photos left.</p>
+            <p>This batch has no photos left. They were deleted by the people who uploaded them.</p>
+            <Link href={paths.today} className={styles.button}>
+              Play today&apos;s batch
+            </Link>
           </div>
         )}
         {batch.data && batch.data.photos.length > 0 && <BatchFeed key={key} batch={batch.data} />}

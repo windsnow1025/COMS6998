@@ -8,11 +8,11 @@
   --dr-ink: #21160f;
   --dr-ink-soft: #6f5d50;
   --dr-line: #e6d6c1;
-  --dr-accent: #e04a14;
-  --dr-accent-strong: #bd3a0b;
+  --dr-accent: #cf4310;
+  --dr-accent-strong: #b8380a;
   --dr-accent-soft: #ffe1d1;
   --dr-on-accent: #ffffff;
-  --dr-gold: #c98a00;
+  --dr-gold: #9a6a00;
   --dr-shadow: 0 1px 2px rgba(33, 22, 15, 0.06), 0 10px 30px rgba(33, 22, 15, 0.08);
   --dr-radius: 20px;
   /* The color of a voice, which an element that shows one sets on itself from the voice's own color */
@@ -124,8 +124,8 @@
 .iconButton {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--dr-line);
   border-radius: 999px;
   background: var(--dr-surface);
@@ -136,8 +136,8 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid var(--dr-line);
   background: var(--dr-surface-2);
@@ -208,7 +208,7 @@
 }
 
 .tab[aria-current='page'] {
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
 }
 
 /* A narrow phone keeps the name and both header buttons on one line */
@@ -262,7 +262,7 @@
 }
 
 .sectionTitle {
-  margin: 32px 0 12px;
+  margin: 40px 0 16px;
   font-family: var(--dr-font-display), sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -329,14 +329,14 @@
 }
 
 .buttonSmall {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
   font-size: 14px;
 }
 
 .linkButton {
   border: 0;
-  padding: 8px 4px;
+  padding: 10px 4px;
   background: none;
   color: var(--dr-ink-soft);
   font-weight: 600;
@@ -382,6 +382,9 @@
 }
 
 .empty {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
   padding: 40px 20px;
   text-align: center;
 }
@@ -459,18 +462,6 @@
   display: block;
 }
 
-.heroText {
-  max-width: 34em;
-  margin: 16px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 17px;
-}
-
-.heroSplit .heroText {
-  margin-top: 20px;
-  font-size: 18px;
-}
-
 .heroActions {
   display: flex;
   flex-wrap: wrap;
@@ -483,28 +474,6 @@
 /* Google's button draws itself at its container's width */
 .heroSignIn {
   width: min(300px, 100%);
-}
-
-.heroFacts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  margin: 22px 0 0;
-  padding: 0;
-  list-style: none;
-  color: var(--dr-ink-soft);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.heroFacts li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.heroFacts svg {
-  color: var(--dr-accent);
 }
 
 @media (min-width: 900px) {
@@ -606,12 +575,6 @@
   letter-spacing: -0.03em;
 }
 
-.landingText {
-  margin: 10px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 17px;
-}
-
 .sectionIntroCenter {
   max-width: 640px;
   margin: 0 auto;
@@ -630,6 +593,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 44px;
   color: var(--dr-accent-strong);
   font-weight: 700;
 }
@@ -772,12 +736,6 @@
   letter-spacing: -0.01em;
 }
 
-.stepText {
-  margin: 4px 0 0;
-  color: var(--dr-ink-soft);
-  font-size: 15px;
-}
-
 @media (min-width: 800px) {
   .stepGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -867,48 +825,6 @@
 
 /* What a player keeps beyond a day */
 
-.featureGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.feature {
-  composes: card;
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 20px;
-  box-shadow: none;
-}
-
-.featureIcon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--dr-accent-soft);
-  color: var(--dr-accent-strong);
-}
-
-.featureTitle {
-  margin: 6px 0 0;
-  font-family: var(--dr-font-display), sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.featureText {
-  margin: 0;
-  color: var(--dr-ink-soft);
-  font-size: 15px;
-}
-
 /* The way in, at the end of the page */
 
 .cta {
@@ -934,10 +850,6 @@
   display: grid;
   justify-items: center;
   gap: 16px;
-}
-
-.ctaBody .landingText {
-  margin: 0;
 }
 
 .ctaBody .countdown {
@@ -1014,14 +926,6 @@
 }
 
 /* Meter */
-
-/* The goal under the meter, for a viewer who has yet to vote on the batch */
-.meterHint {
-  margin: 0 0 14px;
-  color: var(--dr-ink-soft);
-  font-size: 14px;
-  font-weight: 600;
-}
 
 .meter {
   position: sticky;
@@ -1114,7 +1018,7 @@
   align-items: center;
   gap: 6px;
   margin: 14px 0 0;
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
   font-size: 14px;
   font-weight: 700;
 }
@@ -1194,7 +1098,7 @@ button.option:disabled {
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  border: 2px solid var(--dr-line);
+  border: 2px solid var(--dr-ink-soft);
   border-radius: 999px;
   transition: border-color 120ms ease;
 }
@@ -1259,13 +1163,11 @@ button.option:hover .optionMark {
   gap: 4px;
 }
 
-/* The eyebrow's form, at the tooltip's size and in its muted ink */
+/* What the chip is, in the tooltip's muted ink */
 .voiceNoteKind {
   color: var(--dr-ink-soft);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .voiceNoteName {
@@ -1295,8 +1197,6 @@ button.option:hover .optionMark {
   color: var(--dr-on-accent);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
 .crown {
@@ -1357,6 +1257,17 @@ button.option:hover .optionMark {
 
 .verdict[data-tone='match'] {
   color: var(--dr-accent-strong);
+}
+
+/* Results animate in on the card the viewer has just voted on and on the summary of a batch just finished;
+   what a page loads already revealed shows at rest */
+[data-fresh='false'] .optionBar,
+[data-fresh='false'] .optionMeta,
+[data-fresh='false'] .crown,
+[data-fresh='false'] .verdict,
+[data-fresh='false'] .summary,
+[data-fresh='false'] .voiceFill {
+  animation: none;
 }
 
 .error {
@@ -1453,7 +1364,7 @@ button.option:hover .optionMark {
 }
 
 .segment {
-  padding: 8px 16px;
+  padding: 10px 16px;
   border: 0;
   border-radius: 999px;
   background: none;
@@ -1482,11 +1393,10 @@ button.option:hover .optionMark {
   border: 1px solid var(--dr-line);
   background: var(--dr-surface-2);
   aspect-ratio: 4 / 5;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: box-shadow 160ms ease;
 }
 
 .tile:hover {
-  transform: translateY(-3px);
   box-shadow: var(--dr-shadow);
 }
 
@@ -1585,7 +1495,7 @@ button.option:hover .optionMark {
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
-  border: 1.5px solid var(--dr-line);
+  border: 1.5px solid var(--dr-ink-soft);
   border-radius: 14px;
   background: var(--dr-surface);
   color: var(--dr-ink);
@@ -1594,7 +1504,6 @@ button.option:hover .optionMark {
 
 .input:focus {
   border-color: var(--dr-accent);
-  outline: none;
 }
 
 .steps {
@@ -1846,7 +1755,7 @@ button.option:hover .optionMark {
 }
 
 .myPhoto .thumbRow {
-  padding-right: 60px;
+  padding-right: 64px;
 }
 
 .myPhotoDelete {
@@ -1875,6 +1784,7 @@ button.option:hover .optionMark {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: 44px;
   padding: 8px 14px;
   border: 0;
   border-radius: 999px;
@@ -1892,13 +1802,10 @@ button.option:hover .optionMark {
 /* The uploader's choice of the drafts to keep: a check box per draft, as a choice of several */
 .keepHead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-}
-
-.keepHead .sectionTitle {
-  margin-bottom: 4px;
+  margin-top: 14px;
 }
 
 .keepCount {
@@ -1911,7 +1818,7 @@ button.option:hover .optionMark {
 }
 
 .keepCount[data-full='true'] {
-  color: var(--dr-accent);
+  color: var(--dr-accent-strong);
 }
 
 .option[data-kept='true'] {
@@ -1930,7 +1837,7 @@ button.option:hover .optionMark {
   width: 22px;
   height: 22px;
   margin-top: 1px;
-  border: 2px solid var(--dr-line);
+  border: 2px solid var(--dr-ink-soft);
   border-radius: 7px;
   transition: background 120ms ease, border-color 120ms ease;
 }
@@ -2062,6 +1969,7 @@ button.option:hover .keepMark {
 @media (prefers-reduced-motion: reduce) {
   .root * {
     animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
 }

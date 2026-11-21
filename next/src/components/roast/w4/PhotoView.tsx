@@ -8,11 +8,11 @@ import {formatCampusDate} from '@/lib/roast/CampusTime';
 import {getWinner} from '@/lib/roast/PhotoResults';
 import {share} from '@/lib/roast/Share';
 import {PhotoResDto} from '@/client/nest';
-import {useRoast} from '../RoastContext';
+import {useRoast} from './RoastContext';
 import {useLoad} from '../useLoad';
 import PhotoCard from './PhotoCard';
-import {LoadError, Loading} from '../Status';
-import styles from '../roast.module.css';
+import {LoadError, Loading} from './Status';
+import styles from './roast.module.css';
 
 interface PhotoViewProps {
   // The photo's id; undefined until the router knows the route's query
@@ -56,7 +56,7 @@ export default function PhotoView({ id }: PhotoViewProps) {
     setIsWorking(true);
     setError('');
     try {
-      setPhoto(await roastLogic.writeCaptions(photo.id));
+      setPhoto(await roastLogic.writeCaptions(photo.id, 'The roast failed. Try again.'));
     } catch (err) {
       setError((err as Error).message);
     } finally {

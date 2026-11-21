@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {FlavorResDto} from '@/client/nest';
 import {voiceStyle} from '@/lib/roast/VoiceStyle';
-import styles from '../roast.module.css';
+import styles from './roast.module.css';
 
 interface FlavorChipProps {
   flavor: FlavorResDto;

@@ -2,11 +2,11 @@ import * as React from 'react';
 import Link from 'next/link';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import {formatCampusDate} from '@/lib/roast/CampusTime';
-import {useRoast} from '../RoastContext';
-import {useTodayBatch} from '../useTodayBatch';
-import TodayBatch from '../TodayBatch';
+import {useRoast} from './RoastContext';
+import {useTodayBatch} from './useTodayBatch';
+import TodayBatch from './TodayBatch';
 import BatchFeed from './BatchFeed';
-import styles from '../roast.module.css';
+import styles from './roast.module.css';
 
 // The home of the product as Week 4 delivered it: a title, today's batch, and the way to the previous batch's verdicts
 export default function TodayView() {

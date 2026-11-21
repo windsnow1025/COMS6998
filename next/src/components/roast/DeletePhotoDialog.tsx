@@ -45,16 +45,16 @@ export default function DeletePhotoDialog({ photoId, onClose, onDeleted }: Delet
   };
 
   return (
-    <dialog ref={dialogRef} className={styles.dialog} onClose={onClose}>
-      <h2 className={styles.dialogTitle}>Delete this photo?</h2>
+    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby="delete-photo-title" onClose={onClose}>
+      <h2 id="delete-photo-title" className={styles.dialogTitle}>Delete this photo?</h2>
       <p className={styles.muted}>Its captions and votes are deleted with it. This cannot be undone.</p>
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
       <div className={`${styles.actions} ${styles.actionsFill} mt-5`}>
         <button type="button" className={styles.buttonGhost} onClick={onClose}>
-          Keep it
+          Keep photo
         </button>
         <button type="button" className={styles.button} disabled={isDeleting} onClick={handleDelete}>
-          Delete
+          Delete photo
         </button>
       </div>
     </dialog>

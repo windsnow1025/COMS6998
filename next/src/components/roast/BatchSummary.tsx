@@ -57,8 +57,7 @@ export default function BatchSummary({ batch }: BatchSummaryProps) {
 
   return (
     <section className={styles.summary}>
-      <h2 className={styles.title}>Batch done.</h2>
-      <p className={styles.subtitle}>{formatCampusDate(batch.date)}</p>
+      <h2 className={styles.profileName}>Batch done.</h2>
 
       <div className={styles.stats}>
         <div className={styles.stat}>

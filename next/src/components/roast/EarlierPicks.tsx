@@ -22,7 +22,6 @@ export default function EarlierPicks({ photos }: EarlierPicksProps) {
     <section>
       <div className={styles.batchHead}>
         <h2 className={styles.sectionTitle}>Your earlier picks</h2>
-        <span className={`${styles.muted} ${styles.small}`}>Served again for more votes</span>
       </div>
       <div className={`${styles.list} mt-4`}>
         {photos.map((photo) => (
